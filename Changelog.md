@@ -6,3 +6,12 @@ What was added:
 * Serializer utility class.
 * 2 build-in protocols.
 #
+
+# SerialX 1.0.5 (beta)
+
+Release date: 8.20.2020 (Night)
+
+What was added:
+* Ability to generate comments.
+* Some other very small changes.
+#
