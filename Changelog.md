@@ -13,6 +13,5 @@ Release date: 8.20.2020 (Night)
 
 What was added:
 * Ability to generate comments.
-* Double slash comment removed.
 * Fixing some small bugs.
 #
