@@ -24,5 +24,6 @@ What was added:
 * Improveing way to serialize numbers.
 * Adding suffixes fot double "d", short "s" and byte "y"!
 * Java Base64 serialized object now does not need to start with "#"!
+* Objects serialized using protocol with no arguments will now not by serialized with null argument!
 * Repairing an error with long suffix!
 #
