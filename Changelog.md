@@ -30,7 +30,7 @@ What was added:
 
 # SerialX 1.1.0
 
-Release date: 9.21.2020 (Evening)
+Release date: 9.22.2020 (Afternoon)
 
 What was added:
 * Adding decimal number formatter!
