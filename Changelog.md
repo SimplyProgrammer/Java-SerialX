@@ -27,3 +27,17 @@ What was added:
 * Objects serialized using protocol with no arguments will now not by serialized with null argument!
 * Repairing an error with long suffix!
 #
+
+# SerialX 1.1.0
+
+Release date: 9.21.2020 (Evening)
+
+What was added:
+* Adding decimal number formatter!
+* "unserialize" method in SerializationProtocol now throws Exception which makes reflection stuff easier!
+* Fixing some problems such as "Too big objects simply disappear during serialization!"
+* Better optimization. Improving the performance of Serializing and Unserializing astronomically!
+* Some characters now can be serialized using regular Java way for example 'a'! However SerialX syntax characters such as { or } must be still serialized using ASCII code!
+Numbers must have additional character behind for example '4/' otherwise they will be taken as ASCII code! 
+* Some new methods and stuff!
+#
