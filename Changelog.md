@@ -18,7 +18,7 @@ What was added:
 
 # SerialX 1.0.6
 
-Release date: 8.20.2020 (Noon)
+Release date: 8.22.2020 (Noon)
 
 What was added:
 * Improveing way to serialize numbers.
@@ -40,4 +40,14 @@ What was added:
 * Some characters now can be serialized using regular Java way for example 'a'! However SerialX syntax characters such as { or } must be still serialized using ASCII code!
 Numbers must have additional character behind for example '4/' otherwise they will be taken as ASCII code! 
 * Some new methods and stuff!
+#
+
+# SerialX 1.1.2
+
+Release date: 9.27.2020 (Evening)
+
+What was added:
+* Integers now can be serialized using Java binary and hexadecimal form (0b1111, 0xffff)!
+* Numbers can be separated with underscore (just like in Java)!
+* Fixing the bug when formatter mess up decimals suffixes and integers!
 #
