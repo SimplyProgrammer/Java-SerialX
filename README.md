@@ -44,8 +44,7 @@ public class Foo
   }
 }
 ```
-Serialized via:
-**Json:**
+Serialized via **Json:**
 ```
 ...
 {
@@ -55,7 +54,7 @@ Serialized via:
   "flag" : true 
 }
 ```
-**XML:**
+Serialized via **XML:**
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <java version="1.8.0_92" class="java.beans.XMLDecoder">
@@ -75,7 +74,7 @@ Serialized via:
     </object>
 </java>
 ```
-**SerialX:**
+Serialized via **SerialX:**
 ```
 org.some.beautiful.Foo 55 455.45 236.12F T;
 ```
