@@ -78,7 +78,9 @@ Serialized via:
 ```
 org.some.beautiful.Foo 55 455.45 236.12F T;
 ```
-
+Maybe it is a question of formating but SerialX will be the shortest one anyway. Because instead of having some sort of key to the value you simply have its order (index)!
+And value's data type is specified by suffix if it is a primitive data type or simply by package name as the first argument in case of an object!
+<br>
 ## Info
 * If you want to add or see issues just click on [Issues section](https://github.com/PetoPetko/Java-SerialX/issues) in up.
 * If you want to comment use [Issues section](https://github.com/PetoPetko/Java-SerialX/issues) too.
