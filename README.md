@@ -47,6 +47,7 @@ public class Foo
 Serialized via:
 **Json:**
 ```
+...
 {
   "val1" : 55,
   "val2" : 455.45,
