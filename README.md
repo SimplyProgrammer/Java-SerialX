@@ -1,6 +1,81 @@
 # Java-SerialX
 SerialX is a powerful utility library to serialize objects in Java.
 SerialX is improving regular Java Base64 serialization and adding serialization protocols that you can create for objects that cant be serialized using regular way. For example final non-serializable objects, 3rd party objects and others. SerialX is also JSON like "programming" language that are objects serialized into. This also allows you to serialize multiple objects into one string or also into file. But unlike to JSON, SerialX is based on determinate order of arguments or values we can say. In other words SerialX allows you to serialize **anything**, it's pretty simple to use and practically limitless.
+## Comparison: JACKSON (Json) vs XMLEncoder (XML) vs SerialX (SerialX)
+Sample object
+`
+public class Foo
+{
+  double val1 = 55, val2 = 455.45;
+  float val3 = 236.12F;
+  boolean flag = true;
+
+  public double getVal1()
+  {
+    return val1;
+  }
+  public void setVal1(double val1)
+  {
+    this.val1 = val1;
+  }
+  public double getVal2()
+  {
+    return val2;
+  }
+  public void setVal2(double val2)
+  {
+    this.val2 = val2;
+  }
+  public float getVal3()
+  {
+    return val3;
+  }
+  public void setVal3(float val3)
+  {
+    this.val3 = val3;
+  }
+  public boolean isFlag()
+  {
+    return flag;
+  }
+  public void setFlag(boolean flag)
+  {
+    this.flag = flag;
+  }
+}
+`
+**Json:**
+`
+{
+  "val1" : 55,
+  "val2" : 455.45,
+  "val3" : 236.12,
+  "flag" : true 
+}
+`
+**XML:**
+`
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_92" class="java.beans.XMLDecoder">
+    <object class="org.some.beautiful.Foo">
+        <void property="val1">
+            <double>55</double>
+        </void>
+        <void property="val2">
+            <double>455.45</double>
+        </void>
+        <void property="val3">
+            <float>236.12</float>
+        </void>
+        <void property="flag">
+            <boolean>true</boolean>
+        </void>
+    </object>
+</java>
+`
+**SerialX:**
+org.some.beautiful.Foo 55 455.45 236.12F T;
+
 ## Info
 * If you want to add or see issues just click on [Issues section](https://github.com/PetoPetko/Java-SerialX/issues) in up.
 * If you want to comment use [Issues section](https://github.com/PetoPetko/Java-SerialX/issues) too.
