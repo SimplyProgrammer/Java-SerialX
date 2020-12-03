@@ -44,6 +44,7 @@ public class Foo
   }
 }
 ```
+##
 Serialized via **Json:**
 ```
 ...
