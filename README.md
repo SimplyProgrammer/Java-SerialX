@@ -1,5 +1,5 @@
 # Java-SerialX
-SerialX is a powerful utility library to serialize objects in Java. Serialization means storing Java objects and values in to file. <br>
+SerialX is a powerful utility library to serialize objects in Java. Serialization means storing Java objects and values into file. <br>
 SerialX is improving regular Java Base64 serialization and adding serialization protocols that you can create for objects that cant be serialized using regular way. For example final non-serializable objects, 3rd party objects and others. SerialX is also JSON like "programming" language (data storage) that are objects serialized into. So this allows you to serialize multiple objects into one string or also into file. But unlike to JSON, SerialX is based on determinate order of arguments or values we can say. In other words SerialX allows you to serialize **anything**, it's pretty simple to use and practically limitless, however you need to know that "order" is your friend, not an enemy.
 ## Comparison: JACKSON (Json) vs XMLEncoder (XML) vs SerialX (SerialX data storage)
 Sample object:
