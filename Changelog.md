@@ -51,3 +51,14 @@ What was added:
 * Numbers can be separated with underscore (just like in Java)!
 * Fixing the bug when formatter mess up decimals suffixes and integers!
 #
+
+# SerialX 1.1.5
+
+Release date: 12.6.2020 (Evening)
+
+What was added:
+* Variable system! Now "order" is not only possibility.
+* Functions working with variable system!
+* Functions that allows you to insert custom code (comments and stuff)!
+* Fixing "long-lived" bugs such as the on with double slash comment, hopefuly for the last!
+#
