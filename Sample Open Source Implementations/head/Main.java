@@ -67,7 +67,7 @@ public class Main
 		
 		Serializer.PROTOCOL_REGISTRY.GetProtocolFor(String.class).setActive(false); //Disabling a string protocol. This will force Serializer to serialize string with regular Java Base64 because String implements java.io.Serializable!
 		Serializer.SerializeTo(f, vars, "145asaa4144akhdgj31hahaXDDLol", r, list, Serializer.Comment("Size of array"), Serializer.Var("arrSize", list.size()), new Bar(), 1, 2.2, 3, 'A', true, false, null, intArr, Serializer.Code("$num")); //Saving to file (serializing)
-																				  //This will insert an comment        Another way to add variable except Map<String, Object> 				             			 $ is used to obtain value from variable
+							                                  //This will insert an comment        Another way to add variable except Map<String, Object> 				             $ is used to obtain value from variable
 		
 		Serializer.PROTOCOL_REGISTRY.setActivityForAll(true); //Enabling all protocols
 		System.out.println(Serializer.LoadFrom(f)); //Loading from file
