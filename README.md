@@ -85,7 +85,7 @@ Note: Since there is variable system in 1.5.0, the order of values is now not th
 <br>
 ## Info
 * If you want to add or see issues just click on [Issues section](https://github.com/PetoPetko/Java-SerialX/issues) in up.
-* If you want to comment or suggest an feature use [Issues section](https://github.com/PetoPetko/Java-SerialX/issues) too.
+* If you want to comment or suggest an feature use [Discussions section](https://github.com/PetoPetko/Java-SerialX/discussions).
 * If you want to see or learn some things about library then see the documentation or Sample Open Source Implementation.
 * If you want to download library, dont use commits section, use [Releases section](https://github.com/PetoPetko/Java-SerialX/releases) or click that big green button "Clone or download" to download the latest version.
 * And if you want to see changelog open [changelog file](Changelog.md) or use [Releases section](https://github.com/PetoPetko/Java-SerialX/releases) too.
