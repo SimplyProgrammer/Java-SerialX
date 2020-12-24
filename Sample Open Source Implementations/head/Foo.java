@@ -38,7 +38,8 @@ public class Foo //Sample object
 		@Override
 		public Object[] serialize(Foo object) 
 		{
-			return new Object[] {};
+			return new Object[] {}; //Nothing here for now
+			
 		}
 
 		@SuppressWarnings("unchecked")
