@@ -59,7 +59,7 @@ Serialized via **XML:**
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <java version="1.8.0_92" class="java.beans.XMLDecoder">
-    <object class="org.some.beautiful.Foo">
+    <object class="some.package.Foo">
         <void property="val1">
             <double>55</double>
         </void>
