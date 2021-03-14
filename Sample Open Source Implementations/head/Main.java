@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
+import ugp.org.SerialX.Scope;
 import ugp.org.SerialX.Serializer;
 import ugp.org.SerialX.Protocols.SerializationProtocol;
 
