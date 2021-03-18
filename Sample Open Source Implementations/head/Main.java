@@ -71,7 +71,7 @@ public class Main
 							                                  //This will insert an comment        Another way to add variable except Map<String, Object> 				             $ is used to obtain value from variable
 		
 		Serializer.PROTOCOL_REGISTRY.setActivityForAll(true); //Enabling all protocols
-		Scope<Object> scope = Serializer.LoadFrom(f); //Loading scope with variables and values from file!
+		Scope scope = Serializer.LoadFrom(f); //Loading scope with variables and values from file!
 		
 		System.out.println(scope.toVarMap()); 
 		System.out.println(scope.toValList());
