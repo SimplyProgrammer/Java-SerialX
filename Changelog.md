@@ -62,3 +62,21 @@ What was added:
 * Functions that allows you to insert custom code (comments and stuff)!
 * Fixing "long-lived" bugs such as the on with double slash comment, hopefuly for the last!
 #
+
+# SerialX 1.2.0_pre - V2
+
+Release date: 12.6.2020 (Afternoon)
+
+What was added:
+* New Scope object that are now values and variables loaded in to so now its not necesarry to load indepednent values and variables separatly!
+* Scope is not physical manifestation of loaded content in your program!
+* Ability to create sub-scopes / neasted scopes in side of parent scopes or file itself similarly to JSON! For example: { \/\*scope\*\/ }
+* Ability to serialize string normaly in quotes like in java! But certain syntactical characters from SerialX cant be present!
+* "splitValues" method was removed becasue it was out of purpous of library itself.
+* Comma now works as semicolon!
+* Trumendous reading performence boost! Large quantity reading is now up to 50x faster than in previous version.
+* Fixing a bug when order of elements being messed up during serialization.
+* Fixing a bug with hexadecimal and binary number formats.
+* Fixing some other less important bugs.
+* Note: Since this is pre release, there are probably some bugs but hopefully nothing totaly broken. Also this prerelease can only read scopes, not write!
+#
