@@ -65,7 +65,7 @@ What was added:
 
 # SerialX 1.2.0_pre - V2
 
-Release date: 12.6.2020 (Afternoon)
+Release date: 3.18.2021 (Afternoon)
 
 What was added:
 * New Scope object that are now values and variables loaded in to so now its not necesarry to load indepednent values and variables separatly!
