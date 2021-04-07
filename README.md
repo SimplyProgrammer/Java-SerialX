@@ -12,6 +12,8 @@ Compare to this, **SerialX API** is doing everything programmatically. SerialX A
 * Readable, SerialX as format is pretty readable for humans and is also pretty intuitive as well so can be also written by humans!
 * Data types recognision, SerialX supports all primitve datatypes from java and also objects (done with protocols) compare to Json for instance!
 * Small storage requirements, as you can see belove SerialX is often times far smaller than Json not even mentioning XML!
+* Quantity, SerialX can nserialize multiple objects in to one file or string!
+* Very easy to use, at the begining all what you need to know is ``Serializer.SerializeTo(file, objects)`` for serializing and ``Serializer.LoadFrom(f)`` for deserializing!
 
 ## Comparison: JACKSON (Json) vs XMLEncoder (XML) vs SerialX (SerialX data storage)
 Sample object:
