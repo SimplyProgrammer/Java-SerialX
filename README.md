@@ -15,7 +15,7 @@ Compare to this, **SerialX API** is doing everything programmatically. SerialX A
 * Quantity, SerialX can nserialize multiple objects in to one file or string!
 * Very easy to use, at the begining all what you need to know is ``Serializer.SerializeTo(file, objects)`` for serializing and ``Serializer.LoadFrom(f)`` for deserializing!
 
-## Comparison: JACKSON (Json) vs XMLEncoder (XML) vs SerialX (SerialX data storage)
+## Comparison: XML (.xml) vs Json (.json) vs YAML (.yml) vs SerialX (.srlx)
 Sample object:
 ```
 public class Foo
@@ -59,17 +59,7 @@ public class Foo
 }
 ```
 ##
-Serialized via **Json:**
-```
-...
-{
-  "val1" : 55,
-  "val2" : 455.45,
-  "val3" : 236.12,
-  "flag" : true 
-}
-```
-Serialized via **XML:**
+Serialized via **XMLDecoder for XML:**
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <java version="1.8.0_92" class="java.beans.XMLDecoder">
@@ -89,9 +79,46 @@ Serialized via **XML:**
     </object>
 </java>
 ```
-Serialized via **SerialX:**
+Serialized via **JACKSONE (hypothetical) for Json:**
+```
+...
+{
+  "val1" : 55,
+  "val2" : 455.45,
+  "val3" : 236.12,
+  "flag" : true 
+}
+```
+Serialized via **(hypothetical) YAML:**
+```
+val1: 55,
+val2: 455.45,
+val3: 236.12,
+flag: true 
+```
+Serialized via **SerialX for SerialX (protocol):**
 ```
 some.package.Foo 55D 455.45 236.12F T;
+```
+<br>
+After introduction od variables in 1.5.0 and cope in 1.2.0: <br>
+Serialized via **SerialX for SerialX (protocol + scope):**
+```
+some.package.Foo {
+  val1 = 55D,
+  val2 = 455.45,
+  val3 = 236.12F,
+  flag = T 
+}
+```
+Serialized via **SerialX for SerialX (scope only):**
+```
+{
+  val1 = 55D,
+  val2 = 455.45,
+  val3 = 236.12F,
+  flag = T 
+}
 ```
 Maybe it is a question of formating but SerialX will be the shortest one anyway. Because instead of having some sort of key to the value you simply have its order (index)! 
 And value's data type is specified by suffix if it is a primitive data type or simply by package name as the first argument in case of an object! Other arguments (count, order, type) are then specified by a SerializationProtocol! Generally, one line means one object, one value (separated by spaces) means one argument! <br><br>
