@@ -91,9 +91,9 @@ Serialized via **XMLDecoder for XML:**
 ```
 <br>Serialized via **(hypothetical) YAML:**
 ```
-val1: 55.0,
-val2: 455.45,
-val3: 236.12,
+val1: 55.0
+val2: 455.45
+val3: 236.12
 flag: true 
 ```
 <br>Serialized via **SerialX for SerialX (protocol):**
