@@ -100,7 +100,7 @@ flag: true
 ```
 some.package.Foo 55D 455.45 236.12F T;
 ``` 
-<br> After introduction od variables in 1.5.0 and cope in 1.2.0: <br>
+<br> **After introduction od variables in 1.5.0 and cope in 1.2.0:** <br>
 Serialized via **SerialX for SerialX (protocol + scope):**
 ```
 some.package.Foo {
