@@ -79,7 +79,7 @@ Serialized via **XMLDecoder for XML:**
     </object>
 </java>
 ```
-Serialized via **JACKSONE (hypothetical) for Json:**
+<br>Serialized via **JACKSONE (hypothetical) for Json:**
 ```
 ...
 {
@@ -89,19 +89,18 @@ Serialized via **JACKSONE (hypothetical) for Json:**
   "flag" : true 
 }
 ```
-Serialized via **(hypothetical) YAML:**
+<br>Serialized via **(hypothetical) YAML:**
 ```
 val1: 55,
 val2: 455.45,
 val3: 236.12,
 flag: true 
 ```
-Serialized via **SerialX for SerialX (protocol):**
+<br>Serialized via **SerialX for SerialX (protocol):**
 ```
 some.package.Foo 55D 455.45 236.12F T;
-```
-<br>
-After introduction od variables in 1.5.0 and cope in 1.2.0: <br>
+``` 
+<br> After introduction od variables in 1.5.0 and cope in 1.2.0: <br>
 Serialized via **SerialX for SerialX (protocol + scope):**
 ```
 some.package.Foo {
@@ -111,7 +110,7 @@ some.package.Foo {
   flag = T 
 }
 ```
-Serialized via **SerialX for SerialX (scope only):**
+<br>Serialized via **SerialX for SerialX (scope only):**
 ```
 {
   val1 = 55D,
