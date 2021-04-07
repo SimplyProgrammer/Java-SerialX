@@ -119,17 +119,9 @@ some.package.Foo {
   flag = T 
 }
 ```
-Maybe it is a question of formating but SerialX will be the shortest one anyway. Because instead of having some sort of key to the value you simply have its order (index)! 
+Maybe it is a question of formating but SerialX with protocol will be the shortest one anyway. Because, in this case, instead of having some sort of key to the value you simply have its order (index)! 
 And value's data type is specified by suffix if it is a primitive data type or simply by package name as the first argument in case of an object! Other arguments (count, order, type) are then specified by a SerializationProtocol! Generally, one line means one object, one value (separated by spaces) means one argument! <br><br>
 Note: Since there is variable system in 1.1.5, the order of values is now not the only option to obtain an object or value! <br>
-Since 1.1.5 also something like this might come to mind: <br>
-```
-val1 = 55D;
-val2 = 455.45;
-val3 = 236.12F;
-flag = T;
-```
-But this will be far less eficient than protocol solution and will most likely required you to write more code to make it actualy obtain an Foo object from those variables...
 <br>
 ## Info
 * If you want to add or see issues just click on [Issues section](https://github.com/PetoPetko/Java-SerialX/issues) in up.
