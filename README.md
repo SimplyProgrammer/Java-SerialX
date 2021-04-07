@@ -83,7 +83,7 @@ Serialized via **XMLDecoder for XML:**
 ```
 ...
 {
-  "val1" : 55,
+  "val1" : 55.0,
   "val2" : 455.45,
   "val3" : 236.12,
   "flag" : true 
@@ -91,7 +91,7 @@ Serialized via **XMLDecoder for XML:**
 ```
 <br>Serialized via **(hypothetical) YAML:**
 ```
-val1: 55,
+val1: 55.0,
 val2: 455.45,
 val3: 236.12,
 flag: true 
