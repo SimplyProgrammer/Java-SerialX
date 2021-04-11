@@ -74,7 +74,7 @@ What was added:
 * Ability to serialize string normaly in quotes like in java! But certain syntactical characters from SerialX cant be present!
 * "splitValues" method was removed becasue it was out of purpous of library itself.
 * Comma now works as semicolon!
-* Trumendous reading performence boost! Large quantity reading is now up to 50x faster than in previous version.
+* Tremendous reading performence boost! Large quantity reading is now up to 50x faster than in previous version.
 * Fixing a bug when order of elements being messed up during serialization.
 * Fixing a bug with hexadecimal and binary number formats.
 * Fixing some other less important bugs.
@@ -88,17 +88,17 @@ Release date: 4.11.2021 (Afternoon)
 What was added:
 * Ability to serialize Scope object!
 * Ability to clone Objects using Serializer!
-* Now you can access Java utility from SerialX, you can invoke public sttaic methods and fields directly from SerialX!
+* Now you can access Java utility from SerialX, you can invoke public static methods and fields directly from SerialX!
 * SelfSerializable interface which gives you ability to serialize objects without protocol by calling public constructors!
 * Static field "new" to obtain clone of variable and "class" to obtain class of variables value!
 * 4 new protocols:
 * * MapProtocol - to serialize maps!
 * * ScopeProtocols (reading only) to read scopes using protocol!
-* * AutoProtocol - will automaticaly serialize selected fields with getters and setters!
+* * AutoProtocol - will automatically serialize selected fields with getters and setters!
 * * SelfSerializableProtocol - operates with SelfSerializable interface!
-* Trumendous writing performence boost! Large quantity writing is now up to 80x faster than in previous version.
-* Eliminating usage of Regex completely which resaults in to even faster reading!
+* Tremendous writing performance boost! Large quantity writing is now up to 80x faster than in previous version.
+* Eliminating usage of Regex completely which results into even faster reading!
 * Now you can access variables of scopes by "." directly in SerialX!
 * Fixing bug when blank characters despair from string, also now string can contains any character except quote and nextline!
-* SerialX API is now partially opensource, however according to the License you cant appropriate any of this code without including its origins!
+* SerialX API is now partially opensource, the sources are included in main Jar, however according to the License you cant appropriate any of this code without including its origins!
 #
