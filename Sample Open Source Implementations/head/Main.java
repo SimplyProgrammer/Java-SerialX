@@ -48,7 +48,7 @@ public class Main
 			}
 		});
 		
-		File f = new File("./lukasko.srlx");
+		File f = new File("./test.srlx");
 
 		//Sample objects
 		Random r = new Random();
