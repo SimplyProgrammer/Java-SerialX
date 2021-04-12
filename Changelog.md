@@ -88,6 +88,7 @@ Release date: 4.11.2021 (Afternoon)
 What was added:
 * Ability to serialize Scope object!
 * Ability to clone Objects using Serializer!
+* Ability to instantiate any object using Serializer by calling shortest public cnstructor!
 * Now you can access Java utility from SerialX, you can invoke public static methods and fields directly from SerialX!
 * SelfSerializable interface which gives you ability to serialize objects without protocol by calling public constructors!
 * Static field "new" to obtain clone of variable and "class" to obtain class of variables value!
@@ -95,6 +96,7 @@ What was added:
 * * MapProtocol - to serialize maps!
 * * ScopeProtocols (reading only) to read scopes using protocol!
 * * AutoProtocol - will automatically serialize selected fields with getters and setters!
+* * EnumProtocol - to serialize any java enum!
 * * SelfSerializableProtocol - operates with SelfSerializable interface!
 * Tremendous writing performance boost! Large quantity writing is now up to 80x faster than in previous version.
 * Eliminating usage of Regex completely which results into even faster reading!
