@@ -88,7 +88,7 @@ Release date: 4.11.2021 (Afternoon)
 What was added:
 * Ability to serialize Scope object!
 * Ability to clone Objects using Serializer!
-* Ability to instantiate any object using Serializer by calling shortest public cnstructor!
+* Ability to instantiate any object using Serializer by calling shortest public constructor!
 * Now you can access Java utility from SerialX, you can invoke public static methods and fields directly from SerialX!
 * SelfSerializable interface which gives you ability to serialize objects without protocol by calling public constructors!
 * Static field "new" to obtain clone of variable and "class" to obtain class of variables value!
