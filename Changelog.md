@@ -104,3 +104,18 @@ What was added:
 * Fixing bug when blank characters despair from string, also now string can contains any character except quote and nextline!
 * SerialX API is now partially opensource, the sources are included in main Jar, however according to the License you cant appropriate any of this code without including its origins!
 #
+
+# SerialX 1.2.5
+
+Release date: 4.11.2021 (Afternoon)
+
+What was added:
+* Serializer can now serialize into any Appendable which includes all Writers, StringBuilder and many others which gives you alot of uportunities!
+* Serializer can now read from any CharSequence or any Reader object!
+* Serializer is now fully capable of reading JSON!
+* Serializer can read specific object or variable while ignoring any other stuff which saves alot of performance (this is experimental)!
+* Slight increase of reading performance!
+* Utility to work with JSON like JsonScope!
+* Alot of new utility in Scope object such as filtering or object transformation!
+* Small bugs fixed!
+#
