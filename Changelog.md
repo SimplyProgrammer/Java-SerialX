@@ -110,12 +110,12 @@ What was added:
 Release date: 4.11.2021 (Afternoon)
 
 What was added:
-* Serializer can now serialize into any Appendable which includes all Writers, StringBuilder and many others which gives you alot of uportunities!
+* Serializer can now serialize into any Appendable which includes all Writers, StringBuilder and many others which gives you a lot of opportunities!
 * Serializer can now read from any CharSequence or any Reader object!
 * Serializer is now fully capable of reading JSON!
-* Serializer can read specific object or variable while ignoring any other stuff which saves alot of performance (this is experimental)!
+* Serializer can read specific object or variable while ignoring any other stuff which saves a lot of performance (this is experimental)!
 * Slight increase of reading performance!
 * Utility to work with JSON like JsonScope!
-* Alot of new utility in Scope object such as filtering or object transformation!
+* A lot of new utility in Scope object such as filtering or object transformation!
 * Small bugs fixed!
 #
