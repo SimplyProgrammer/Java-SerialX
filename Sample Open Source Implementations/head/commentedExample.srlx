@@ -33,7 +33,7 @@ dependencies =
 			},
 			serialx = 
 			{
-				version = "Is the best!"
+				version = "The best version!"
 			}
 		},
 		ppl = 
@@ -99,14 +99,14 @@ devDependencies =
 //Since 1.2.5 Serializer fully supports Json and JavaScript object!
 jsonCrossover = 
 {
-	"hello" : "Hello world I am Javascript object notation!";
+	"hello" : "Hello world I am Javascript object notation!",
 	"jsonObject" : 
 	{
 		name: "John", 
 		age: 31, 
 		city: "New York"
-	};
-	"jsonArray" : [1, 2, 3, 4];
+	},
+	"jsonArray" : [1, 2, 3, 4]
 },
 
 //Variable "bullshit" cant be accessed here yet!
