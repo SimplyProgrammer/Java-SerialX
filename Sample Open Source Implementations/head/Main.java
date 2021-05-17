@@ -81,8 +81,6 @@ public class Main
 		
 		System.out.println(scope.toVarMap()); 
 		System.out.println(scope.toValList());
-		
-		System.out.println((Object)Serializer.LoadFrom(f, 1));
  	}
 	
 	//We can invoke static things from SerialX!
