@@ -8,7 +8,7 @@ dependencies =
 	//Each scope can have its own variables with values and independant values!
 		
 	//Every scope can read and write parent scopes variables however by changing them, it will only affect local one and not parents one!
-	$name; //"app" ($ obtains value "app")
+	$name; //"app" ($ obtains value from variable, in this case "app")
 	$name = "no longer app lol!";
 		
 	composition-api = "^1.0.0-beta.21", //This is one of the variables of this scope...
@@ -96,11 +96,24 @@ devDependencies =
 	}
 };
 
+//Since 1.2.5 Serializer fully supports Json and JavaScript object!
+jsonCrossover = 
+{
+	"hello" : "Hello world I am Javascript object notation!";
+	"jsonObject" : 
+	{
+		name: "John", 
+		age: 31, 
+		city: "New York"
+	};
+	"jsonArray" : [1, 2, 3, 4];
+},
+
 //Variable "bullshit" cant be accessed here yet!
 bullshit = 
 {
 	//This scope cant access variable that is stored by (bullshit), because variables are always created after its value (Scope in this case) is constructed!
-    server = "service server",
+    	server = "service server",
 	build = "service build",
 	lint = "service lint";
 },
