@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.sun.javafx.css.parser.CSSParser;
+
 import ugp.org.SerialX.Scope;
 import ugp.org.SerialX.Serializer;
 import ugp.org.SerialX.Protocols.SerializationProtocol;
@@ -75,8 +77,12 @@ public class Main
 		t = System.nanoTime();
 		System.out.println("Read: " + (t-t0)/1000000);
 		
+		scope = scope.filter(obj -> obj != null); //This will filter away every null value and variable!
+		
 		System.out.println(scope.toVarMap()); 
 		System.out.println(scope.toValList());
+		
+		System.out.println((Object)Serializer.LoadFrom(f, 1));
  	}
 	
 	//We can invoke static things from SerialX!
