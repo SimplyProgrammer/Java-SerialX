@@ -119,3 +119,26 @@ What was added:
 * A lot of new utility in Scope object such as filtering or object transformation!
 * Small bugs fixed!
 #
+
+# SerialX 1.3.0
+
+Release date: 8.8.2021 (Night) 
+
+What was added: 
+* Revelation of compiler that is now Recursive descent parser that is customizable and configurable.
+* Structure of entire API was generally reorganized in to 3 main sections:
+  * Serializer - which is main class that operates entire API. Is responsible for input and output, formatting and general utility!
+  * DataParser and DataConverter API - is recursive  descent parser itself that is responsible for converting objects to strings and parsing them back! In default SerialX API implementation now known as JUSS (Java universal serial script) are these parsers and converters available:
+    * NumberConverter - for converting and parsing numbers (integers, decimals, hexa, bin)!
+    * BooleanConverter - for converting and parsing booleans!
+    * CharacterConverter - for converting and parsing chars!
+    * StringConverter - for converting and parsing strings ("Hello world!", "And others...")!
+    * NullConverter - for converting and parsing null!
+    * ObjectConverter - for converting and parsing SerializationProtocol expressions and Scopes!
+    * VariableConverter - for converting and parsing JUSS variables (Map.Entry)!
+    * SerializableBase64Converter - for converting and parsing Base64 expressions (java.io.Serializable)!
+    * ArrayConverter - for converting and parsing primitive arrays!
+    ##
+    * 
+
+#
