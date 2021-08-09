@@ -1,21 +1,24 @@
 # Java-SerialX
 SerialX is a powerful utility library to serialize objects in Java. Serialization means storing Java objects and values into file. <br>
-SerialX is improving regular Java Base64 serialization and adding serialization protocols that you can create for objects that cant be serialized using regular way. For example final non-serializable objects, 3rd party objects and others. SerialX is also JSON like "programming" language (data storage) that are objects serialized into. So this allows you to serialize multiple objects into one string or also into file. But unlike to JSON, SerialX is based on determinate order of arguments and values we can say. Latest one also provides variable system (keys, values) similar to JSON. But unlike to JSON these variables can be overided and can interact with each other and can be used multiple times. In other words SerialX allows you to serialize **anything**, it's pretty simple to use and practically limitless!
+SerialX is improving regular Java Base64 serialization and adding serialization protocols that you can create for objects that cant be serialized using regular way. For example final non-serializable objects, 3rd party objects and others. SerialX API is storing objects into JSON like "programming" language (data format) called JUSS (Java universal serial script) which shares common functionality with JSON and provides more customizability and extended functionality!. This allows you to serialize multiple objects into one string or also into file. But unlike to JSON, JUSS general conception is based on determinate order of arguments or values we can say. Latest versions also provides variable system (keys, values) similar to JSON. But in JUSS these variables can be overided and can interact with each other and can be used multiple times. Nowadays SerialX provides recursive descent parser that can be modified so you can create your own data structures! In other words SerialX allows you to serialize **anything**, it's pretty simple to use and practically limitless!
 ## Brief overview of working concept and advantages compared to regular serialization:
 **Regular java serialization** is strongly based on some kind of "magic" or we can say "godly reflection" which will reflectivly read all fields of object includeing private and final ones and then interprets it as Base64 string. And during deserialization it will create an empty instance of object absolutly ignoring its constructors by using some "magic" compilator process to create it instad, and then it will violently write all serialized field again includeing private and final ones which is realy not the best aproach! Also this alows you to serialize only instances of java.io.Serializable and all field must be instances of Serializable as well which is also not the most usefull thing! <br>
-Compare to this, **SerialX API** is doing everything programmatically. SerialX API uses ``SerializationProtocol``s that are registred in ``ProtocolRegistry``, each working for certain class! ``SerializationProtocol`` contains 2 methods, ``serialize(T object)`` and ``unserialize(Object[] args)``. ``serialize(T object)`` method obtains certain object to serialize and its job is to turn this object into array of objects that we can then reconstruct this exact object from, such as constructor arguments! These arguments are then paste into ``Serializer`` and ``Serializer`` serialize them into mentioned SerialX format data storage. During deserialization, ``Serializer`` first takes givven data serialized in SerialX, unserialize them into array of objects and this array is then paste into ``unserialize(Object[] args)`` method of certain ``SerializationProtocol`` as argument. Job of ``unserialize(Object[] args)`` method is to create an new instance of serialized object ``T`` from givven arguments! Evrything in this function is controlled by you and you can write them by your self which gives you an absolute control! <br>
+Compare to this, **SerialX API** is doing everything programmatically. SerialX API uses ``SerializationProtocol``s that are registred in ``ProtocolRegistry``, each working for certain class! ``SerializationProtocol`` contains 2 methods, ``serialize(T object)`` and ``unserialize(Object[] args)``. ``serialize(T object)`` method obtains certain object to serialize and its job is to turn this object into array of objects that we can then reconstruct this exact object from, such as constructor arguments! These arguments are then paste into ``Serializer`` and ``Serializer`` serialize them into mentioned SerialX API data storage format. During deserialization, ``Serializer`` first takes givven data serialized in SerialX, unserialize them into array of objects and this array is then paste into ``unserialize(Object[] args)`` method of certain ``SerializationProtocol`` as argument. Job of ``unserialize(Object[] args)`` method is to create an new instance of serialized object ``T`` from givven arguments! Evrything in this function is controlled by you and you can write them by your self which gives you an absolute control! <br>
+Note: Since 1.3.0, protocols are operated by DataParsers and are mainly used for more complex objects. Also Object -> String conversion is now done by DataConverter and String - Object is done by DataParsers and further by protocols!
 **Advantages and goals:**
 * Overcoming most of regular serialization problems such as bypassing constructor!
-* Powefull and highly costomizable, you have control over stuff!
+* Powefull and highly costomizable, you have control over stuff via protocols and recursive descent parser!
 * Programmaticall, meaning you can decide how objects will be serialized and deserialized!
 * Fast, SerialX is almost always far more faster than regular serialization!
 * Readable, SerialX as format is pretty readable for humans and is also pretty intuitive as well so can be also written by humans!
-* Data types recognision, SerialX supports all primitve datatypes from java and also objects (done with protocols) compare to Json for instance!
+* Data types recognision, SerialX defaultly supports all primitve datatypes from java and also objects (done with protocols) compare to Json for instance!
 * Small storage requirements, as you can see belove SerialX is often times far smaller than Json not even mentioning XML!
 * Quantity, SerialX can serialize multiple objects into one file or string!
+* Fully compatible with JSON!
 * Very easy to use, at the begining all what you need to know is ``Serializer.SerializeTo(file, objects)`` for serializing and ``Serializer.LoadFrom(file)`` for deserializing!
+* Recursive descent parser that is fully customizable and can be used to parse and convert potentialy anything from JSON to CSS!
 
-## Comparison: XML (.xml) vs Json (.json) vs YAML (.yml) vs SerialX (.srlx)
+## Comparison: XML (.xml) vs Json (.json) vs YAML (.yml) vs JUSS (.juss or .srlx)
 Sample object:
 ```
 public class Foo
@@ -96,12 +99,12 @@ val2: 455.45
 val3: 236.12
 flag: true 
 ```
-<br>Serialized via **SerialX for SerialX (protocol):**
+<br>Serialized via **SerialX for JUSS (protocol):**
 ```
 some.package.Foo 55D 455.45 236.12F T;
 ``` 
 ## After introduction of variables in 1.1.5 and scope in 1.2.0: <br>
-Serialized via **SerialX for SerialX (protocol + scope):**
+Serialized via **SerialX for JUSS (protocol + scope):**
 ```
 some.package.Foo {
   val1 = 55D,
@@ -110,7 +113,7 @@ some.package.Foo {
   flag = T 
 }
 ```
-<br>Serialized via **SerialX for SerialX (scope only):**
+<br>Serialized via **SerialX for JUSS (scope only):**
 ```
 {
   val1 = 55D,
@@ -119,7 +122,7 @@ some.package.Foo {
   flag = T 
 }
 ```
-<br>Maybe it is a question of formating but SerialX with protocol will be the shortest one anyway. Because, in this case, instead of having some sort of key to the value you simply have its order (index)! 
+<br>Maybe it is a question of formating but JUSS with protocol will be the shortest one anyway. Because, in this case, instead of having some sort of key to the value you simply have its order (index)! 
 And value's data type is specified by suffix if it is a primitive data type or simply by package name as the first argument in case of an object! Other arguments (count, order, type) are then specified by a SerializationProtocol! Generally, one line means one object, one value (separated by spaces) means one argument! <br><br>
 Note: Since there is variable system in 1.1.5, the order of values is now not the only option to obtain an object or value! <br>
 <br>
