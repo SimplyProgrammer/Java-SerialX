@@ -139,6 +139,20 @@ What was added:
     * SerializableBase64Converter - for converting and parsing Base64 expressions (java.io.Serializable)!
     * ArrayConverter - for converting and parsing primitive arrays!
     ##
-    * 
-
+    * OperationGroups - for parsing expression groups such as (5 + 5) / 2
+    * ArithmeticOperators - for parsing arithmetic expression such as 2 + 5 * 4 ** 2
+    * LogicalOperators - for parsing logical expression such as true && false || true
+    * ComparisonOperators - for comparing objects, for instance 6 > 5
+    * ConditionalAssignmentOperators - that provides ternary operator (?:) and null coalescing (??)
+    * NegationOperator - to negate stuff, for example !true
+  * SerializationProtocol API - long known protocol system for more complex objects. It contains 8 protocols as before! Now protocols are operated by ObjectConverter!
+* New import system that allows you to import some class once with certain alias and then use it with that alias, similar  to java!
+* Too big integers are now automatically converted into long without necessarily of using L suffix!
+* Small new syntax features!
+* Alot of string utility methods from Serializer become public and some were moved into converters where they are mainly used!
+* Registry object which is Collection type that can store only one instance per class!
+* Some new functions in Scope!
+* Deprecated methods were removed!
+* Source code was excluded from main jar to save space and is now available in separate src.zip file! Now on java doc files will not be provided and src.zip should be used instead!
+* Small bugs fixed but there were alot of internal changes so I encourage you to report any bug you encounter!
 #
