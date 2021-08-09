@@ -148,7 +148,7 @@ What was added:
   * SerializationProtocol API - long known protocol system for more complex objects. It contains 8 protocols as before! Now protocols are operated by ObjectConverter!
 * New import system that allows you to import some class once with certain alias and then use it with that alias, similar  to java!
 * Too big integers are now automatically converted into long without necessarily of using L suffix!
-* Small new syntax features!
+* Small new syntax features and alot of small enhancements!
 * Alot of string utility methods from Serializer become public and some were moved into converters where they are mainly used!
 * Registry object which is Collection type that can store only one instance per class!
 * Some new functions in Scope!
