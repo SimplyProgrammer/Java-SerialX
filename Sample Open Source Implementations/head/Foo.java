@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import ugp.org.SerialX.Protocols.SerializationProtocol;
+import ugp.org.SerialX.protocols.SerializationProtocol;
 
 public class Foo //Sample object
 {
@@ -16,7 +16,7 @@ public class Foo //Sample object
 	char ch = 'l';
 	String s = "a"; 
 	boolean nah = false;
-	List<Object> l = new CopyOnWriteArrayList<Object>(Arrays.asList(6, 45,464654, 9.9, 56f));
+	List<Object> l = new CopyOnWriteArrayList<Object>(Arrays.asList(6, 45, 464654, 9.9, 56f));
 	
 	public Foo() 
 	{
@@ -24,7 +24,7 @@ public class Foo //Sample object
 		l.add(9);
 		l.add(13);
 		l.add(new Random());
-		l.add(new ArrayList<>(new ArrayList<>(new ArrayList<>(Arrays.asList(4, 5,6d)))));
+		l.add(new ArrayList<>(new ArrayList<>(new ArrayList<>(Arrays.asList(4, 5, 6d)))));
 	}
 	
 	@Override
@@ -38,8 +38,7 @@ public class Foo //Sample object
 		@Override
 		public Object[] serialize(Foo object) 
 		{
-			return new Object[] {}; //Nothing here for now
-			
+			return new Object[] {object.a, object.b, object.c, object.d, object.f, object.ch, object.s, object.nah, object.l};
 		}
 
 		@SuppressWarnings("unchecked")
@@ -65,5 +64,79 @@ public class Foo //Sample object
 		{
 			return Foo.class;
 		}
+	}
+	
+	public int getA() {
+		return a;
+	}
+
+	public void setA(int a) {
+		this.a = a;
+	}
+
+	public int getB() {
+		return b;
+	}
+
+	public void setB(int b) {
+		this.b = b;
+	}
+
+	public int getC() {
+		return c;
+	}
+
+	public void setC(int c) {
+		this.c = c;
+	}
+
+	public double getD() {
+		return d;
+	}
+
+	public void setD(double d) {
+		this.d = d;
+	}
+
+	public float getF() {
+		return f;
+	}
+
+	public void setF(float f) {
+		this.f = f;
+	}
+
+	public char getCh() {
+		return ch;
+	}
+
+	public void setCh(char ch) {
+		this.ch = ch;
+	}
+
+	public String getS() {
+		return s;
+	}
+
+	public void setS(String s) {
+		this.s = s;
+	}
+
+	public boolean isNah() {
+		return nah;
+	}
+
+	public void setNah(boolean nah) {
+		this.nah = nah;
+	}
+
+	public List<Object> getL() {
+		return l;
+	}
+
+	public void setL(List<Object> l) {
+		this.l = l;
 	};
+	
+	public static void a() {};
 }

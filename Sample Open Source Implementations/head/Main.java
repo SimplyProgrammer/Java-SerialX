@@ -8,18 +8,24 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.sun.javafx.css.parser.CSSParser;
-
 import ugp.org.SerialX.Scope;
 import ugp.org.SerialX.Serializer;
-import ugp.org.SerialX.Protocols.SerializationProtocol;
+import ugp.org.SerialX.protocols.SerializationProtocol;
 
+/**
+ * @author PETO
+ */
 public class Main 
 {
-	public static void main(String[] args)
+	/**
+	 * {@link ArrayList#listIterator()}
+	 * @param args
+	 * @throws Exception
+	 */
+	public static void main(String[] args) throws Exception
 	{
 		//Protocol registration
-		Serializer.PROTOCOL_REGISTRY.addAll(new Bar.BarProtocol(), new Foo.FooProtocol(), new SerializationProtocol<Random>() //Sample custom protocol to serialized Random. 
+		SerializationProtocol.REGISTRY.addAll(new Bar.BarProtocol(), new Foo.FooProtocol(), new SerializationProtocol<Random>() //Sample custom protocol to serialized Random. 
 		{																													  //Random will be serialized also without protocol via classic Java Base64 because it implements java.io.Serializable!
 			@Override
 			public Object[] serialize(Random object) 
@@ -50,7 +56,7 @@ public class Main
 			}
 		});
 		
-		File f = new File("./test.srlx");
+		File f = new File("./test.juss");
 
 		//Sample objects
 		Random r = new Random();
@@ -62,16 +68,18 @@ public class Main
 		vars.put("yourMom", "is heavier than sun...");
 		vars.put("num", 6);
 		
+		int[][] ints = {{1, 2, 3}, {4, 5, 4}, {3, 2, 1}};
+		
 		Serializer.generateComments = true; //Enabling comment generation
 		
 		Serializer.globalVariables.put("parent", "father"); //Setting global variables
 		
 		double t0 = System.nanoTime();																										   //Invokation of static members of this class (calling method "println" and obtaining "hello" field as argument! 
-		Serializer.SerializeTo(f, vars, "145asaa4144akhdgj31hahaXDDLol", r, list, Serializer.Comment("Size of array"), Serializer.Var("arrSize", list.size()), new Bar(), 1, 2.2, 3, 'A', true, false, null, Serializer.Code("$num"), new Scope(), Serializer.StaticMember(Main.class, "println", Serializer.StaticMember(Main.class, "hello"))); //Saving to file (serializing)
+		Serializer.SerializeTo(f, vars, "145asaa4144akhdgj31hahaXDDLol", r, list, Serializer.Comment("Size of array"), Serializer.Var("arrSize", list.size()), new Bar(), 1, 2.2, 3, 'A', true, false, null, ints, Serializer.Code("$num"), new Scope(), Serializer.StaticMember(Main.class, "println", Serializer.StaticMember(Main.class, "hello"))); //Saving to file (serializing)
 		double t = System.nanoTime();						  //This will insert an comment        Another way to add variable except Map<String, Object> 				     $ is used to obtain value from variable
 		System.out.println("Write: " + (t-t0)/1000000);
 		
-		Serializer.PROTOCOL_REGISTRY.setActivityForAll(true); //Enabling all protocols
+		SerializationProtocol.REGISTRY.setActivityForAll(true); //Enabling all protocols
 		t0 = System.nanoTime();
 		Scope scope = Serializer.LoadFrom(f); //Loading scope with variables and values from file!
 		t = System.nanoTime();
@@ -83,8 +91,7 @@ public class Main
 		System.out.println(scope.toValList());
  	}
 	
-	//We can invoke static things from SerialX!
-	
+	//We can invoke static things in JUSS!
 	public static String hello = "Hello world!";
 	
 	public static void println(String str)

@@ -11,10 +11,6 @@ public final class Bar extends Foo //Sample object that inheres
 	double d2 = 5;
 	Object sampleParent;
 	
-	public Bar(Object... args) {
-		// TODO Auto-generated constructor stub
-	}
-	
 	@Override
 	public String toString() 
 	{
@@ -55,5 +51,37 @@ public final class Bar extends Foo //Sample object that inheres
 		{
 			return Bar.class;
 		}
+	}
+	
+	public byte getBy0() {
+		return by0;
+	}
+
+	public void setBy0(byte by0) {
+		this.by0 = by0;
+	}
+
+	public short getS0() {
+		return s0;
+	}
+
+	public void setS0(short s0) {
+		this.s0 = s0;
+	}
+
+	public double getD2() {
+		return d2;
+	}
+
+	public void setD2(double d2) {
+		this.d2 = d2;
+	}
+
+	public Object getSampleParent() {
+		return sampleParent;
+	}
+
+	public void setSampleParent(Object sampleParent) {
+		this.sampleParent = sampleParent;
 	}
 }
