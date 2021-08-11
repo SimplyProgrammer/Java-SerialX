@@ -145,6 +145,8 @@ What was added:
     * ComparisonOperators - for comparing objects, for instance 6 > 5
     * ConditionalAssignmentOperators - that provides ternary operator (?:) and null coalescing (??)
     * NegationOperator - to negate stuff, for example !true
+    ##
+    * As mentioned. you can create your own parsers or even replace already existing ones with yours!
   * SerializationProtocol API - long known protocol system for more complex objects. It contains 8 protocols as before! Now protocols are operated by ObjectConverter!
 * New import system that allows you to import some class once with certain alias and then use it with that alias, similar  to java!
 * Too big integers are now automatically converted into long without necessarily of using L suffix!
