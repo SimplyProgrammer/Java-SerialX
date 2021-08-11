@@ -35,13 +35,13 @@ public class SimpleImplementation
 			@Override
 			public Object parse(Registry<DataParser> myHomeRegistry, String str, Object... args) 
 			{
-				if (str.equalsIgnoreCase("ans"))
+				if (str.equalsIgnoreCase("ans")) //Check if this parser is suitable for parsing inserted string!
 				{
 					if (args.length > 0)
 						return args[0];
 					return null;
 				}
-				return CONTINUE;
+				return CONTINUE; //Continue search for suitable parser for inserted string!
 			}
 		};
 		parsersRequiredToEvaluateMath.add(ansParser);
