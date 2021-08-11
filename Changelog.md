@@ -156,5 +156,5 @@ What was added:
 * Some new functions in Scope!
 * Deprecated methods were removed!
 * Source code was excluded from main jar to save space and is now available in separate src.zip file! Now on java doc files will not be provided and src.zip should be used instead!
-* Small bugs fixed but there were alot of internal changes so I encourage you to report any bug you encounter!
+* Small bugs fixed but there were alot of internal changes in this update so they might be another bugs so I encourage you to report any bug you encounter!
 #
