@@ -7,10 +7,10 @@ Compare to this, **SerialX API** is doing everything programmatically. SerialX A
 Note: Since 1.3.0, protocols are operated by DataParsers and are mainly used for more complex objects. Also Object -> String conversion is now done by DataConverter and String - Object is done by DataParsers and further by protocols!
 **Advantages and goals:**
 * Overcoming most of regular serialization problems such as bypassing constructor!
-* Powefull and highly costomizable, you have control over stuff via protocols and recursive descent parser!
+* Powerful and highly costomizable, you have control over stuff via protocols and recursive descent parser!
 * Programmaticall, meaning you can decide how objects will be serialized and deserialized!
-* Fast, SerialX is almost always far more faster than regular serialization!
-* Readable, SerialX as format is pretty readable for humans and is also pretty intuitive as well so can be also written by humans!
+* Fast, SerialX solution is almost always far more faster than regular serialization!
+* Readable, It depends but SerialX formats are supposed to be pretty readable for humans and should be also pretty intuitive for learning and writing!
 * Data types recognision, SerialX defaultly supports all primitve datatypes from java and also objects (done with protocols) compare to Json for instance!
 * Small storage requirements, as you can see belove SerialX is often times far smaller than Json not even mentioning XML!
 * Quantity, SerialX can serialize multiple objects into one file or string!
