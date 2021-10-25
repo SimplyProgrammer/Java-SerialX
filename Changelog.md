@@ -94,7 +94,7 @@ What was added:
 * Static field "new" to obtain clone of variable and "class" to obtain class of variables value!
 * 4 new protocols:
 * * MapProtocol - to serialize maps!
-* * ScopeProtocols (reading only) to read scopes using protocol!
+* * ScopeProtocol (reading only) to read scopes using protocol!
 * * AutoProtocol - will automatically serialize selected fields with getters and setters!
 * * EnumProtocol - to serialize any java enum!
 * * SelfSerializableProtocol - operates with SelfSerializable interface!
@@ -150,11 +150,33 @@ What was added:
   * SerializationProtocol API - long known protocol system for more complex objects. It contains 8 protocols as before! Now protocols are operated by ObjectConverter!
 * New import system that allows you to import some class once with certain alias and then use it with that alias, similar  to java!
 * Too big integers are now automatically converted into long without necessarily of using L suffix!
-* Small new syntax features and alot of small enhancements!
+* Small new syntax features and alot of small enhancements (shortened version of variable being initialized to scope)!
 * Alot of string utility methods from Serializer become public and some were moved into converters where they are mainly used!
 * Registry object which is Collection type that can store only one instance per class!
 * Some new functions in Scope!
 * Deprecated methods were removed!
 * Source code was excluded from main jar to save space and is now available in separate src.zip file! Now on java doc files will not be provided and src.zip should be used instead!
 * Small bugs fixed but there were alot of internal changes in this update so they might be another bugs so I encourage you to report any bug you encounter!
+#
+
+# SerialX 1.3.2
+
+Release date: 10.25.2021 (Morning) 
+
+What was added: 
+* Serializer now abstract class which inherits Scope so now it is Scope that can serialize itself! Serialization and deserialization methods are now not static and original functionality has been split into two separated objects that inherit Serializer:
+ * JussSerializer - which is responsible for serializing and deserializing objects using Juss format (original functionality of Serializer).
+ * JsonSerializer - which is responsible for serializing and deserializing objects using Json format (successors of JsonSelxUtils)
+* JsonSelxUtils was replaced with JsonSerializer that is capable of both reading and writing Json!
+* Main formatting and reading algorithms can be now overridden by extending JsonSerializer, JussSerializer or Serializer!
+* Ability to set multiple variables on one value, for example x = y = z = 5
+* Ability to remove multiple variables by setting them on null!
+* Variables of scope are now settable from outer world, for example someScope.x = 9
+* Compare identity operator (triple equals) was added and transtype comparison logic was changed, mainly between primitive datatypes!
+* Logical operators now have higher precedence over comparison operators by default!
+* Logic behind operators can now be overridden by extending belonging operator DataParser!
+* Adding some new utility and functionalities!
+* Small syntax features (scopes now don't have to be separated with semicolon if they are in new line)!
+* Package name was renamed from "ugp.org.SerialX" to "org.ugp.serialx"!
+* Fixing some bugs with formatting and reading!
 #
