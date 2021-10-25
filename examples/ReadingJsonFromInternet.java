@@ -22,7 +22,7 @@ public class ReadingJsonFromInternet
 		JsonSerializer reader = new JsonSerializer();
 
 		InputStream urlInput = new URL("https://jsonplaceholder.typicode.com/users").openStream(); //Establishing connection with https://jsonplaceholder.typicode.com/users and getting stream of received data!
-		reader.LoadFrom(urlInput); //Parsing url into json!
+		reader.LoadFrom(urlInput); //Parsing url stream content into json!
 
 		String user = "Glenna Reichert"; //User we want to get (Glenna Reichert)!
 		String glennasCompany = reader.getScopesWith("name", user).get(0).getScope("company").getString("name"); //Obtaining first scope that contains variable with users name and getting name of his company as string from it!
