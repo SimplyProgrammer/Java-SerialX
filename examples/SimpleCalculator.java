@@ -40,7 +40,7 @@ public class SimpleCalculator
 				if (str.equalsIgnoreCase("ans"))
 				{
 					if (args.length > 0)
-						return args[0];
+						return args[0]; //First arg is old answer!
 					return null;
 				}
 				return CONTINUE;
