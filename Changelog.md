@@ -93,11 +93,11 @@ What was added:
 * SelfSerializable interface which gives you ability to serialize objects without protocol by calling public constructors!
 * Static field "new" to obtain clone of variable and "class" to obtain class of variables value!
 * 4 new protocols:
-* * MapProtocol - to serialize maps!
-* * ScopeProtocol (reading only) to read scopes using protocol!
-* * AutoProtocol - will automatically serialize selected fields with getters and setters!
-* * EnumProtocol - to serialize any java enum!
-* * SelfSerializableProtocol - operates with SelfSerializable interface!
+  * MapProtocol - to serialize maps!
+  * ScopeProtocol (reading only) to read scopes using protocol!
+  * AutoProtocol - will automatically serialize selected fields with getters and setters!
+  * EnumProtocol - to serialize any java enum!
+  * SelfSerializableProtocol - operates with SelfSerializable interface!
 * Tremendous writing performance boost! Large quantity writing is now up to 80x faster than in previous version.
 * Eliminating usage of Regex completely which results into even faster reading!
 * Now you can access variables of scopes by "." directly in SerialX!
@@ -165,8 +165,8 @@ Release date: 10.25.2021 (Morning)
 
 What was added: 
 * Serializer now abstract class which inherits Scope so now it is Scope that can serialize itself! Serialization and deserialization methods are now not static and original functionality has been split into two separated objects that inherit Serializer:
- * JussSerializer - which is responsible for serializing and deserializing objects using Juss format (original functionality of Serializer).
- * JsonSerializer - which is responsible for serializing and deserializing objects using Json format (successors of JsonSelxUtils)
+  * JussSerializer - which is responsible for serializing and deserializing objects using Juss format (original functionality of Serializer).
+  * JsonSerializer - which is responsible for serializing and deserializing objects using Json format (successors of JsonSelxUtils)
 * JsonSelxUtils was replaced with JsonSerializer that is capable of both reading and writing Json!
 * Main formatting and reading algorithms can be now overridden by extending JsonSerializer, JussSerializer or Serializer!
 * Ability to set multiple variables on one value, for example x = y = z = 5
@@ -187,10 +187,10 @@ Release date: imminent...
 
 What was added:
 * Scope was split into 2 separate classes:
- * GenericScope - that allows you to set generic types of keys and values. Furthermore, it can be serialized with generic types preserved!
- * Scope - that you already know which poses the same functionality as before now as a child class of GenericScope!
+  * GenericScope - that allows you to set generic types of keys and values. Furthermore, it can be serialized with generic types preserved!
+  * Scope - that you already know which poses the same functionality as before now as a child class of GenericScope!
 * Imports system was redesigned and splitted into multiple separate classes, each handling some part of functionality!
- * Also imports are now Serializer specific rather than global!
+  * Also imports are now Serializer specific rather than global!
 * Precedence of ConditionalAssignmentOperators ?: and ?? was slightly altered to closely resemble behavior of these operators in other languages. Also, these operators now can be nested without necessity of ().
 * Parser API (DataParser and DataConverter) was redesigned and is now handled by ParserRegistry which can provide additional functionality such as caching to improve performance!
 * Serialization syntax of Serializable objects using Base64 via SerializableBase64Converter was slightly altered to mitigate conflicts with the rest of JUSS syntax!
@@ -203,9 +203,9 @@ What was added:
 * SerializationDebugger that provides ability to debug serialization and deserialization!
 * New utility across API and small new functionalities and changes!
 * Fixing bugs (hopefully not adding new ones):
- * Long live bug with // and /* comments in strings now fixed for good (I hope...)
- * Bug with wrong formatting when serializing Json in Juss and revers!
- * Some other small ones!
+  * Long live bug with // and /* comments in strings now fixed for good (I hope...)
+  * Bug with wrong formatting when serializing Json in Juss and revers!
+  * Some other small ones!
 * New examples were added!
 * Source code is now also available in "dev" branch!
 #
