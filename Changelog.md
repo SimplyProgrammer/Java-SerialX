@@ -180,3 +180,32 @@ What was added:
 * Package name was renamed from "ugp.org.SerialX" to "org.ugp.serialx"!
 * Fixing some bugs with formatting and reading!
 #
+
+# SerialX 1.3.5
+
+Release date: imminent...
+
+What was added:
+* Scope was split into 2 separate classes:
+ * GenericScope - that allows you to set generic types of keys and values. Furthermore, it can be serialized with generic types preserved!
+ * Scope - that you already know which poses the same functionality as before now as a child class of GenericScope!
+* Imports system was redesigned and splitted into multiple separate classes, each handling some part of functionality!
+ * Also imports are now Serializer specific rather than global!
+* Precedence of ConditionalAssignmentOperators ?: and ?? was slightly altered to closely resemble behavior of these operators in other languages. Also, these operators now can be nested without necessity of ().
+* Parser API (DataParser and DataConverter) was redesigned and is now handled by ParserRegistry which can provide additional functionality such as caching to improve performance!
+* Serialization syntax of Serializable objects using Base64 via SerializableBase64Converter was slightly altered to mitigate conflicts with the rest of JUSS syntax!
+* New "from/into API" which is now part of the Scope that allows you to map almost any java object into a scope and any scope into corresponding java object!
+* AutoProtocol is now based on "from/into API" making it more flexible!
+* New UniversalObjectInstantiationProtocol that can deserialize any object by calling its constructor (something similar to ObjectClass::new)!
+* SerializationProtocols now have a "mode" that can define what they can do!
+* JsonSerializer will now serialize JUSS protocols as JSON objects to achieve more JSON compatibility out of the box!
+* LogProvider which is now responsible for logging errors and allows you to implement your own form of logging!
+* SerializationDebugger that provides ability to debug serialization and deserialization!
+* New utility across API and small new functionalities and changes!
+* Fixing bugs (hopefully not adding new ones):
+ * Long live bug with // and /* comments in strings now fixed for good (I hope...)
+ * Bug with wrong formatting when serializing Json in Juss and revers!
+ * Some other small ones!
+* New examples were added!
+* Source code is now also available in "dev" branch!
+#
