@@ -207,5 +207,4 @@ What was added:
   * Bug with wrong formatting when serializing Json in Juss and revers!
   * Some other small ones!
 * New examples were added!
-* Source code is now also available in "dev" branch!
 #
