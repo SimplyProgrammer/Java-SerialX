@@ -1,0 +1,10 @@
+{
+    "fruit": "Apple",
+    "size": "Large",
+    "color": "Red",
+    "variants": [
+    	1,
+    	2, 
+    	3
+    ]
+}
