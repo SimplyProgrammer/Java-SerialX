@@ -183,7 +183,7 @@ What was added:
 
 # SerialX 1.3.5
 
-Release date: imminent...
+Release date: 8.30.2022 (Night)
 
 What was added:
 * Scope was split into 2 separate classes:
