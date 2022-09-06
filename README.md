@@ -17,7 +17,7 @@ Note: Since 1.3.0, protocols are operated by DataParsers and are mainly used for
 * Fully compatible and interoperable with JSON!
 * Very easy to use, at the begining all what you need to know is ``JsonSerializer#SerializeTo(file, objects)`` for serializing and ``JsonSerializer#LoadFrom(file)`` for deserializing!
 * Recursive descent parser that is fully customizable and can be used to parse and convert potentialy anything from JSON to CSS!
-* Lightweight, under 150KB jar file!
+* Lightweight, one under 150KB jar file!
 
 ## Comparison: XML (.xml) vs Json (.json) vs YAML (.yml) vs JUSS (.juss or .srlx)
 Sample object:
