@@ -14,9 +14,10 @@ Note: Since 1.3.0, protocols are operated by DataParsers and are mainly used for
 * Data types recognision, SerialX defaultly supports all primitve datatypes from java and also objects (done with protocols) compare to Json for instance!
 * Small storage requirements, as you can see belove SerialX is often times far smaller than Json not even mentioning XML!
 * Quantity, SerialX can serialize multiple objects into one file or string!
-* Fully compatible with JSON!
-* Very easy to use, at the begining all what you need to know is ``Serializer.SerializeTo(file, objects)`` for serializing and ``Serializer.LoadFrom(file)`` for deserializing!
+* Fully compatible and interoperable with JSON!
+* Very easy to use, at the begining all what you need to know is ``JsonSerializer#SerializeTo(file, objects)`` for serializing and ``JsonSerializer#LoadFrom(file)`` for deserializing!
 * Recursive descent parser that is fully customizable and can be used to parse and convert potentialy anything from JSON to CSS!
+* Lightweight, under 150KB jar file!
 
 ## Comparison: XML (.xml) vs Json (.json) vs YAML (.yml) vs JUSS (.juss or .srlx)
 Sample object:
