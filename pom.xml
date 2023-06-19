@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>org.ugp</groupId>
+  <artifactId>serialx</artifactId>
+  <version>1.3.7</version>
+  <packaging>pom</packaging>
+
+  <modules>
+        <module>SerialX-json</module>
+        <module>SerialX-core</module>
+  </modules>
+  
+  <name>SerialX root</name>
+  <description>Store Java objects into file via SerialX. SerialX is a powerful utility library to serialize objects in Java programmatically via recursive descent parser for custom domain-specific languages!</description>
+  <url>https://github.com/SimplyProgrammer/Java-SerialX</url>
+  
+  <licenses>
+    <license>
+      <name>Custom license</name>
+      <url>https://github.com/SimplyProgrammer/Java-SerialX/blob/master/LICENSE</url>
+    </license>
+  </licenses>
+  
+  <developers>
+    <developer>
+      <name>SimplyProgrammer</name>
+      <email>petko.hupka@gmail.com</email>
+      <organization>org.ugp</organization>
+      <organizationUrl>https://github.com/SimplyProgrammer/</organizationUrl>
+    </developer>
+  </developers>
+  
+  <scm>
+  	<connection>scm:git:git://github.com/SimplyProgrammer/Java-SerialX.git</connection>
+  	<developerConnection>scm:git:ssh://github.com:SimplyProgrammer/Java-SerialX.git</developerConnection>
+  	<url>https://github.com/SimplyProgrammer/</url>
+ </scm>
+ 
+	<properties>
+	   <maven.compiler.source>1.8</maven.compiler.source>
+	   <maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+
+	<build>
+		<plugins>
+		  <plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-compiler-plugin</artifactId>
+		    <version>3.2</version> <!-- or whatever current version -->
+		    <configuration>
+		      <source>1.8</source>
+		      <target>1.8</target>
+		    </configuration>
+		  </plugin>
+		</plugins>
+	</build>
+</project>

@@ -1,0 +1,911 @@
+package org.ugp.serialx;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+import org.ugp.serialx.converters.ArrayConverter;
+import org.ugp.serialx.converters.DataParser;
+import org.ugp.serialx.protocols.SerializationProtocol;
+import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
+
+	
+/**
+ * This is some kind of hybrid between {@link List} and {@link Map} which allow you to have both variables and independent values managed by one Object. <br>
+ * Note: Variables are managed and accessed classically via {@link Map} methods such as <code>put(KeyT key, Object)</code> and array of independent values is accessed by via {@link List} methods such as <code>add(Object)</code> and <code>get(int)</code><br>
+ * Also this is java representation of JUSS GenericScope group such as:
+ * <pre>
+ * <code>
+ * {
+ *     //This is generic scope in JUSS! Variable keys are generic!
+ * }
+ * </code>
+ * </pre>
+ * 
+ * @author PETO
+ * 
+ * @since 1.2.0
+ * 
+ * @param <KeyT> generic type of variables key.
+ * @param <ValT> generic type of variables value and independent value.
+ */
+public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Serializable
+{
+	private static final long serialVersionUID = 5717775602991055386L;
+	
+	protected Map<KeyT, ValT> variables;
+	protected List<ValT> values;
+	protected GenericScope<?, ?> parent;
+
+	/**
+	 * @param values | Initial independent values to be added in to this scope!
+	 * 
+	 * @since 1.2.0
+	 */
+	@SafeVarargs
+	public GenericScope(ValT... values) 
+	{
+		this(null, values);
+	}
+	
+	/**
+	 * @param variablesMap | Initial variables to be added in to this scope!
+	 * @param values | Initial independent values to be added in to this scope!
+	 * 
+	 * @since 1.2.0
+	 */
+	@SafeVarargs
+	public GenericScope(Map<? extends KeyT, ? extends ValT> variablesMap, ValT... values) 
+	{
+		this(variablesMap, values == null ? null : Arrays.asList(values), null);
+	}
+	
+	/**
+	 * @param variablesMap | Initial variables to be added in to this scope!
+	 * @param values | Initial independent values to be added in to this scope!
+	 * 
+	 * @since 1.2.0
+	 */
+	public GenericScope(Map<? extends KeyT, ? extends ValT> variablesMap, Collection<? extends ValT> values) 
+	{
+		this(variablesMap, values, null);
+	}
+	
+	/**
+	 * @param variablesMap | Initial variables to be added in to this scope!
+	 * @param values | Initial independent values to be added in to this scope!
+	 * @param parent | Parent of this scope.
+
+	 * @since 1.2.0
+	 */
+	public GenericScope(Map<? extends KeyT, ? extends ValT> variablesMap, Collection<? extends ValT> values, GenericScope<?, ?> parent) 
+	{
+		if (variablesMap != null)
+			this.variables = new LinkedHashMap<>(variablesMap);
+		if (values != null)
+			this.values = new ArrayList<>(values);
+		this.parent = parent;
+	}
+	
+	@Override
+	public boolean equals(Object obj) 
+	{
+		if (obj instanceof GenericScope)
+			return values().equals(((GenericScope<?, ?>) obj).values()) && variables().equals(((GenericScope<?, ?>) obj).variables());
+		else if (obj instanceof Collection)
+			return variablesCount() <= 0 && values().equals(obj);
+		else if (obj instanceof Map)
+			return valuesCount() <= 0 && variables().equals(obj);
+		else if (obj != null && obj.getClass().isArray())
+			return variablesCount() <= 0 && Objects.deepEquals(toValArray(), ArrayConverter.fromAmbiguous(obj));
+		return super.equals(obj);
+	}
+	
+	@Override
+	public String toString()
+	{
+		String name = getClass().getSimpleName();
+		if (variablesCount() > 0 ^ valuesCount() > 0)
+			return name + (variablesCount() > 0 ? variables() : values());
+		else
+			return name + toUnifiedList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public GenericScope<KeyT, ValT> clone()
+	{
+		try 
+		{
+			return clone(getClass());
+		}
+		catch (Exception e) 
+		{
+			return new GenericScope<>(variables(), values(), getParent());
+		}
+	}
+
+	/**
+	 * @param typeOfClone | Class representing type of scope that will be created.
+	 * @return Copy of this scope converted to instance of typeOfClone.
+	 * 
+	 * @throws Exception | When program was unable to create instance of typeOfClone.
+	 * 
+	 * @since 1.3.5
+	 */
+	@SuppressWarnings("unchecked")
+	public <S extends GenericScope<KeyT, ValT>> S clone(Class<S> typeOfClone) throws Exception
+	{
+		S clone = Serializer.Instantiate(typeOfClone);
+		clone.values = (List<ValT>) toValList();
+		clone.variables = (Map<KeyT, ValT>) toVarMap();
+		clone.parent = getParent();
+		return (S) clone;
+	}
+	
+	/**
+	 * @param newType | Type of new scope.
+	 * @return Original scope retyped/casted into instance of newType. Similar to {@link GenericScope#clone(Class)} but this will share same instances of values list and variables map with original!
+	 * 
+	 * @throws Exception | When program was unable to create instance of newType.
+	 * 
+	 * @since 1.3.5
+	 */
+	@SuppressWarnings("unchecked")
+	public <K, V, S extends GenericScope<? super K, ? super V>> S castTo(Class<S> newType) throws Exception
+	{
+		if (getClass() == newType)
+			return (S) this;
+		
+		GenericScope<Object, Object> clone = (GenericScope<Object, Object>) Serializer.Instantiate(newType);
+		clone.values = (List<Object>) values();
+		clone.variables = (Map<Object, Object>) variables();
+		clone.parent = getParent();
+		return (S) clone;
+	} 
+	
+	/**
+	 * @return Iterator of independent values.
+	 * 
+	 * @since 1.2.0
+	 */
+	@Override
+	public Iterator<ValT> iterator() 
+	{
+		return values().iterator();
+	}
+	
+	/**
+	 * Insert new variable.
+	 *
+	 * @param variableKey | Name of variable.
+	 * @param variableValue | Variables value.
+	 * 
+	 * @return Old value of variable with given name or null is there was no this variable before!
+	 * 
+	 * @since 1.2.0
+	 */
+	public ValT put(KeyT variableKey, ValT variableValue)
+	{
+		if (variableValue instanceof GenericScope && ((GenericScope<?, ?>) variableValue).getParent() == null)
+			((GenericScope<?, ?>) variableValue).parent = this;
+		return variables().put(variableKey, variableValue);
+	}
+	
+	/**
+	 * @param kVkVkV | kV array with keys and values to insert into this map. Elements with even indexes are values and the ones with odd indexes are keys...
+	 * 
+	 * @return Array of values previously at keys from kv array.
+	 * 
+	 * @since 1.3.7
+	 */
+	@SuppressWarnings("unchecked")
+	public ValT[] putAllKv(Object... kVkVkV)
+	{
+		ValT[] oldValues = (ValT[]) new Object[kVkVkV.length/2];
+		for (int i = 1; i < kVkVkV.length; i+=2) {
+			oldValues[i/2] = put((KeyT) kVkVkV[i-1], (ValT) kVkVkV[i]);
+		}
+		return oldValues;
+	}
+	
+	/**
+	 * @param index | Index of variable!
+	 * 
+	 * @return Value of variable at required index or null if index was not found!
+	 * 
+	 * @since 1.2.5
+	 */
+	public <V extends ValT> V getVarAt(int index)
+	{
+		return getVarAt(index, null);
+	}
+	
+	/**
+	 * @param index | Index of variable!
+	 * @param defaultValue | Default value to return.
+	 * 
+	 * @return Value of variable at required index or defaultValue if index was not found!
+	 * 
+	 * @since 1.2.5
+	 */
+	@SuppressWarnings("unchecked")
+	public <V extends ValT> V getVarAt(int index, V defaultValue)
+	{
+		int i = 0;
+		for (Map.Entry<KeyT, ValT> ent : varEntrySet())
+			if (i++ == index)
+				return (V) ent.getValue();
+		return defaultValue;
+	}
+	
+	/**
+	 * @param variableKey | Variables name.
+	 * 
+	 * @return Value of variable with name or null if there is no such a one!
+	 * 
+	 * @since 1.2.0
+	 */
+	public <V extends ValT> V get(KeyT variableKey) 
+	{
+		return get(variableKey, null);
+	}
+	
+	/**
+	 * @param variableKey | Variables name.
+	 * @param defaultValue | Default value to return.
+	 * 
+	 * @return Value of variable with name or defaultValue if there is no such a one!
+	 * 
+	 * @since 1.2.5
+	 */
+	@SuppressWarnings("unchecked")
+	public <V extends ValT> V get(KeyT variableKey, V defaultValue)
+	{
+		V obj = (V) variables().get(variableKey);
+		if (obj == null)
+			return (V) defaultValue;
+		return obj instanceof Serializer.NULL ? null : obj;
+	}
+	
+	/**
+	 * @param variableKey | Variables name to search for.
+	 * 
+	 * @return True if variable with given name was found in this scope.
+	 * 
+	 * @since 1.2.0
+	 */
+	public boolean containsVariable(KeyT variableKey) 
+	{
+		for (Map.Entry<KeyT, ValT> ent : varEntrySet())
+			if (ent.getKey().equals(variableKey))
+				return true;
+		return false;
+	}
+	
+	/**
+	 * @param value | Objecthe value.
+	 * 
+	 * @return True if independent value was found in this scope.
+	 * 
+	 * @since 1.2.0
+	 */
+	public boolean containsIndependentValue(ValT value) 
+	{
+		return values().contains(value);
+	}
+	
+	/**
+	 * @param valueIndex | Index of independent value. Also can be negative, in this case u will get elements from back!
+	 * {@link IndexOutOfBoundsException} will be thrown if index is too big!
+	 * 
+	 * @return Independent value with valueIndex.
+	 * 
+	 * @since 1.2.0
+	 */
+	@SuppressWarnings("unchecked")
+	public <V> V get(int valueIndex)
+	{
+		V obj = (V) values().get(valueIndex < 0 ? valuesCount() + valueIndex : valueIndex);
+		return obj instanceof Serializer.NULL ? null : obj;
+	}
+	
+	/**
+	 * @param value | Independent value to add into array of values.
+	 * 
+	 * @return {@link ArrayList#add(Object)}
+	 * 
+	 * @since 1.2.0
+	 */
+	public boolean add(ValT value)
+	{
+		boolean result = values().add(value);
+		if (result && value instanceof GenericScope && ((GenericScope<?, ?>) value).getParent() == null)
+			((GenericScope<?, ?>) value).parent = this;
+		return result;
+	}
+	
+	/**
+	 * @param values | List of independent value or values to add into array of values.
+	 * 
+	 * @return {@link ArrayList#add(Object)}
+	 * 
+	 * @since 1.2.0
+	 */
+	public boolean addAll(Collection<ValT> values)
+	{
+		if (values.isEmpty())
+			return false;
+		return values().addAll(values);
+	}
+	
+	/**
+	 * @param values | Array of independent value or values to add into array of values.
+	 * 
+	 * @return {@link GenericScope#addAll(Object...)}
+	 * 
+	 * @since 1.3.2
+	 */
+	public boolean addAll(@SuppressWarnings("unchecked") ValT... values)
+	{
+		return addAll(Arrays.asList(values));
+	}
+	
+	/**
+	 * @param scopeValueIndex | Index of sub-scopes value.
+	 * 
+	 * @return Sub-scope on required index or null if there is no scope on required index!<br>
+	 * Note: Keep in mind that you need to insert valid index according to other values. Scopes share same index order with other values!
+	 * Note: Also remember that this function will work only when this scope generically allows to store other scopes inside (when ValT is base class of {@link GenericScope})
+	 * 
+	 * @since 1.2.0
+	 */
+	@SuppressWarnings("unchecked")
+	public <K, V> GenericScope<K, V> getGenericScope(int scopeValueIndex)
+	{
+		GenericScope<K, V> obj = (GenericScope<K, V>) get(scopeValueIndex);
+		if (obj instanceof GenericScope)
+			return (GenericScope<K, V>) obj;
+		return null;
+	}
+	
+	/**
+	 * @param scopesPath | Array with variables creating path to required scope.
+	 * 
+	 * @return Sub-scope stored by variable with required name (last element) in inserted path or null if there is no such a one in inserted path. If there is more than one result, the first one found will be returned!
+	 * This search will also includes sub-scopes of scope but variables from lower ones are prioritize! <br>
+	 * If this function is called with no arguments then self will be returned!
+	 * Note: Remember that this search includes variables only, no values! <br>
+	 * Note: Also remember that this function will work only when this scope generically allows to store other scopes inside (when ValT is base class of {@link GenericScope})
+	 * 
+	 * @since 1.2.0
+	 */
+	@SuppressWarnings("unchecked")
+	public <K, V> GenericScope<K, V> getGenericScope(K... scopesPath)
+	{
+		try
+		{
+			if (scopesPath.length <= 0)
+				return (GenericScope<K, V>) this;
+			Object obj = get((KeyT) scopesPath[0]);
+			if (obj instanceof GenericScope)
+				return ((GenericScope<K, V>) obj).getGenericScope(scopesPath = Arrays.copyOfRange(scopesPath, 1, scopesPath.length));
+			for (Map.Entry<KeyT, ValT> var : varEntrySet())
+				if (var.getValue() instanceof GenericScope)
+					try 
+					{
+						GenericScope<K, V> sc = (GenericScope<K, V>) var.getValue();
+						if ((sc = sc.getGenericScope(scopesPath[0])) != null)
+							return sc.getGenericScope(scopesPath = Arrays.copyOfRange(scopesPath, 1, scopesPath.length));
+					}
+					catch (Exception e) {}
+			
+			if (containsVariable((KeyT) scopesPath[0]))
+				LogProvider.instance.logErr("Variable with name \"" + scopesPath[0] + "\" does exists! However its value is not instance of scope, use \"get\" function instead if possible!", null);
+		}
+		catch (ClassCastException e)
+		{}
+		return null;
+	}
+	
+	/**
+	 * @param objClass | Object of class to create.
+	 * 
+	 * @return Object of objClass constructed from this scopes independent values using protocol for objClass or null if there was no protocol found in {@link Serializer#PROTOCOL_REGISTRY}! 
+	 * 
+	 * @throws Exception | Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!
+	 * 
+	 * @since 1.2.5
+	 */
+	public <T> T toObject(Class<T> objClass) throws Exception
+	{
+		return toObject(objClass, SerializationProtocol.REGISTRY);
+	}
+	
+	/**
+	 * @param objClass | Object of class to create using protocols.
+	 * @param protocolsToUse | Registry of protocols to use.
+	 * 
+	 * @return Object of objClass constructed from this scopes independent values using protocol for objClass or null if there was no protocol found in {@link Serializer#PROTOCOL_REGISTRY}! 
+	 * 
+	 * @throws Exception | Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!
+	 * 
+	 * @since 1.3.2
+	 */
+	public <T> T toObject(Class<T> objClass, ProtocolRegistry protocolsToUse) throws Exception
+	{
+		SerializationProtocol<T> pro = protocolsToUse == null ? null : protocolsToUse.GetProtocolFor(objClass, SerializationProtocol.MODE_DESERIALIZE);
+		if (pro != null)
+		{
+			T obj = pro.unserialize(objClass, this.variablesCount() > 0 ? new Object[] {this} : this.toValArray());
+			if (obj != null)
+				return obj;
+		}
+		return null;
+	}
+	
+	/**
+	 * @param predicate | Predicate object with filter condition in test method!
+	 * 
+	 * @return Original scope after filtration using inserted predicate! If some object can't be casted to {@link Predicate#test(Object)} argument, it will be treated as invalid and will be filtered away! Sub-scopes are not included!
+	 * 
+	 * @since 1.2.5
+	 */
+	public GenericScope<KeyT, ValT> filter(Predicate<ValT> predicate)
+	{
+		return filter(predicate, false);
+	}
+	
+	/**
+	 * @param predicate | Predicate object with filter condition in test method!
+	 * @param includeSubScopes | If true filtration will be also applied on sub-scopes, if false sub-scopes will be treated as other things (parsed in to {@link Predicate#test(Object)}).
+	 * If sub-scope is empty after filtration it will not be included in result!
+	 * Note: Remember that this will work only when this scope generically allows to store other scopes inside (when ValT is base class of {@link GenericScope})!
+	 * 
+	 * @return Original scope after filtration using inserted predicate! If some object can't be casted to {@link Predicate#test(Object)} argument, it will be treated as invalid and will be filtered away!
+	 * 
+	 * @since 1.2.5
+	 */
+	@SuppressWarnings("unchecked")
+	public GenericScope<KeyT, ValT> filter(Predicate<ValT> predicate, boolean includeSubScopes)
+	{
+		return (GenericScope<KeyT, ValT>) transform(new Function<ValT, Object>() 
+		{
+			@Override
+			public Object apply(ValT t) 
+			{
+				return predicate.test(t) ? t : DataParser.VOID;
+			}
+		}, includeSubScopes);
+	}
+	
+	/**
+	 * @param trans | Function to transform objects of this scope!
+	 * 
+	 * @return Original scope after transformation using inserted function! If some object can't be casted to {@link Function#apply(Object)} argument, it will be treated as invalid and will be filtered away! Sub-scopes are not included!
+	 * 
+	 * @since 1.2.5
+	 */
+	public <V> GenericScope<KeyT, V> transform(Function<ValT, V> trans)
+	{
+		return transform(trans, false);
+	}
+	
+	/**
+	 * @param trans | Function to transform objects of this scope!
+	 * @param includeSubScopes | If true transformation will be also applied on sub-scopes, if false sub-scopes will be treated as other things (parsed in to {@link Function#apply(Object)}).
+	 * If sub-scope is empty after transformation it will not be included in result!
+	 * Note: Remember that this will work only when this scope generically allows to store other scopes inside (when ValT is base class of {@link GenericScope})!
+	 * 
+	 * @return Original scope after transformation using inserted function! If some object can't be casted to {@link Function#apply(Object)} argument, it will be treated as invalid and will be filtered away!
+	 * 
+	 * @since 1.2.5
+	 */
+	@SuppressWarnings("unchecked")
+	public <V> GenericScope<KeyT, V> transform(Function<ValT, V> trans, boolean includeSubScopes)
+	{
+		if (trans == null || isEmpty())
+			return (GenericScope<KeyT, V>) this;
+
+		List<V> fltVals = map(trans, includeSubScopes);
+		LinkedHashMap<KeyT, V> fltVars = new LinkedHashMap<>();
+		
+		for (Entry<KeyT, ValT> ent : this.varEntrySet())
+			try
+			{
+				Object obj = ent.getValue();
+				obj = obj instanceof Serializer.NULL ? null : obj;
+				if (obj instanceof GenericScope && includeSubScopes)
+				{ 
+					GenericScope<?, V> sc = ((GenericScope<?, ValT>) obj).transform(trans, includeSubScopes);
+					if (!sc.isEmpty())
+						fltVars.put(ent.getKey(), (V) sc);
+				}
+				else if ((obj = trans.apply((ValT) obj)) != DataParser.VOID)
+					fltVars.put(ent.getKey(), trans.apply((ValT) obj));
+			}
+			catch (ClassCastException e) 
+			{}
+		
+		try 
+		{ 
+			GenericScope<KeyT, V> clone = Serializer.Instantiate(getClass());
+			clone.values = fltVals;
+			clone.variables = fltVars;
+			clone.parent = getParent();
+			return clone;
+		} 
+		catch (Exception e) 
+		{
+			return new GenericScope<>(fltVars, fltVals, getParent());
+		}
+	}
+	
+	/**
+	 * @param trans | Function to transform objects of this scope!
+	 * 
+	 * @return Original scope after transformation using inserted function! If some object can't be casted to {@link Function#apply(Object)} argument, it will be treated as invalid and will be filtered away!
+	 * 
+	 * @since 1.3.5
+	 */
+	public <V> List<V> map(Function<ValT, V> trans)
+	{
+		return map(trans, false);
+	}
+	
+	/**
+	 * @param trans | Function to transform objects of this scope!
+	 * @param includeSubScopes | If true transformation will be also applied on sub-scopes, if false sub-scopes will be treated as other things (parsed in to {@link Function#apply(Object)}).
+	 * If sub-scope is empty after transformation it will not be included in result!
+	 * Note: Remember that this will work only when this scope generically allows to store other scopes inside (when ValT is base class of {@link GenericScope})!
+	 * 
+	 * @return Original scope after transformation using inserted function! If some object can't be casted to {@link Function#apply(Object)} argument, it will be treated as invalid and will be filtered away!
+	 * 
+	 * @since 1.3.5
+	 */
+	@SuppressWarnings("unchecked")
+	public <V> List<V> map(Function<ValT, V> trans, boolean includeSubScopes)
+	{
+		List<V> fltVals = new ArrayList<>();
+		for (Object obj : this)
+			try
+			{	
+				obj = obj instanceof Serializer.NULL ? null : obj;
+				if (obj instanceof GenericScope && includeSubScopes)
+				{ 
+					GenericScope<?, V> sc = ((GenericScope<?, ValT>) obj).transform(trans, includeSubScopes);
+					if (!sc.isEmpty())
+						fltVals.add((V) sc);
+				}
+				else if ((obj = trans.apply((ValT) obj)) != DataParser.VOID)
+					fltVals.add((V) obj);
+			}
+			catch (ClassCastException e) 
+			{}
+		
+		return fltVals;
+	}
+	
+	/**
+	 * @param valueIndex | Index of independent value to remove!
+	 * 
+	 * @return Removed independent value!
+	 * 
+	 * @since 1.3.2
+	 */
+	public ValT remove(int valueIndex)
+	{
+		return values().remove(valueIndex < 0 ? valuesCount() + valueIndex : valueIndex);
+	}
+	
+	/**
+	 * @param variableKey | Name of variable to remove!
+	 * 
+	 * @return Value of variable that was removed!
+	 * 
+	 * @since 1.3.2
+	 */
+	public ValT remove(KeyT variableKey)
+	{
+		return variables().remove(variableKey);
+	}
+	
+	/**
+	 * Removes all independent values and variables of this scope!
+	 * <br>
+	 * Basically it just calls <code>variables().clear()</code> and <code>values().clear()</code>!
+	 * 
+	 * @since 1.3.5
+	 */
+	public void clear()
+	{
+		variables().clear();
+		values().clear();
+	}
+	
+	/**
+	 * @return This scope after inheriting variables of its parent (return this)!
+	 * 
+	 * @since 1.3.2
+	 */
+	@SuppressWarnings("unchecked")
+	public GenericScope<KeyT, ValT> inheritParent()
+	{ 
+		GenericScope<?, ?> parent = getParent();
+		if (parent != null)
+			variables().putAll((Map<? extends KeyT, ? extends ValT>) parent.variables());
+		return this;
+	}
+	
+	/**
+	 * @param scope | GenericScope whose content will be added!
+	 * 
+	 * @return This scope...
+	 * 
+	 * @since 1.3.0
+	 */
+	public GenericScope<KeyT, ValT> addAll(GenericScope<KeyT, ? extends ValT> scope)
+	{
+		values().addAll(scope.values());
+		variables().putAll(scope.variables());
+		return this;
+	}
+	
+	/**
+	 * @return Entry set of variables!
+	 * 
+	 * @since 1.2.0
+	 */
+	public Set<Entry<KeyT, ValT>> varEntrySet()
+	{
+		return variables().entrySet();
+	}
+	
+	/**
+	 * @return Count of keyless values of this scope! (<code>values().size()</code>)
+	 * 
+	 * @since 1.2.0
+	 */
+	public int valuesCount()
+	{
+		return values().size();
+	}
+	
+	/**
+	 * @return Count of variables! (<code>variables().size()</code>)
+	 * 
+	 * @since 1.2.0
+	 */
+	public int variablesCount()
+	{
+		return variables().size();
+	}
+	
+	/**
+	 * @return Total number of variables and independent values of this scope! (<code>vvaluesCount() + variablesCount()</code>)
+	 */
+	public int totalSize()
+	{
+		return valuesCount() + variablesCount();
+	}
+	
+	/**
+	 * @return True if this scope is completely empty, meaning there are no variables or values.
+	 * 
+	 * @since 1.2.0
+	 */
+	public boolean isEmpty()
+	{
+		return totalSize() <= 0;
+	}
+	
+	/**
+	 * @return The parent scope of this scope or null if this scope has no parent such as default one in file.
+	 * 
+	 * @since 1.2.0
+	 */
+	public GenericScope<?, ?> getParent()
+	{
+		return getParent(false);	
+	}
+	
+	/**
+	 * @param absoluteParent | If true, absolute parent of this scope will be returned (parent of parent of parent...)!
+	 * 
+	 * @return The parent scope of this scope or null if this scope has no parent such as default one in file.
+	 * 
+	 * @since 1.3.2
+	 */
+	public GenericScope<?, ?> getParent(boolean absoluteParent)
+	{
+		if (!absoluteParent)
+			return parent; 
+		GenericScope<?, ?> parent = this.parent;
+		for (GenericScope<?, ?> tmpPar; parent != null && (tmpPar = parent.getParent()) != null; parent = tmpPar);
+		return parent;
+	}
+	
+	/**
+	 * @return New {@link LinkedHashMap} with variables of this a in defined order! Key is a KeyT of variable and value is its value! <br>
+	 * Modifying this map will not affect this GenericScope object!
+	 * 
+	 * @since 1.2.0
+	 */
+	public LinkedHashMap<? extends KeyT, ? extends ValT> toVarMap()
+	{
+		return new LinkedHashMap<>(variables());
+	}
+	
+	/**
+	 * @return New {@link ArrayList} with independent values of this {@link GenericScope}. These values have nothing to do with values of variables, they are independent!
+	 * Modifying this list will not affect this GenericScope object!
+	 * 
+	 * @since 1.2.0
+	 */
+	public List<? extends ValT> toValList()
+	{
+		return new ArrayList<>(values());
+	}
+	
+	/**
+	 * @return Primitive array with independent values of this {@link GenericScope}. These values have nothing to do with values of variables, they are independent!
+	 * Modifying this list will not affect this {@link GenericScope} object!
+	 * 
+	 * @since 1.2.0
+	 */
+	public Object[] toValArray()
+	{
+		return values().toArray();
+	}
+	
+	/**
+	 * @param vals | Array to store independent values into!
+	 * 
+	 * @return Primitive array with independent values of this {@link GenericScope}. These values have nothing to do with values of variables, they are independent!
+	 * Modifying this list will not affect this {@link GenericScope} object!
+	 * 
+	 * @since 1.3.5
+	 */
+	public <V extends ValT> V[] toValArray(V[] vals)
+	{
+		return values().toArray(vals);
+	}
+	
+	/**
+	 * @return List with both variables and values! Variables will be added as {@link Entry}!
+	 * Variables will be always first!
+	 * Modifying this map will not affect this GenericScope object!
+	 * 
+	 * @since 1.3.0
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Object> toUnifiedList()
+	{
+		List<Object> list = (List<Object>) toValList();
+		list.addAll(0, varEntrySet());
+		return list;
+	}
+	
+	/**
+	 * @return Values of this scope. These are not the values of keys these are values that have no key. You can access them via {@link GenericScope#get(int)}!
+	 * Note: Editing this List will affect this scope!
+	 * 
+	 * @since 1.2.0
+	 */
+	public List<ValT> values() 
+	{
+		if (values == null)
+			values = new ArrayList<>();
+		return values;
+	}
+	
+	/**
+	 * @return Variables of this scope. Objecthis variables has nothing to do with values. Key is a KeyT name of variable and value is value of variable.
+	 * Note: Editing this Map will affect this scope!
+	 * 
+	 * @since 1.2.0
+	 */
+	public Map<KeyT, ValT> variables() 
+	{
+		if (variables == null)
+			variables = new LinkedHashMap<>();
+		return variables;
+	}
+	
+	/**
+	 * @param variablesMap | Variables map to use!
+	 * 
+	 * @return New scope that is bidirectional with given data structures (list and map), which means that changing these data structures will affect scope and changing scope will affect data structures. This is behavior that regular constructor created scopes do not possess!
+	 * 
+	 * @since 1.3.5
+	 */
+	public static <K, V> GenericScope<K, V> newBidirectional(Map<K, V> variablesMap)
+	{
+		return newBidirectional(variablesMap, null);
+	}
+	
+	/**
+	 * @param variablesMap | Variables map to use!
+	 * @param values | Values list to use!
+	 * 
+	 * @return New scope that is bidirectional with given data structures (list and map), which means that changing these data structures will affect scope and changing scope will affect data structures. This is behavior that regular constructor created scopes do not possess!
+	 * 
+	 * @since 1.3.5
+	 */
+	public static <K, V> GenericScope<K, V> newBidirectional(Map<K, V> variablesMap, List<V> values)
+	{
+		return newBidirectional(variablesMap, values, null);
+	}
+	
+	/**
+	 * @param variablesMap | Variables map to use!
+	 * @param values | Values list to use!
+	 * @param parent | Parent of scope!
+	 * 
+	 * @return New scope that is bidirectional with given data structures (list and map), which means that changing these data structures will affect scope and changing scope will affect data structures. This is behavior that regular constructor created scopes do not possess!
+	 * 
+	 * @since 1.3.5
+	 */
+	public static <K, V> GenericScope<K, V> newBidirectional(Map<K, V> variablesMap, List<V> values, GenericScope<?, ?> parent)
+	{
+		return intoBidirectional(new GenericScope<>(null, null, null), variablesMap, values, parent);
+	}
+	
+	/**
+	 * @param scopeToMakeBidirectional | GenericScope to make bidirectional!
+	 * @param variablesMap | Variables map to use!
+	 * @param values | Values list to use!
+	 * 
+	 * @return Inserted scope that is bidirectional with given data structures (list and map), which means that changing these data structures will affect scope and changing scope will affect data structures. This is behavior that regular constructor created scopes do not possess!
+	 * 
+	 * @since 1.3.5
+	 */
+	public static <K, V> GenericScope<K, V> intoBidirectional(GenericScope<K, V> scopeToMakeBidirectional, Map<K, V> variablesMap, List<V> values)
+	{
+		return intoBidirectional(scopeToMakeBidirectional, variablesMap, values, null);
+	}
+	
+	/**
+	 * @param scopeToMakeBidirectional | GenericScope to make bidirectional!
+	 * @param variablesMap | Variables map to use!
+	 * @param values | Values list to use!
+	 * @param parent | Parent of scope!
+	 * 
+	 * @return Inserted scope that is bidirectional with given data structures (list and map), which means that changing these data structures will affect scope and changing scope will affect data structures. This is behavior that regular constructor created scopes do not possess!
+	 * 
+	 * @since 1.3.5
+	 */
+	public static <K, V> GenericScope<K, V> intoBidirectional(GenericScope<K, V> scopeToMakeBidirectional, Map<K, V> variablesMap, List<V> values, GenericScope<?, ?> parent)
+	{
+		scopeToMakeBidirectional.variables = variablesMap;
+		scopeToMakeBidirectional.values = values;
+		scopeToMakeBidirectional.parent = parent;
+		return scopeToMakeBidirectional;
+	}
+	
+	/**
+	 * @param map | Map to populate from kV array.
+	 * @param kVkVkV | kV array with keys and values to insert into this map. Elements with even indexes are values and the ones with odd indexes are keys...
+	 * 
+	 * @return Same map populated with kV array.
+	 * 
+	 * @since 1.3.7
+	 */
+	@SuppressWarnings("unchecked")
+	public static <K, V> Map<K, V> mapKvArray(Map<K, V> map, Object... kVkVkV)
+	{
+		for (int i = 1; i < kVkVkV.length; i+=2) 
+			map.put((K) kVkVkV[i-1], (V) kVkVkV[i]);
+		return map;
+	}
+}
