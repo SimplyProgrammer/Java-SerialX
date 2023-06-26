@@ -33,5 +33,6 @@ npm-debug.log*
 bin/
 tmp/
 .metadata
+.settings
 
 target/
