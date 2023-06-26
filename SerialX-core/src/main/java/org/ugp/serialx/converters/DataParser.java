@@ -5,7 +5,6 @@ import java.util.Collection;
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Registry;
 import org.ugp.serialx.Scope;
-import org.ugp.serialx.converters.operators.NegationOperator;
 
 /**
  * This class supposed to be used to parse strings back to java objects using {@link DataParser#parse(String, Object...)}!
@@ -43,7 +42,7 @@ public interface DataParser
 	 * @since 1.3.0
 	 */
 	//TODO ParserRegistry
-	public static final ParserRegistry REGISTRY = new ParserRegistry(new OperationGroups(), new VariableConverter(), /*new ConditionalAssignmentOperators(), new ComparisonOperators(), new LogicalOperators(), new ArithmeticOperators(),*/ new StringConverter(), new ObjectConverter(), new ArrayConverter(), new NumberConverter(), new NegationOperator(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter());
+	public static final ParserRegistry REGISTRY = new ParserRegistry(new OperationGroups(), new VariableConverter(), new StringConverter(), new ObjectConverter(), new ArrayConverter(), new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter());
 	
 	/**
 	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link DataParser#parseObj(Registry, String, boolean, Class[], Object...)} otherwise it demands on implementation (it should not be null)!

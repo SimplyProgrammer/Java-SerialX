@@ -1,5 +1,7 @@
 package org.ugp.serialx.converters.imports;
 
+import java.lang.reflect.Type;
+
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.imports.ImportConverter.Imports;
 
@@ -13,7 +15,7 @@ import org.ugp.serialx.converters.imports.ImportConverter.Imports;
  * 
  * @see Import
  */
-public class Import implements Cloneable
+public class Import implements Cloneable, Type
 {
 	protected final Class<?> cls;
 	protected final String alias;
@@ -90,6 +92,12 @@ public class Import implements Cloneable
 	public Import clone()  
 	{
 		return new Import(getCls(), getClsAlias(), getOwner());
+	}
+	
+	@Override
+	public String getTypeName() 
+	{
+		return getClsAlias();
 	}
 	
 	public Import clone(ImportsProvider newOwner)  

@@ -55,7 +55,7 @@ public class LogicalOperators implements DataParser
 					}
 					else if (opr.equals("||"))
 					{
-						cof1 = cofs.get(index); 
+						cof1 = cofs.get(index);
 						if (cof1 instanceof String)
 							cof1 = myHomeRegistry.parse(cof1.toString().trim(), i > 0, new Class[] {getClass()}, args);
 						if (cof1.equals(true))

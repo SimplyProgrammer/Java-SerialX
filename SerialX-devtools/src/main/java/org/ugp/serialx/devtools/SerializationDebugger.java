@@ -1,14 +1,14 @@
-package org.ugp.serialx;
+package org.ugp.serialx.devtools;
 
 import java.util.Arrays;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
+import org.ugp.serialx.Registry;
+import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.DataConverter;
-import org.ugp.serialx.converters.DataParser;
+import org.ugp.serialx.devtools.converters.DebugParserRegistry;
 
 /**	
  * Use this for debugging during parsing and converting by adding new instance of it into your parser {@link Registry} or in case of {@link Serializer} use !<br>
@@ -26,11 +26,9 @@ public class SerializationDebugger implements DataConverter
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args)
 	{
-		synchronized (this) {
-			if (str.toLowerCase().startsWith(DEBUG_MARK))
-				return printDebugs(myHomeRegistry instanceof DebugParserRegistry ? (DebugParserRegistry) myHomeRegistry : new DebugParserRegistry(myHomeRegistry), null, str, args);
-			return CONTINUE;
-		}
+		if (str.toLowerCase().startsWith(DEBUG_MARK))
+			return printDebugs(myHomeRegistry instanceof DebugParserRegistry ? (DebugParserRegistry) myHomeRegistry : new DebugParserRegistry(myHomeRegistry), null, str, args);
+		return CONTINUE;
 	}
 	
 	@Override
@@ -72,8 +70,7 @@ public class SerializationDebugger implements DataConverter
 			}
 			else if (args[99] instanceof Integer && (int) args[99] > 0)
 			{
-				myHomeRegistry = myHomeRegistry.clone(); 
-				myHomeRegistry.iterationStackTrace = new TreeMap<>();
+				myHomeRegistry = myHomeRegistry.clone(false);
 			}
 			
 			double t0 = System.nanoTime();
@@ -101,8 +98,7 @@ public class SerializationDebugger implements DataConverter
 			}
 			else if (args[99] instanceof Integer && (int) args[99] > 0)
 			{
-				myHomeRegistry = myHomeRegistry.clone(); 
-				myHomeRegistry.iterationStackTrace = new TreeMap<>();
+				myHomeRegistry = myHomeRegistry.clone(false);
 			}
 			
 			double t0 = System.nanoTime();
@@ -228,7 +224,7 @@ public class SerializationDebugger implements DataConverter
 				System.err.println(strTbs + entry.getKey() + ":\t" + String.valueOf(o));
 		}
 	}
-	
+
 	/**
 	 * Use this during converting/serializing!
 	 * 
@@ -250,151 +246,6 @@ public class SerializationDebugger implements DataConverter
 		public DebugWrapper(Object yourObject)
 		{
 			obj = yourObject;
-		}
-	}
-	
-	/**
-	 * Special {@link ParserRegistry} that keeps track of its actions! Use only for debugging!
-	 * 
-	 * @author PETO
-	 *
-	 * @since 1.3.5
-	 */
-	public static class DebugParserRegistry extends ParserRegistry 
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 3445967263611388142L;
-		
-		protected Map<Integer, Object> iterationStackTrace = new TreeMap<>();
-		
-		public DebugParserRegistry(ParserRegistry registry) 
-		{
-			super(registry);
-			resetCache(registry.getParsingCache(), registry.getConverterCache());
-		}
-		
-		@Override
-		public DebugParserRegistry clone() 
-		{
-			DebugParserRegistry reg = new DebugParserRegistry(this);
-			reg.iterationStackTrace = this.iterationStackTrace;
-			return reg;
-		}
-		
-		@Override
-		public CharSequence toString(Object obj, Object... args) {
-			int iterationIndex = 0;
-			if (args.length > 99 && args[99] instanceof Integer)
-			{
-				iterationIndex = (int) args[99];
-				args[99] = iterationIndex + 1;
-			}
-			
-			CharSequence str = null;
-			if (convertingCache != null)
-				for (int i = 0; i < convertingCache.length; i++)
-				{
-					DataParser parser = convertingCache[i];
-					if (parser != null)
-					{
-						double t0 = System.nanoTime();
-						str = ((DataConverter) parser).toString(this, obj, args);
-						double t = System.nanoTime();
-						if (str != CONTINUE)
-						{
-							iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms (from cache)\n>>\t" + toStringAndCls(obj) + "\t -->\t\"" + str + "\"");
-							return str; 
-						}
-					}
-				}
-			
-			for (int i = 0, size = size(); i < size; i++) 
-			{
-				DataParser parser = get(i);
-				if (parser instanceof DataConverter)
-				{
-					double t0 = System.nanoTime();
-					str = ((DataConverter) parser).toString(this, obj, args);
-					double t = System.nanoTime();
-					if(str != CONTINUE)
-					{
-						if (convertingCache != null && i < convertingCache.length)
-							convertingCache[i] = parser; 
-						iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms\n>>\t" + toStringAndCls(obj) + "\t -->\t\"" + str + "\"");
-						return str;
-					}
-				}
-			}
-			
-			LogProvider.instance.logErr(DataConverter.class.getSimpleName() + ": Unable to convert \"" + obj == null ? "null" : obj.getClass().getName() + "\" to string because none of registered converters were aplicable for this object!", null);
-			return null;
-		}
-		
-		@Override
-		public Object parse(String str, boolean returnAsStringIfNotFound, Class<?>[] ignore, Object... args) 
-		{
-			int iterationIndex = 0;
-			if (args.length > 99 && args[99] instanceof Integer)
-			{
-				iterationIndex = (int) args[99];
-				args[99] = iterationIndex + 1;
-			}
-			
-			Object obj = null; 
-			if (parsingCache != null)
-				for (int i = 0; i < parsingCache.length; i++)
-				{
-					DataParser parser = parsingCache[i];
-					if (parser != null)
-					{
-						double t0 = System.nanoTime();
-						obj = parser.parse(this, str, args);
-						double t = System.nanoTime();
-						if (obj != CONTINUE)
-						{
-							iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms (from cache)\n>>\t\"" + str + "\"\t -->\t" + toStringAndCls(obj));
-							return obj; 
-						}
-					}
-				}
-		
-			registryLoop: for (int i = 0, size = size(); i < size; i++)
-			{
-				DataParser parser = get(i);
-				if (ignore != null)
-					for (Class<?> cls : ignore) 
-						if (cls == parser.getClass())
-							continue registryLoop;
-
-				double t0 = System.nanoTime();
-				obj = parser.parse(this, str, args);
-				double t = System.nanoTime();
-				if (obj != CONTINUE)
-				{
-					if (parsingCache != null && i < parsingCache.length)
-						parsingCache[i] = parser; 
-					iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms\n>>\t\"" + str + "\"\t -->\t" + toStringAndCls(obj));
-					return obj;
-				}
-			}
-
-			if (returnAsStringIfNotFound)
-				return str;
-
-			LogProvider.instance.logErr(DataParser.class.getSimpleName() + ": Unable to parse \"" + str + "\" because none of registred parsers were suitable!", null);
-			return null;
-		}
-		
-		/**
-		 * @return Ordered map of registry iterations generated by using it during parsing or converting!
-		 * 
-		 * @since 1.3.5
-		 */
-		public Map<Integer, Object> getRegistryIterationStackTrace()
-		{
-			return iterationStackTrace;
 		}
 	}
 }

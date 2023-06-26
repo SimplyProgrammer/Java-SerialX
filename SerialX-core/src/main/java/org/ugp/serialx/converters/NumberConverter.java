@@ -8,7 +8,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import org.ugp.serialx.LogProvider;
-import org.ugp.serialx.converters.operators.NegationOperator;
 
 /**
  * This converter is capable of converting {@link Number} including all common implementations like {@link Double}, {@link Float}, {@link Integer} and others. They are determine by suffixes like in java!
@@ -106,9 +105,6 @@ public class NumberConverter implements DataConverter
 					try
 					{
 						Number integer;
-						boolean isNeg = arg.charAt(0) == '-';
-						if (isNeg)
-							arg = arg.substring(1);
 						if (arg.endsWith("l"))
 							integer = new Long(Long.parseLong(fastReplace(fastReplace(fastReplace(arg, "l", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
 						else if (arg.endsWith("s"))
@@ -117,7 +113,7 @@ public class NumberConverter implements DataConverter
 							integer = new Byte(Byte.parseByte(fastReplace(fastReplace(arg, "y", ""), "0b", ""), arg.startsWith("0b") ? 2 : 10));
 						else
 							integer = new Integer(Integer.parseInt(fastReplace(fastReplace(arg, "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
-						return isNeg ? NegationOperator.negate(integer) : integer;
+						return integer;
 					}
 					catch (NumberFormatException e)
 					{

@@ -40,9 +40,6 @@ import org.ugp.serialx.converters.NullConverter;
 import org.ugp.serialx.converters.NumberConverter;
 import org.ugp.serialx.converters.SerializableBase64Converter;
 import org.ugp.serialx.converters.StringConverter;
-import org.ugp.serialx.converters.imports.ImportConverter;
-import org.ugp.serialx.converters.imports.ImportConverter.Imports;
-import org.ugp.serialx.converters.imports.ImportsProvider;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 
@@ -56,7 +53,7 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
  * @since 1.0.0 
  */
 @SuppressWarnings("serial")
-public abstract class Serializer extends Scope implements ImportsProvider
+public abstract class Serializer extends Scope
 {	
 	/**
 	 * Common parsers that can parse primitive datatypes!
@@ -67,7 +64,6 @@ public abstract class Serializer extends Scope implements ImportsProvider
 	
 	protected ParserRegistry parsers;
 	protected ProtocolRegistry protocols;
-	protected Imports imports;
 	
 	/**
 	 * @param values | Initial independent values to be added in to this scope!
@@ -197,14 +193,6 @@ public abstract class Serializer extends Scope implements ImportsProvider
 	public <T> T into(Object obj, String... fieldNamesToUse) throws IntrospectionException, Exception 
 	{
 		return Serializer.into(obj, this, fieldNamesToUse);
-	}
-	
-	@Override
-	public Imports getImports() 
-	{
-		if (imports == null)
-			imports = ImportConverter.IMPORTS.clone();
-		return imports;
 	}
 	
 	/**
@@ -887,6 +875,34 @@ public abstract class Serializer extends Scope implements ImportsProvider
 		LogProvider.instance.logErr("Variable " + varName + " was not found!");
 		return null;
 	}*/
+	
+	/**
+	 * @param indexWithStringValue | Index of independent value that should be string.
+	 * @param args | Additional arguments that will be obtained in {@link DataParser#parse(String, Object...)}!
+	 * 
+	 * @return Object that was parsed from string at given index, using parsers of this {@link Serializer}!
+	 * 
+	 * @since 1.3.7
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T getParsed(int indexWithStringValue, Object... args)
+	{
+		return (T) getParsers().parse(getString(indexWithStringValue), args);
+	}
+	
+	/**
+	 * @param variableWithStringValue | Variable name with string value.
+	 * @param args | Additional arguments that will be obtained in {@link DataParser#parse(String, Object...)}!
+	 * 
+	 * @return Object that was parsed from value of given variable, using parsers of this {@link Serializer}!
+	 * 
+	 * @since 1.3.7
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T getParsed(String variableWithStringValue, Object... args)
+	{
+		return (T) getParsers().parse(getString(variableWithStringValue), args);
+	}
 
 	/**
 	 * @param f | Source file.

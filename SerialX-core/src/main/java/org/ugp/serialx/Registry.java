@@ -183,11 +183,13 @@ public class Registry<E> extends ArrayList<E>
 	 * @param cls | Class to find!
 	 * @param element | Element to insert before index of required class!
 	 * 
+	 * @return Index where the element was inserted. {@link Registry#indexOf(cls, false)}
+	 * 
 	 * @since 1.3.0
 	 */
-	public void addBefore(Class<? extends E> cls, E element)
+	public int addBefore(Class<? extends E> cls, E element)
 	{
-		addBefore(cls, false, element);
+		return addBefore(cls, false, element);
 	}
 	
 	/**
@@ -195,20 +197,25 @@ public class Registry<E> extends ArrayList<E>
 	 * @param includeChildrens | If true, index of child classes of cls will be returned when object with exactly matching class is not registered!
 	 * @param element | Element to insert before index of required class!
 	 * 
+	 * @return {@link Registry#indexOf(Class, boolean)}
+	 * 
 	 * @since 1.3.0
 	 */
-	public void addBefore(Class<? extends E> cls, boolean includeChildrens, E element)
+	public int addBefore(Class<? extends E> cls, boolean includeChildrens, E element)
 	{
-		int index = indexOf(cls);
+		int index = indexOf(cls, includeChildrens);
 		if (index <= -1)
 			add(element);
 		else
 			add(index, element);
+		return index;
 	}
 	
 	/**
 	 * @param cls | Class to find!
 	 * @param element | Element to insert after index of required class!
+	 * 
+	 * @return Index where the elements were inserted. {@link Registry#indexOf(cls, false)}
 	 * 
 	 * @since 1.3.0
 	 */
@@ -222,26 +229,31 @@ public class Registry<E> extends ArrayList<E>
 	 * @param includeChildrens | If true, index of child classes of cls will be returned when object with exactly matching class is not registered!
 	 * @param element | Element to insert after index of required class!
 	 * 
+	 * @return {@link Registry#indexOf(Class, boolean)}
+	 * 
 	 * @since 1.3.0
 	 */
-	public void addAllBefore(Class<? extends E> cls, boolean includeChildrens, @SuppressWarnings("unchecked") E... element)
+	public int addAllBefore(Class<? extends E> cls, boolean includeChildrens, @SuppressWarnings("unchecked") E... element)
 	{
-		int index = indexOf(cls);
+		int index = indexOf(cls, includeChildrens);
 		if (index <= -1)
 			addAll(element);
 		else
 			addAll(index, element);
+		return index;
 	}
 	
 	/**
 	 * @param cls | Class to find!
 	 * @param element | Element to insert after index of required class!
 	 * 
+	 * @return Index where the element was inserted. {@link Registry#indexOf(cls, false)}
+	 * 
 	 * @since 1.3.0
 	 */
-	public void addAfter(Class<? extends E> cls, E element)
+	public int addAfter(Class<? extends E> cls, E element)
 	{
-		addAfter(cls, false, element);
+		return addAfter(cls, false, element);
 	}
 	
 	/**
@@ -249,26 +261,31 @@ public class Registry<E> extends ArrayList<E>
 	 * @param includeChildrens | If true, index of child classes of cls will be returned when object with exactly matching class is not registered!
 	 * @param element | Element to insert after index of required class!
 	 * 
+	 * @return {@link Registry#indexOf(Class, boolean)}
+	 * 
 	 * @since 1.3.0
 	 */
-	public void addAfter(Class<? extends E> cls, boolean includeChildrens, E element)
+	public int addAfter(Class<? extends E> cls, boolean includeChildrens, E element)
 	{
 		int index = indexOf(cls, includeChildrens);
 		if (index <= -1)
 			add(element);
 		else
 			add(index + 1, element);
+		return index;
 	}
 	
 	/**
 	 * @param cls | Class to find!
 	 * @param element | Element to insert after index of required class!
 	 * 
+	 * @return Index where the elements were inserted. {@link Registry#indexOf(cls, false)}
+	 * 
 	 * @since 1.3.0
 	 */
-	public void addAllAfter(Class<? extends E> cls, @SuppressWarnings("unchecked") E... element)
+	public int addAllAfter(Class<? extends E> cls, @SuppressWarnings("unchecked") E... element)
 	{
-		addAllAfter(cls, false, element);
+		return addAllAfter(cls, false, element);
 	}
 	
 	/**
@@ -276,15 +293,18 @@ public class Registry<E> extends ArrayList<E>
 	 * @param includeChildrens | If true, index of child classes of cls will be returned when object with exactly matching class is not registered!
 	 * @param element | Element to insert after index of required class!
 	 * 
+	 * @return {@link Registry#indexOf(Class, boolean)}
+	 * 
 	 * @since 1.3.0
 	 */
-	public void addAllAfter(Class<? extends E> cls, boolean includeChildrens, @SuppressWarnings("unchecked") E... element)
+	public int addAllAfter(Class<? extends E> cls, boolean includeChildrens, @SuppressWarnings("unchecked") E... element)
 	{
 		int index = indexOf(cls, includeChildrens);
 		if (index <= -1)
 			addAll(element);
 		else
 			addAll(index + 1, element);
+		return index;
 	}
 
 	/**

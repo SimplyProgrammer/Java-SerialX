@@ -1,5 +1,7 @@
 package org.ugp.serialx;
 
+import static org.ugp.serialx.converters.DataParser.VOID;
+
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
@@ -10,12 +12,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import org.ugp.serialx.converters.ArrayConverter;
-import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 
@@ -295,8 +296,7 @@ public class Scope extends GenericScope<String, Object>
 	 */
 	public String getString(String variableName, String defaultValue)
 	{
-		Object obj = get(variableName, defaultValue);
-		return obj == null ? null : obj.toString();
+		return String.valueOf(get(variableName, defaultValue));
 	}
 	
 	/**
@@ -475,8 +475,7 @@ public class Scope extends GenericScope<String, Object>
 	 */
 	public String getString(int valueIndex)
 	{
-		Object obj = get(valueIndex);
-		return obj == null ? null : obj.toString();
+		return String.valueOf(get(valueIndex));
 	}
 	
 	/**
@@ -1206,8 +1205,8 @@ public class Scope extends GenericScope<String, Object>
 	{
 		for (PropertyDescriptor var : fieldsToUse) 
 		{
-			Object varValue = ((GenericScope<String, Object>) fromScope).get(var.getName(), DataParser.VOID);
-			if (varValue != DataParser.VOID)
+			Object varValue = ((GenericScope<String, Object>) fromScope).get(var.getName(), VOID);
+			if (varValue != VOID)
 				var.getWriteMethod().invoke(obj, varValue);
 		}
 		return obj;

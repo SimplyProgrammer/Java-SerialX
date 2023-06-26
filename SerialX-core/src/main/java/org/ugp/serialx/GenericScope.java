@@ -314,7 +314,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * @since 1.2.0
 	 */
 	@SuppressWarnings("unchecked")
-	public <V> V get(int valueIndex)
+	public <V extends ValT> V get(int valueIndex)
 	{
 		V obj = (V) values().get(valueIndex < 0 ? valuesCount() + valueIndex : valueIndex);
 		return obj instanceof Serializer.NULL ? null : obj;

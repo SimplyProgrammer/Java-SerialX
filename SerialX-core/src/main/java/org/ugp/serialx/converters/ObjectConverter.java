@@ -299,7 +299,7 @@ public class ObjectConverter implements DataConverter
 				StringBuilder sb = new StringBuilder();
 				GenericScope<?, ?> parent;
 				if ((parent = serializer.getParent()) == null || serializer.getClass() != parent.getClass())
-					sb.append(serializer.getImports().getAliasFor(arg.getClass()) + " ");
+					sb.append(ImportsProvider.getAliasFor(serializer, getClass()) + " ");
 				return serializer.SerializeAsSubscope(sb, args);
 			} 
 			catch (IOException e) 

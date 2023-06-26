@@ -25,15 +25,10 @@ import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.DataParser.ParserRegistry;
 import org.ugp.serialx.converters.ObjectConverter;
-import org.ugp.serialx.converters.StringConverter;
 import org.ugp.serialx.converters.imports.ImportConverter;
-import org.ugp.serialx.converters.operators.ArithmeticOperators;
-import org.ugp.serialx.converters.operators.ComparisonOperators;
-import org.ugp.serialx.converters.operators.ConditionalAssignmentOperators;
-import org.ugp.serialx.converters.operators.LogicalOperators;
+import org.ugp.serialx.converters.imports.ImportConverter.Imports;
+import org.ugp.serialx.converters.imports.ImportsProvider;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
-
-import javafx.beans.binding.When;
 
 /**
  * This is implementation of {@link Serializer} for serializing in default SerialX API implementation known as JUSS (Java universal serial script) which is Json like domain specific language that has extended functionality!
@@ -44,16 +39,38 @@ import javafx.beans.binding.When;
  * @since 1.3.2
  */
 @SuppressWarnings("serial")
-public class JussSerializer extends Serializer 
+public class JussSerializer extends Serializer implements ImportsProvider
 {
-	public static final ParserRegistry JUSS_PARSERS = DataParser.REGISTRY.clone(), JUSS_PARSERS_AND_OPERATORS;
+	/**
+	 * {@link ParserRegistry} with all parsers required to parse JUSS!
+	 * 
+	 * @since 1.3.2
+	 */
+	public static final ParserRegistry JUSS_PARSERS = DataParser.REGISTRY.clone();
+	
+	/**
+	 * {@link ParserRegistry} with all parsers required to parse JUSS with additional operators.
+	 * <br>
+	 * Since 1.3.7 this requires "org.ugp.serialx.converters.Operators" from SerialX "operators" modules to be present on the classpath!
+	 * 
+	 * @since 1.3.2
+	 */
+	public static final ParserRegistry JUSS_PARSERS_AND_OPERATORS;
 	
 	static
 	{
 		JUSS_PARSERS.add(0, new ImportConverter());
 		JUSS_PARSERS_AND_OPERATORS = JUSS_PARSERS.clone();
-		JUSS_PARSERS_AND_OPERATORS.addAllBefore(StringConverter.class, true, new ConditionalAssignmentOperators(), new LogicalOperators(), new ComparisonOperators(), new ArithmeticOperators());
+		
+		try 
+		{
+			InvokeStaticFunc(Class.forName("org.ugp.serialx.converters.Operators"), "install", JUSS_PARSERS_AND_OPERATORS);
+		} 
+		catch (Exception e) 
+		{}
 	}
+	
+	protected Imports imports;
 	
 	/**
 	 * Set this on true and program will generate comments and report!<br>
@@ -156,6 +173,14 @@ public class JussSerializer extends Serializer
 	public ParserRegistry getParsers() 
 	{
 		return parsers != null ? parsers : (parsers = JUSS_PARSERS.clone());
+	}
+	
+	@Override
+	public Imports getImports() 
+	{
+		if (imports == null)
+			imports = ImportConverter.IMPORTS.clone();
+		return imports;
 	}
 	
 	/**
@@ -785,7 +810,7 @@ public class JussSerializer extends Serializer
 			</tr>
 		</table>
 	 *	
-	 * @throws When something went wrong during deserialization!
+	 * @throws If something went wrong during deserialization!
 	 * 
 	 * @since 1.3.5
 	 */
