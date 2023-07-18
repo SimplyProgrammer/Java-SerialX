@@ -1,0 +1,15 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.ugp</groupId>
+    <artifactId>serialx</artifactId>
+    <version>${revision}</version>
+  </parent>
+  
+  <groupId>org.ugp.serialx</groupId>
+  <artifactId>juss</artifactId>
+  <version>1.3.7</version>
+  
+  <name>SerialX-juss</name>
+  <description>SerialX support for Java Universal Serial Script data format, custom default format of SerialX!</description>
+</project>

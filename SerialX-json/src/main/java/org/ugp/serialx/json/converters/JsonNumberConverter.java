@@ -8,7 +8,7 @@ public class JsonNumberConverter extends NumberConverter {
 	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
 	{
 		if (obj instanceof Number)
-			return decimalFormatter != null ? decimalFormatter.format(obj) : obj.toString();
+			return format((Number) obj);
 		return CONTINUE;
 	}
 }

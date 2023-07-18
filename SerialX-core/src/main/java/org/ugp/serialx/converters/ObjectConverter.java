@@ -1,9 +1,10 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.Serializer.InvokeStaticFunc;
-import static org.ugp.serialx.Serializer.indexOfNotInObj;
-import static org.ugp.serialx.Serializer.isOneOf;
-import static org.ugp.serialx.Serializer.splitValues;
+import static org.ugp.serialx.Utils.Instantiate;
+import static org.ugp.serialx.Utils.InvokeStaticFunc;
+import static org.ugp.serialx.Utils.indexOfNotInObj;
+import static org.ugp.serialx.Utils.isOneOf;
+import static org.ugp.serialx.Utils.splitValues;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -83,7 +84,7 @@ public class ObjectConverter implements DataConverter
 
 		if (str.length() > 0 && ((hasOp = (ch = str.charAt(0)) == '{' || ch == '[') && (hasCls = (ch = str.charAt(str.length()-1)) == '}' || ch == ']') /*|| containsNotInObj(str, ' ')*/ || (objectClass = getProtocolExprClass(str, compilerArgs)) != null))
 		{
-			if (objectClass != null)
+			if (objectClass != null) //TODO: Preferably separate this to ProtocolConverter
 			{
 				if (objectClass == IsSelectorScope.class)
 				{
@@ -121,7 +122,7 @@ public class ObjectConverter implements DataConverter
 							try
 							{
 								compilerArgs[4] = oldObjectClass;
-								return clsAttr[1].equals("class") ? objectClass : clsAttr[1].equals("new") ? Serializer.Instantiate(objectClass) : objectClass.getField(clsAttr[1]).get(null);
+								return clsAttr[1].equals("class") ? objectClass : clsAttr[1].equals("new") ? Instantiate(objectClass) : objectClass.getField(clsAttr[1]).get(null);
 							}
 							catch (NoSuchFieldException e)
 							{
@@ -208,6 +209,7 @@ public class ObjectConverter implements DataConverter
 				{
 					compilerArgs = compilerArgs.clone();
 					compilerArgs[0] = false;
+					//TODO: Prevent neccesity of scope parent inheritance.
 					return ((Serializer) scope.inheritParent()).LoadFrom(new StringReader(str), compilerArgs);
 				}
 				
@@ -307,7 +309,7 @@ public class ObjectConverter implements DataConverter
 				throw new RuntimeException(e);
 			}
 		}
-		else
+		else //TODO: Preferably separate this to ProtocolConverter
 		{
 			if (preferedProtocol != null || (preferedProtocol = (SerializationProtocol<Object>) getProtocolFor(arg, SerializationProtocol.MODE_SERIALIZE, args)) != null)
 			{

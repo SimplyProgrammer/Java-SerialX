@@ -1,6 +1,6 @@
 package org.ugp.serialx.converters.operators;
 
-import static org.ugp.serialx.Serializer.indexOfNotInObj;
+import static org.ugp.serialx.Utils.indexOfNotInObj;
 import static org.ugp.serialx.converters.operators.ArithmeticOperators.getTerms;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.Serializer.isOneOf;
+import static org.ugp.serialx.Utils.isOneOf;
 
 import java.util.Arrays;
 import java.util.HashMap;

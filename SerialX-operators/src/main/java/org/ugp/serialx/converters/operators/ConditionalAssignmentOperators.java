@@ -1,9 +1,9 @@
 package org.ugp.serialx.converters.operators;
 
-import static org.ugp.serialx.Serializer.indexOfNotInObj;
+import static org.ugp.serialx.Utils.indexOfNotInObj;
 
 import org.ugp.serialx.LogProvider;
-import org.ugp.serialx.Serializer.NULL;
+import org.ugp.serialx.Utils.NULL;
 import org.ugp.serialx.converters.DataParser;
 
 /**

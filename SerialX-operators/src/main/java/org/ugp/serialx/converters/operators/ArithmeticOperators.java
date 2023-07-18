@@ -1,7 +1,8 @@
 package org.ugp.serialx.converters.operators;
 
-import static org.ugp.serialx.Serializer.fastReplace;
-import static org.ugp.serialx.Serializer.isOneOf;
+import static org.ugp.serialx.Utils.fastReplace;
+import static org.ugp.serialx.Utils.isOneOf;
+import static org.ugp.serialx.Utils.multilpy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +11,6 @@ import java.util.List;
 
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
-import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.ArrayConverter;
 import org.ugp.serialx.converters.DataParser;
 
@@ -260,7 +260,7 @@ public class ArithmeticOperators implements DataParser
 		if (cof2 instanceof Number)
 		{
 			if (!(cof instanceof Number))
-				return Serializer.multilpy(cof.toString(), ((Number) cof2).intValue() * sign).toString();
+				return multilpy(cof.toString(), ((Number) cof2).intValue() * sign).toString();
 			
 			if (cof instanceof Double || cof2 instanceof Double)
 				return ((Number) cof).doubleValue() * ((Number) cof2).doubleValue() * sign;
@@ -274,7 +274,7 @@ public class ArithmeticOperators implements DataParser
 			return ((Number) cof).doubleValue() * ((Number) cof2).doubleValue() * sign;
 		}
 		
-		return Serializer.multilpy(cof2.toString(), ((Number) cof).intValue() * sign).toString();
+		return multilpy(cof2.toString(), ((Number) cof).intValue() * sign).toString();
 	}
 	
 	/**
@@ -426,7 +426,7 @@ public class ArithmeticOperators implements DataParser
 						brackets--;
 					else if (brackets == 0)
 					{
-						if (Serializer.isOneOf(ch, operators))
+						if (isOneOf(ch, operators))
 							hasOpr = isCof = 0;
 						else if (oldCh <= 32 && isCof == 1)
 							return false;

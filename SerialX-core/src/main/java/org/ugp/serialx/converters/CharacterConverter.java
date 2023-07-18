@@ -1,6 +1,6 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.Serializer.fastReplace;
+import static org.ugp.serialx.Utils.fastReplace;
 
 /**
  * This converter is capable of converting {@link Character}.
@@ -41,10 +41,9 @@ public class CharacterConverter implements DataConverter
 		if (str.length() > 1 && str.charAt(0) == '\'' && str.charAt(str.length()-1) == '\'')
 			try
 			{
-				if (str.equals("''"))
+				if (str.equals("''")) // TODO: str.length() == 2 + mby cache len
 					return new Character(' ');
-				else
-					return new Character((char) Integer.parseInt(str = fastReplace(str, "'", "")));
+				return new Character((char) Integer.parseInt(str = fastReplace(str, "'", "")));
 			}
 			catch (Exception e) 
 			{

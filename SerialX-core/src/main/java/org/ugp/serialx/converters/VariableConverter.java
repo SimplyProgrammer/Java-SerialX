@@ -1,10 +1,10 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.Serializer.Clone;
-import static org.ugp.serialx.Serializer.contains;
-import static org.ugp.serialx.Serializer.fastReplace;
-import static org.ugp.serialx.Serializer.multilpy;
-import static org.ugp.serialx.Serializer.splitValues;
+import static org.ugp.serialx.Utils.Clone;
+import static org.ugp.serialx.Utils.contains;
+import static org.ugp.serialx.Utils.fastReplace;
+import static org.ugp.serialx.Utils.multilpy;
+import static org.ugp.serialx.Utils.splitValues;
 
 import java.util.AbstractMap;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
-import org.ugp.serialx.Serializer.NULL;
+import org.ugp.serialx.Utils.NULL;
 
 /**
  * This converter is capable of converting {@link Map.Entry} and reading variables from {@link Scope} via "$"!
@@ -108,7 +108,7 @@ public class VariableConverter implements DataConverter
 				if ((arg = fastReplace(arg, "$", "")).indexOf('.') > -1)
 				{
 					Object[] tree = splitValues(fastReplace(fastReplace(arg, "::new", ""), "::class", ""), '.');
-					GenericScope<Object, Object> sc = (GenericScope<Object, Object>) scope.getGenericScope(Arrays.copyOfRange(tree, 0, tree.length-1));
+					GenericScope<Object, Object> sc = (GenericScope<Object, Object>) scope.getGenericScope(Arrays.copyOfRange(tree, 0, tree.length-1)); //TODO: Prevent neccesity of scope parent inheritance.
 					obj = sc == null ? null : sc.variables().get(tree[tree.length-1]);
 					/*if (sc == null || !sc.containsVariable(tree[tree.length-1]))
 						LogProvider.instance.logErr("Variable \"" + tree[tree.length-1] + "\" was not declared in \"" + arg.substring(0, arg.length() - tree[tree.length-1].length() - 1) + "\"! Defaulting to null!");*/

@@ -1,5 +1,7 @@
 package org.ugp.serialx;
 
+import static org.ugp.serialx.Utils.Instantiate;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +16,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.ugp.serialx.Utils.NULL;
 import org.ugp.serialx.converters.ArrayConverter;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.protocols.SerializationProtocol;
@@ -146,7 +149,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	@SuppressWarnings("unchecked")
 	public <S extends GenericScope<KeyT, ValT>> S clone(Class<S> typeOfClone) throws Exception
 	{
-		S clone = Serializer.Instantiate(typeOfClone);
+		S clone = Instantiate(typeOfClone);
 		clone.values = (List<ValT>) toValList();
 		clone.variables = (Map<KeyT, ValT>) toVarMap();
 		clone.parent = getParent();
@@ -167,7 +170,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 		if (getClass() == newType)
 			return (S) this;
 		
-		GenericScope<Object, Object> clone = (GenericScope<Object, Object>) Serializer.Instantiate(newType);
+		GenericScope<Object, Object> clone = (GenericScope<Object, Object>) Instantiate(newType);
 		clone.values = (List<Object>) values();
 		clone.variables = (Map<Object, Object>) variables();
 		clone.parent = getParent();
@@ -275,7 +278,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 		V obj = (V) variables().get(variableKey);
 		if (obj == null)
 			return (V) defaultValue;
-		return obj instanceof Serializer.NULL ? null : obj;
+		return obj instanceof NULL ? null : obj;
 	}
 	
 	/**
@@ -317,7 +320,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	public <V extends ValT> V get(int valueIndex)
 	{
 		V obj = (V) values().get(valueIndex < 0 ? valuesCount() + valueIndex : valueIndex);
-		return obj instanceof Serializer.NULL ? null : obj;
+		return obj instanceof NULL ? null : obj;
 	}
 	
 	/**
@@ -524,7 +527,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 			try
 			{
 				Object obj = ent.getValue();
-				obj = obj instanceof Serializer.NULL ? null : obj;
+				obj = obj instanceof NULL ? null : obj;
 				if (obj instanceof GenericScope && includeSubScopes)
 				{ 
 					GenericScope<?, V> sc = ((GenericScope<?, ValT>) obj).transform(trans, includeSubScopes);
@@ -539,7 +542,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 		
 		try 
 		{ 
-			GenericScope<KeyT, V> clone = Serializer.Instantiate(getClass());
+			GenericScope<KeyT, V> clone = Instantiate(getClass());
 			clone.values = fltVals;
 			clone.variables = fltVars;
 			clone.parent = getParent();
@@ -580,7 +583,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 		for (Object obj : this)
 			try
 			{	
-				obj = obj instanceof Serializer.NULL ? null : obj;
+				obj = obj instanceof NULL ? null : obj;
 				if (obj instanceof GenericScope && includeSubScopes)
 				{ 
 					GenericScope<?, V> sc = ((GenericScope<?, ValT>) obj).transform(trans, includeSubScopes);

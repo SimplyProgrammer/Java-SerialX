@@ -11,6 +11,7 @@
         <module>SerialX-core</module>
         <module>SerialX-devtools</module>
         <module>SerialX-operators</module>
+        <module>SerialX-juss</module>
   </modules>
   
   <name>SerialX root</name>
@@ -40,7 +41,7 @@
  </scm>
  
  	<properties>
-	   <java.version>1.8</java.version>
+	   <java.version>8</java.version>
 	   <revision>1.3.7</revision> <!-- global lib version -->
 		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -55,7 +56,6 @@
 		  <plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 		    <artifactId>maven-compiler-plugin</artifactId>
-		    <version>3.8.0</version>
 		    
 		    <configuration>
 		      <source>${java.version}</source>

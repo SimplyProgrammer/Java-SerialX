@@ -1,6 +1,6 @@
 package org.ugp.serialx.converters;
 
-import org.ugp.serialx.Serializer.NULL;
+import org.ugp.serialx.Utils.NULL;
 
 /**
  * This converter is capable of converting "nothing" otherwise known as null and {@link DataParser#VOID}.
@@ -40,7 +40,7 @@ public class NullConverter implements DataConverter
 	{
 		if (str.equalsIgnoreCase("null"))
 			return null;
-		else if (str.equalsIgnoreCase("void"))
+		if (str.equalsIgnoreCase("void"))
 			return VOID;
 		return CONTINUE;
 	}

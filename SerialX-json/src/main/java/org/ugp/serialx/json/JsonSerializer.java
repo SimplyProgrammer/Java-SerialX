@@ -1,5 +1,9 @@
 package org.ugp.serialx.json;
 
+import static org.ugp.serialx.Utils.indexOfNotInObj;
+import static org.ugp.serialx.Utils.isOneOf;
+import static org.ugp.serialx.Utils.multilpy;
+
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -22,14 +26,16 @@ import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.BooleanConverter;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.DataParser.ParserRegistry;
-import org.ugp.serialx.json.converters.JsonCharacterConverter;
-import org.ugp.serialx.json.converters.JsonNumberConverter;
-import org.ugp.serialx.json.converters.JsonObjectConverter;
 import org.ugp.serialx.converters.NullConverter;
 import org.ugp.serialx.converters.StringConverter;
 import org.ugp.serialx.converters.VariableConverter;
+import org.ugp.serialx.json.converters.JsonCharacterConverter;
+import org.ugp.serialx.json.converters.JsonNumberConverter;
+import org.ugp.serialx.json.converters.JsonObjectConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
+
+import javafx.beans.binding.When;
 
 /**
  * This is implementation of {@link JussSerializer} for serializing in <a href = "https://www.json.org/json-en.html">Json</a>!
@@ -143,7 +149,7 @@ public class JsonSerializer extends JussSerializer
 	@Override
 	public Object put(String variableName, Object variableValue) 
 	{
-		if (Serializer.isOneOf(variableName.charAt(0), '"', '\'') && Serializer.isOneOf(variableName.charAt(variableName.length()-1), '"', '\''))
+		if (isOneOf(variableName.charAt(0), '"', '\'') && isOneOf(variableName.charAt(variableName.length()-1), '"', '\''))
 			variableName = variableName.substring(1, variableName.length()-1);
 		return super.put(variableName, variableValue);
 	}

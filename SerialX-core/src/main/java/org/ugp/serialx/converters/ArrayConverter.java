@@ -1,11 +1,13 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.Serializer.ToClasses;
-import static org.ugp.serialx.Serializer.indexOfNotInObj;
-import static org.ugp.serialx.Serializer.splitValues;
+import static org.ugp.serialx.Utils.ToClasses;
+import static org.ugp.serialx.Utils.indexOfNotInObj;
+import static org.ugp.serialx.Utils.splitValues;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+
+import org.ugp.serialx.converters.imports.ImportsProvider;
 
 /**
  * This converter is capable of converting primitive arrays. 
@@ -99,10 +101,11 @@ public class ArrayConverter implements DataConverter
 				if (args.length > 2)
 					args[2] = index + 1;
 				
+				Object[] elms = fromAmbiguous(obj);
 				StringBuilder sb = new StringBuilder();
-				for (int i = 0, length = Array.getLength(obj), sizeEndl = 10000; i < length; i++) 
+				for (int i = 0, length = elms.length, sizeEndl = 10000; i < length; i++) 
 				{
-					CharSequence str = myHomeRegistry.toString(Array.get(obj, i), args);
+					CharSequence str = myHomeRegistry.toString(elms[i], args);
 					char ch = str.charAt(0);
 					if (ch == '{' || ch == '[')
 						sb.append("("+str+")");
@@ -182,7 +185,7 @@ public class ArrayConverter implements DataConverter
 	/**
 	 * @param array | Object that might be array!
 	 * 
-	 * @return Object transformed in to primitive array! 
+	 * @return Object transformed in to primitive array! If array is already an instance of primitive array then it will be simply returned!
 	 * 
 	 * @throws IllegalArgumentException if the specified object is not an array!
 	 * 
@@ -190,9 +193,12 @@ public class ArrayConverter implements DataConverter
 	 */
 	public static Object[] fromAmbiguous(Object array)
 	{
-		int len1 = Array.getLength(array);
-		Object[] arr = new Object[len1];
-		for (int i = 0; i < len1; i++) 
+		if (array instanceof Object[])
+			return (Object[]) array;
+		
+		int len = Array.getLength(array);
+		Object[] arr = new Object[len];
+		for (int i = 0; i < len; i++) 
 			arr[i] = Array.get(array, i);
 		return arr;
 	}

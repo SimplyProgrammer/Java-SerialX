@@ -4,7 +4,7 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
 import org.ugp.serialx.LogProvider;
-import org.ugp.serialx.Serializer;
+import org.ugp.serialx.Utils;
 
 /**
  * Universal protocol for deserializing any object using its constructor. Args array of {@link UniversalObjectInstantiationProtocol#unserialize(Class, Object...)} must have elements applicable as arguments for some constructor of required objects class!
@@ -30,7 +30,7 @@ public class UniversalObjectInstantiationProtocol<T> extends SerializationProtoc
 	{
 		try 
 		{
-			return objectClass.getConstructor(Serializer.ToClasses(args)).newInstance(args);
+			return objectClass.getConstructor(Utils.ToClasses(args)).newInstance(args);
 		}
 		catch (Exception e0) 
 		{

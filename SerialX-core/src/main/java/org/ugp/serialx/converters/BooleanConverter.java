@@ -54,11 +54,11 @@ public class BooleanConverter implements DataConverter
 	}
 	
 	@Override
-	public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args) 
+	public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args)
 	{
-		if (arg.equalsIgnoreCase("t") || arg.equalsIgnoreCase("true"))
+		if (arg.equalsIgnoreCase("T") || arg.equalsIgnoreCase("true"))
 			return new Boolean(true);
-		else if (arg.equalsIgnoreCase("f") || arg.equalsIgnoreCase("false"))
+		if (arg.equalsIgnoreCase("F") || arg.equalsIgnoreCase("false"))
 			return new Boolean(false);
 		return CONTINUE;
 	}

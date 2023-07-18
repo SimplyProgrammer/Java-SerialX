@@ -1,7 +1,7 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.Serializer.contains;
-import static org.ugp.serialx.Serializer.indexOfNotInObj;
+import static org.ugp.serialx.Utils.contains;
+import static org.ugp.serialx.Utils.indexOfNotInObj;
 
 import org.ugp.serialx.Registry;
 

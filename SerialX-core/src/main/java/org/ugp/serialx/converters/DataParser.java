@@ -41,7 +41,6 @@ public interface DataParser
 	 * 
 	 * @since 1.3.0
 	 */
-	//TODO ParserRegistry
 	public static final ParserRegistry REGISTRY = new ParserRegistry(new OperationGroups(), new VariableConverter(), new StringConverter(), new ObjectConverter(), new ArrayConverter(), new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter());
 	
 	/**

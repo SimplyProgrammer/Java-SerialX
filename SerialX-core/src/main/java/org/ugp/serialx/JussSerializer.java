@@ -1,5 +1,9 @@
 package org.ugp.serialx;
 
+import static org.ugp.serialx.Utils.Clone;
+import static org.ugp.serialx.Utils.InvokeStaticFunc;
+import static org.ugp.serialx.Utils.indexOfNotInObj;
+import static org.ugp.serialx.Utils.multilpy;
 import static org.ugp.serialx.converters.DataParser.VOID;
 
 import java.beans.IntrospectionException;
@@ -21,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.ugp.serialx.Utils.NULL;
 import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.DataParser.ParserRegistry;
@@ -38,6 +43,7 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
  *
  * @since 1.3.2
  */
+//TODO: Separate to SerialX-juss together with parsers and stuff
 @SuppressWarnings("serial")
 public class JussSerializer extends Serializer implements ImportsProvider
 {
@@ -483,7 +489,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		else
 			for (Map.Entry<?, ?> ent : parent.varEntrySet())
 				if (variables().get(ent.getKey()) == ent.getValue())
-					variables().remove(ent.getKey());
+					variables().remove(ent.getKey());//TODO: Prevent neccesity of scope parent inheritance.
 		return (S) this;
 	}
 	
@@ -695,7 +701,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		T obj = get(variableName , defaultValue);
 		if (obj == defaultValue)
 			return defaultValue;
-		return Serializer.Clone(obj, getParsers(), new Object[] {-99999, 0, this, getProtocols(), isGenerateComments()}, this, null, null, getProtocols());
+		return Clone(obj, getParsers(), new Object[] {-99999, 0, this, getProtocols(), isGenerateComments()}, this, null, null, getProtocols());
 	}
 
 	/**
@@ -711,7 +717,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	public <T> T cloneOf(int valueIndex)
 	{
 		T obj = get(valueIndex);
-		return Serializer.Clone(obj, getParsers(), new Object[] {-99999, 0, this, getProtocols(), isGenerateComments()}, this, null, null, getProtocols());
+		return Clone(obj, getParsers(), new Object[] {-99999, 0, this, getProtocols(), isGenerateComments()}, this, null, null, getProtocols());
 	}
 	
 	/**

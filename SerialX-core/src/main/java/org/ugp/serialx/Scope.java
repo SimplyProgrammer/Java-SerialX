@@ -1,5 +1,6 @@
 package org.ugp.serialx;
 
+import static org.ugp.serialx.Utils.Instantiate;
 import static org.ugp.serialx.converters.DataParser.VOID;
 
 import java.beans.IntrospectionException;
@@ -1100,7 +1101,7 @@ public class Scope extends GenericScope<String, Object>
 			}
 		}
 		
-		return into(Serializer.Instantiate(objCls), fromScope, fieldNamesToUse);
+		return into(Instantiate(objCls), fromScope, fieldNamesToUse);
 	}
 	
 	/**

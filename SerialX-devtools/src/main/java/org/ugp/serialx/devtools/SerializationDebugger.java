@@ -1,5 +1,7 @@
 package org.ugp.serialx.devtools;
 
+import static org.ugp.serialx.Utils.multilpy;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -194,13 +196,13 @@ public class SerializationDebugger implements DataConverter
 		for (int i = 0, i2 = 0; i < objs.size(); i++) 
 		{
 			Object o = objs.get(i);
-			String strTbs = Serializer.multilpy('\t', tabs).toString();
+			String strTbs = multilpy('\t', tabs).toString();
 			if (o instanceof List)
 				print(strTbs + (i2++) + ":\t" + o.getClass().getName() + ":", (List<?>) o, tabs+1);
 			else if (o instanceof Map)
 				print(strTbs + (i2++) + ":\t" + o.getClass().getName() + ":", (Map<?, ?>) o, tabs+1);
 			else
-				System.err.println(Serializer.multilpy('\t', tabs).toString() + (i2++) + ":\t" + String.valueOf(o));
+				System.err.println(multilpy('\t', tabs).toString() + (i2++) + ":\t" + String.valueOf(o));
 		}
 	}
 	
@@ -215,7 +217,7 @@ public class SerializationDebugger implements DataConverter
 		for (Entry<?, ?> entry : map.entrySet()) 
 		{
 			Object o = entry.getValue();
-			String strTbs = Serializer.multilpy('\t', tabs).toString();
+			String strTbs = multilpy('\t', tabs).toString();
 			if (o instanceof List)
 				print(strTbs + (entry.getKey()) + ":\t" + o.getClass().getName() + ":", (List<?>) o, tabs+1);
 			else if (o instanceof Map)
