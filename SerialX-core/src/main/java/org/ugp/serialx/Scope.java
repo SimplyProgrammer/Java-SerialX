@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import org.ugp.serialx.converters.ArrayConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 
@@ -101,7 +100,46 @@ public class Scope extends GenericScope<String, Object>
 	@Override
 	public Scope clone() 
 	{
-		return (Scope) super.clone();
+		try 
+		{
+			return clone(getClass());
+		}
+		catch (Exception e) 
+		{
+			return new Scope(variables(), values(), getParent());
+		}
+	}
+	
+	/**
+	 * @param objClass | Object of class to create using protocols.
+	 * @param protocolsToUse | Registry of protocols to use.
+	 * 
+	 * @return Object of objClass constructed from this scopes independent values using protocol for objClass or null if there was no protocol found in {@link Serializer#PROTOCOL_REGISTRY}! 
+	 * If there were no suitable deserialization protocols found, {@link Scope#into(Class, String...)} will be used!
+	 * 
+	 * @throws Exception | Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!
+	 * 
+	 * @see Scope#into(Class, String...)
+	 * @see Scope#intoNew(Class, GenericScope, String...)
+	 * 
+	 * @since 1.3.5
+	 */
+	@Override
+	public <T> T toObject(Class<T> objClass, ProtocolRegistry protocolsToUse) throws Exception
+	{
+		T obj = super.toObject(objClass, protocolsToUse);
+		if (obj != null)
+			return obj;
+		
+		try
+		{
+			return into(objClass);
+		}
+		catch (Exception e)
+		{
+			LogProvider.instance.logErr("Unable to create new instance of " + objClass.getName() + " because none of provided protocols were suitable and class introspection has failed as well!", e);
+			return null;
+		}
 	}
 	
 	/**
@@ -590,11 +628,13 @@ public class Scope extends GenericScope<String, Object>
 	}
 	
 	/**
-	 * @param scopesPath | Array with variable names creating path to required scope.
+	 * @param pathToScope | Array with variable names creating path to required scope.
 	 * 
-	 * @return Sub-scope stored by variable with required name (last element) in inserted path or null if there is no such a one in inserted path. If there is more than one result, the first one found will be returned!
-	 * This search will also includes sub-scopes of scope but variables from lower ones are prioritize! <br>
+	 * @return Sub-scope stored by variable with required name (last element of pathToScope) or null if there is no such a one in inserted path. If there is more than one result, the first one found will be returned!
+	 * This search will also includes sub-scopes stored by variables of this scope while variables from lower ones are prioritize! <br>
 	 * If this function is called with no arguments then self will be returned!
+	 * Note: Remember that this search includes variables only, no values! <br>
+	 * Note: Also remember that this function will work only when this scope generically allows to store other scopes inside (when ValT is base class of {@link GenericScope})
 	 * <br>
 	 * <pre>
 	 * <code>
@@ -614,11 +654,11 @@ public class Scope extends GenericScope<String, Object>
 	 * 
 	 * @since 1.2.0
 	 */
-	public Scope getScope(String... scopesPath)
+	public Scope getScope(String... pathToScope)
 	{
 		try
 		{
-			return (Scope) getGenericScope(scopesPath);
+			return (Scope) getGenericScope(pathToScope);
 		}
 		catch (ClassCastException e)
 		{
@@ -807,7 +847,7 @@ public class Scope extends GenericScope<String, Object>
 	public Scope getScopesWith(String varName, Predicate<Object> condition, boolean includeSubScopes)
 	{
 		Scope result = new Scope(null, null, getParent());
-		
+
 		for (Entry<String, Object> myVar : varEntrySet())
 			if (myVar.getValue() instanceof Scope)
 				try
@@ -833,37 +873,6 @@ public class Scope extends GenericScope<String, Object>
 				catch (ClassCastException e)
 				{}
 		return result;
-	}
-	
-	/**
-	 * @param objClass | Object of class to create using protocols.
-	 * @param protocolsToUse | Registry of protocols to use.
-	 * 
-	 * @return Object of objClass constructed from this scopes independent values using protocol for objClass or null if there was no protocol found in {@link Serializer#PROTOCOL_REGISTRY}! 
-	 * If there were no suitable deserialization protocols found, {@link Scope#into(Class, String...)} will be used!
-	 * 
-	 * @throws Exception | Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!
-	 * 
-	 * @see Scope#into(Class, String...)
-	 * @see Scope#intoNew(Class, GenericScope, String...)
-	 * 
-	 * @since 1.3.5
-	 */
-	public <T> T toObject(Class<T> objClass, ProtocolRegistry protocolsToUse) throws Exception
-	{
-		T obj = super.toObject(objClass, protocolsToUse);
-		if (obj != null)
-			return obj;
-		
-		try
-		{
-			return into(objClass);
-		}
-		catch (Exception e)
-		{
-			LogProvider.instance.logErr("Unable to create new instance of " + objClass.getName() + " because none of provided protocols were suitable and class introspection has failed as well!", e);
-			return null;
-		}
 	}
 	
 	/**
@@ -897,7 +906,7 @@ public class Scope extends GenericScope<String, Object>
 	 * 
 	 * @since 1.3.5  
 	 */
-	public <T> T into(Object obj, String... fieldNamesToUse) throws IntrospectionException, Exception
+	public <T> T into(T obj, String... fieldNamesToUse) throws IntrospectionException, Exception
 	{
 		return into(obj, this, fieldNamesToUse);
 	}
@@ -957,7 +966,7 @@ public class Scope extends GenericScope<String, Object>
 			return new Scope();
 		
 		if (obj.getClass().isArray())
-			return new Scope(ArrayConverter.fromAmbiguous(obj));
+			return new Scope(Utils.fromAmbiguousArray(obj));
 		
 		if (obj instanceof Scope)
 		{
@@ -996,22 +1005,23 @@ public class Scope extends GenericScope<String, Object>
 	}
 	
 	/**
-	 * @param newInstance | New instance of specific {@link Scope}!
+	 * @param newInstance | New instance of specific {@link GenericScope} with {@link String} keys!
 	 * @param obj | Object to create scope from!
 	 * @param fieldsToUse | List of {@link PropertyDescriptor}s representing fields of object to map into scopes variables using getters (read method)!
 	 * 
-	 * @return Scope (newInstance) structured from given obj by mapping obj's fields into variables of created scope via given {@link PropertyDescriptor}s (fieldsToUse)!
+	 * @return Scope (newInstance) structured/populated from given obj by mapping obj's fields into variables of created scope via given {@link PropertyDescriptor}s (fieldsToUse)!
 	 * 
 	 * @throws Exception if calling of some {@link PropertyDescriptor}s read method fails (should not happen often)!
 	 * 
 	 * @since 1.3.5
 	 */
-	public static Scope from(Scope newInstance, Object obj, List<PropertyDescriptor> fieldsToUse) throws Exception
+	@SuppressWarnings("unchecked")
+	public static <S extends GenericScope<? super String, ?>> S from(S newInstance, Object obj, List<PropertyDescriptor> fieldsToUse) throws Exception
 	{
 		//if (variablesToUse != null)
 		//variablesToUse = AutoProtocol.getPropertyDescriptorsOf(obj.getClass());
 		for (PropertyDescriptor var : fieldsToUse) 
-			newInstance.put(var.getName(), var.getReadMethod().invoke(obj));
+			((GenericScope<Object, Object>) newInstance).put(var.getName(), var.getReadMethod().invoke(obj));
 		return newInstance;
 	}
 	
@@ -1064,7 +1074,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @since 1.3.5
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T intoNew(Class<T> objCls, GenericScope<String, ?> fromScope, String... fieldNamesToUse) throws IntrospectionException, Exception
+	public static <T> T intoNew(Class<T> objCls, GenericScope<? super String, ?> fromScope, String... fieldNamesToUse) throws IntrospectionException, Exception
 	{
 		if (objCls == null)
 			return null;
@@ -1079,7 +1089,7 @@ public class Scope extends GenericScope<String, Object>
 		
 		if (GenericScope.class.isAssignableFrom(objCls))
 		{
-			GenericScope<String, Object> result = ((GenericScope<String, Object>) fromScope).clone((Class<GenericScope<String, Object>>)objCls);
+			GenericScope<Object, Object> result = ((GenericScope<Object, Object>) fromScope).clone((Class<GenericScope<Object, Object>>)objCls);
 			if (fieldNamesToUse != null && fieldNamesToUse.length > 0)
 				result.variables().keySet().retainAll(Arrays.asList(fieldNamesToUse));
 			return (T) result;
@@ -1154,7 +1164,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @since 1.3.5
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T into(Object obj, GenericScope<String, ?> fromScope, String... fieldNamesToUse) throws IntrospectionException, Exception
+	public static <T> T into(T obj, GenericScope<? super String, ?> fromScope, String... fieldNamesToUse) throws IntrospectionException, Exception
 	{
 		if (obj == null)
 			return null;
@@ -1162,21 +1172,21 @@ public class Scope extends GenericScope<String, Object>
 		{
 			for (int i = 0, arrLen = Array.getLength(obj), scSize = fromScope.valuesCount(); i < arrLen && i < scSize; i++)
 				Array.set(obj, i, fromScope.get(i));
-			return (T) obj;
+			return obj;
 		}
 		
 		if (obj instanceof GenericScope)
 		{
-			((GenericScope<String, Object>) obj).addAll(fromScope);
+			((GenericScope<Object, Object>) obj).addAll(fromScope);
 			if (fieldNamesToUse != null && fieldNamesToUse.length > 0)
-				((GenericScope<String, Object>) obj).variables().keySet().retainAll(Arrays.asList(fieldNamesToUse));
-			return (T) obj;
+				((GenericScope<Object, Object>) obj).variables().keySet().retainAll(Arrays.asList(fieldNamesToUse));
+			return obj;
 		}
 		
 		if (obj instanceof Collection)
 		{	
 			((Collection<Object>) obj).addAll(fromScope.values());
-			return (T) obj;
+			return obj;
 		}
 		
 		if (obj instanceof Map)
@@ -1184,10 +1194,10 @@ public class Scope extends GenericScope<String, Object>
 			((Map<Object, Object>) obj).putAll(fromScope.variables());
 			if (fieldNamesToUse != null && fieldNamesToUse.length > 0)
 				((Map<Object, Object>) obj).keySet().retainAll(Arrays.asList(fieldNamesToUse));
-			return (T) obj;
+			return obj;
 		}
 		
-		return (T) into(obj, fromScope, getPropertyDescriptorsOf(obj.getClass(), fieldNamesToUse));
+		return into(obj, fromScope, getPropertyDescriptorsOf(obj.getClass(), fieldNamesToUse));
 	}
 	
 	/**
@@ -1202,11 +1212,11 @@ public class Scope extends GenericScope<String, Object>
 	 * @since 1.3.5
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T into(T obj, GenericScope<String, ?> fromScope, List<PropertyDescriptor> fieldsToUse) throws Exception
+	public static <T> T into(T obj, GenericScope<? super String, ?> fromScope, List<PropertyDescriptor> fieldsToUse) throws Exception
 	{
 		for (PropertyDescriptor var : fieldsToUse) 
 		{
-			Object varValue = ((GenericScope<String, Object>) fromScope).get(var.getName(), VOID);
+			Object varValue = ((GenericScope<Object, Object>) fromScope).get(var.getName(), VOID);
 			if (varValue != VOID)
 				var.getWriteMethod().invoke(obj, varValue);
 		}

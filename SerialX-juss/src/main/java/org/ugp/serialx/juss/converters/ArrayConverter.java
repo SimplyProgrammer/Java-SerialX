@@ -1,13 +1,11 @@
-package org.ugp.serialx.converters;
+package org.ugp.serialx.juss.converters;
 
-import static org.ugp.serialx.Utils.ToClasses;
+import static org.ugp.serialx.Utils.castArray;
+import static org.ugp.serialx.Utils.fromAmbiguousArray;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
 import static org.ugp.serialx.Utils.splitValues;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-
-import org.ugp.serialx.converters.imports.ImportsProvider;
+import org.ugp.serialx.converters.DataConverter;
 
 /**
  * This converter is capable of converting primitive arrays. 
@@ -101,13 +99,13 @@ public class ArrayConverter implements DataConverter
 				if (args.length > 2)
 					args[2] = index + 1;
 				
-				Object[] elms = fromAmbiguous(obj);
+				Object[] elms = fromAmbiguousArray(obj);
 				StringBuilder sb = new StringBuilder();
 				for (int i = 0, length = elms.length, sizeEndl = 10000; i < length; i++) 
 				{
 					CharSequence str = myHomeRegistry.toString(elms[i], args);
 					char ch = str.charAt(0);
-					if (ch == '{' || ch == '[')
+					if ((ch | ' ') == '{')
 						sb.append("("+str+")");
 					else
 						sb.append(str);
@@ -145,61 +143,5 @@ public class ArrayConverter implements DataConverter
 	public String[] tokenize(String str)
 	{
 		return splitValues(str, ' ');
-	}
-	
-	/**
-	 * @param sourceArray | Array to cast!
-	 * @param toType | Type to cast array in to!
-	 * 
-	 * @return Array object casted in to required type!
-	 * 
-	 * @since 1.3.2
-	 */
-	public static Object castArray(Object[] sourceArray, Class<?> toType)
-	{
-		int len = sourceArray.length;
-		Object arr = Array.newInstance(ToClasses(toType)[0], len);
-		for (int i = 0; i < len; i++) 
-			Array.set(arr, i, sourceArray[i]);
-		return arr;
-	}
-	
-	/**
-	 * @param arr1 | Object one that might be array!
-	 * @param arr2 | Object two that might be array!
-	 * 
-	 * @return New array consisting of array 1 and array 2!
-	 * 
-	 * @throws IllegalArgumentException if object one is not an array!
-	 * 
-	 * @since 1.3.2
-	 */
-	public static Object[] mergeArrays(Object arr1, Object arr2) 
-	{
-		Object[] array1 = fromAmbiguous(arr1), array2 = arr2.getClass().isArray() ? fromAmbiguous(arr2) : new Object[] {arr2};
-		Object[] result = Arrays.copyOf(array1, array1.length + array2.length);
-	    System.arraycopy(array2, 0, result, array1.length, array2.length);
-	    return result;
-	}
-	
-	/**
-	 * @param array | Object that might be array!
-	 * 
-	 * @return Object transformed in to primitive array! If array is already an instance of primitive array then it will be simply returned!
-	 * 
-	 * @throws IllegalArgumentException if the specified object is not an array!
-	 * 
-	 * @since 1.3.2
-	 */
-	public static Object[] fromAmbiguous(Object array)
-	{
-		if (array instanceof Object[])
-			return (Object[]) array;
-		
-		int len = Array.getLength(array);
-		Object[] arr = new Object[len];
-		for (int i = 0; i < len; i++) 
-			arr[i] = Array.get(array, i);
-		return arr;
 	}
 }

@@ -41,7 +41,7 @@ public interface DataParser
 	 * 
 	 * @since 1.3.0
 	 */
-	public static final ParserRegistry REGISTRY = new ParserRegistry(new OperationGroups(), new VariableConverter(), new StringConverter(), new ObjectConverter(), new ArrayConverter(), new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter());
+	public static final ParserRegistry REGISTRY = new ParserRegistry(/* new OperationGroups(), new VariableConverter(),*/ new StringConverter(), /*new ObjectConverter(),*/ /*TODO: remove new ArrayConverter(),*/ new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter());
 	
 	/**
 	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link DataParser#parseObj(Registry, String, boolean, Class[], Object...)} otherwise it demands on implementation (it should not be null)!

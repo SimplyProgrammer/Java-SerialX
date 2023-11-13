@@ -1,4 +1,4 @@
-package org.ugp.serialx.converters;
+package org.ugp.serialx.juss.converters;
 
 import static org.ugp.serialx.Utils.Clone;
 import static org.ugp.serialx.Utils.contains;
@@ -15,6 +15,7 @@ import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Utils.NULL;
+import org.ugp.serialx.converters.DataConverter;
 
 /**
  * This converter is capable of converting {@link Map.Entry} and reading variables from {@link Scope} via "$"!
@@ -194,9 +195,9 @@ public class VariableConverter implements DataConverter
 					return false;
 				else if (brackets == 0 && (ch == '=' || ch == ':') && !(oldCh == '=' || oldCh == ':' || oldCh == '!' || oldCh == '>'|| oldCh == '<') && (i >= len-1 || !((chNext = s.charAt(i+1)) == '=' || chNext == ':' || chNext ==  '!' || chNext == '>'|| chNext == '<')))
 					return true;	
-				else if (ch == '{' || ch == '[')
+				else if ((ch | ' ') == '{')
 					brackets++;
-				else if (ch == '}' || ch == ']')
+				else if ((ch | ' ') == '}')
 					if (brackets > 0)
 						brackets--;
 			}
@@ -204,6 +205,13 @@ public class VariableConverter implements DataConverter
 		}
 		return false;
 	}
+	
+//	public static <K, V> V getValueOf(GenericScope<K, V> scope, K... pathToScope) 
+//	{
+//		
+//		if (scope.containsVariable(pathToScope[0]))
+//			return scope.getGenericScope(pathToScope);
+//	}
 	
 	/**
 	 * @param varName | Name of variable.

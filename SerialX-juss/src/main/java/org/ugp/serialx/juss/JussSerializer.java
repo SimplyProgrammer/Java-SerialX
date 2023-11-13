@@ -1,4 +1,4 @@
-package org.ugp.serialx;
+package org.ugp.serialx.juss;
 
 import static org.ugp.serialx.Utils.Clone;
 import static org.ugp.serialx.Utils.InvokeStaticFunc;
@@ -25,14 +25,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.ugp.serialx.GenericScope;
+import org.ugp.serialx.Registry;
+import org.ugp.serialx.Scope;
+import org.ugp.serialx.Serializer;
 import org.ugp.serialx.Utils.NULL;
+import org.ugp.serialx.converters.BooleanConverter;
+import org.ugp.serialx.converters.CharacterConverter;
 import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.DataParser.ParserRegistry;
-import org.ugp.serialx.converters.ObjectConverter;
-import org.ugp.serialx.converters.imports.ImportConverter;
-import org.ugp.serialx.converters.imports.ImportConverter.Imports;
+import org.ugp.serialx.converters.NullConverter;
+import org.ugp.serialx.converters.NumberConverter;
+import org.ugp.serialx.converters.SerializableBase64Converter;
+import org.ugp.serialx.converters.StringConverter;
 import org.ugp.serialx.converters.imports.ImportsProvider;
+import org.ugp.serialx.juss.converters.ArrayConverter;
+import org.ugp.serialx.juss.converters.ImportConverter;
+import org.ugp.serialx.juss.converters.ObjectConverter;
+import org.ugp.serialx.juss.converters.OperationGroups;
+import org.ugp.serialx.juss.converters.VariableConverter;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 
 /**
@@ -43,7 +55,6 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
  *
  * @since 1.3.2
  */
-//TODO: Separate to SerialX-juss together with parsers and stuff
 @SuppressWarnings("serial")
 public class JussSerializer extends Serializer implements ImportsProvider
 {
@@ -52,7 +63,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @since 1.3.2
 	 */
-	public static final ParserRegistry JUSS_PARSERS = DataParser.REGISTRY.clone();
+	public static final ParserRegistry JUSS_PARSERS = new ParserRegistry(new OperationGroups(), new VariableConverter(), new StringConverter(), new ObjectConverter(), new ArrayConverter(), new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter());
 	
 	/**
 	 * {@link ParserRegistry} with all parsers required to parse JUSS with additional operators.
@@ -185,7 +196,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	public Imports getImports() 
 	{
 		if (imports == null)
-			imports = ImportConverter.IMPORTS.clone();
+			imports = ImportsProvider.IMPORTS.clone();
 		return imports;
 	}
 	
@@ -439,7 +450,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 					{
 						if (notString)
 						{
-							if (ch == '{' || ch == '[')
+							if (ch | ' ') == '{' || ch == '[')
 								brackets++;
 							else if (ch == '}' || ch == ']')
 							{
@@ -486,10 +497,10 @@ public class JussSerializer extends Serializer implements ImportsProvider
 
 		if (parent == null)
 			getImports().removeImportsOf(this);
-		else
-			for (Map.Entry<?, ?> ent : parent.varEntrySet())
-				if (variables().get(ent.getKey()) == ent.getValue())
-					variables().remove(ent.getKey());//TODO: Prevent neccesity of scope parent inheritance.
+//		else
+//			for (Map.Entry<?, ?> ent : parent.varEntrySet())
+//				if (variables().get(ent.getKey()) == ent.getValue())
+//					variables().remove(ent.getKey());//TODO: Prevent neccesity of scope parent inheritance.
 		return (S) this;
 	}
 	
@@ -538,7 +549,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 						{
 							/*if (notString)
 							{
-								if (ch == '{' || ch == '[')
+								if (ch | ' ') == '{' || ch == '[')
 									brackets++;
 								else if (ch == '}' || ch == ']')
 								{
@@ -614,9 +625,9 @@ public class JussSerializer extends Serializer implements ImportsProvider
 					}
 					//add = 1;
 				}
-				else if (ch == '{' || ch == '[')
+				else if ((ch | ' ') == '{')
 					brackets++;
-				else if (ch == '}' || ch == ']')
+				else if ((ch | ' ') == '}')
 				{
 					if (brackets > 0)
 						brackets--;

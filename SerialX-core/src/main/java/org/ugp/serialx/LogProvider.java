@@ -15,18 +15,20 @@ public class LogProvider
 	public static LogProvider instance = new LogProvider();
 	
 	/**
-	 * @param object | Object to log in normal mode!
+	 * @param obj | Object to log in normal mode!
 	 * 
 	 * @since 1.3.5
 	 */
-	public void logOut(Object object)
+	public void logOut(Object obj)
 	{
-		System.out.println(object);
+		System.out.println(obj);
 	}
 	
 	/**
-	 * @param object | Object to log in error mode!
+	 * @param obj | Object to log in error mode!
 	 * @param ex | Exception that cause the error!
+	 * 
+	 * @throws RuntimeException | Of "ex" if exception re-throwing is enabled!
 	 * 
 	 * @since 1.3.5
 	 */

@@ -56,7 +56,7 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.3.2
 	 */
-	public static final ParserRegistry COMMON_PARSERS = new ParserRegistry(new StringConverter(), new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter());
+	public static final ParserRegistry COMMON_PARSERS = new ParserRegistry(new StringConverter(), /* TODO: new ProtocolConverter() */ new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter());
 	
 	protected ParserRegistry parsers;
 	protected ProtocolRegistry protocols;
@@ -132,19 +132,6 @@ public abstract class Serializer extends Scope
 		if (protocols != null)
 			setProtocols(protocols);
 	}
-	
-	@Override
-	public Scope clone() 
-	{
-		try 
-		{
-			return clone(getClass());
-		}
-		catch (Exception e) 
-		{
-			return new JussSerializer(variables(), values(), getParent());
-		}
-	}
 
 	@Override
 	public <S extends GenericScope<String, Object>> S clone(Class<S> typeOfClone) throws Exception
@@ -186,7 +173,7 @@ public abstract class Serializer extends Scope
 	 * @see Serializer#into(Object, Serializer, String...)
 	 */
 	@Override
-	public <T> T into(Object obj, String... fieldNamesToUse) throws IntrospectionException, Exception 
+	public <T> T into(T obj, String... fieldNamesToUse) throws IntrospectionException, Exception 
 	{
 		return Serializer.into(obj, this, fieldNamesToUse);
 	}
@@ -702,7 +689,7 @@ public abstract class Serializer extends Scope
 						}
 						else
 						{
-							if (ch == '{' || ch == '[')
+							if (ch | ' ') == '{' || ch == '[')
 								brackets++;
 							else if (ch == '}' || ch == ']')
 							{
@@ -844,7 +831,7 @@ public abstract class Serializer extends Scope
 					}
 					else 
 					{
-						if (ch == '{' || ch == '[')
+						if (ch | ' ') == '{' || ch == '[')
 							brackets++;
 						else if (ch == '}' || ch == ']')
 						{
@@ -1022,7 +1009,7 @@ public abstract class Serializer extends Scope
 		catch (IOException e)
 		{}
 		
-		return Scope.into(obj, fromSerializer, fieldNamesToUse);
+		return (T) Scope.into(obj, fromSerializer, fieldNamesToUse);
 	}
 	
 	/**

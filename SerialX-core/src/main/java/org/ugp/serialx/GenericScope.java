@@ -17,7 +17,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.ugp.serialx.Utils.NULL;
-import org.ugp.serialx.converters.ArrayConverter;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
@@ -110,7 +109,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 		else if (obj instanceof Map)
 			return valuesCount() <= 0 && variables().equals(obj);
 		else if (obj != null && obj.getClass().isArray())
-			return variablesCount() <= 0 && Objects.deepEquals(toValArray(), ArrayConverter.fromAmbiguous(obj));
+			return variablesCount() <= 0 && Objects.deepEquals(toValArray(), Utils.fromAmbiguousArray(obj));
 		return super.equals(obj);
 	}
 	
@@ -277,8 +276,80 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	{
 		V obj = (V) variables().get(variableKey);
 		if (obj == null)
-			return (V) defaultValue;
+			return defaultValue;
 		return obj instanceof NULL ? null : obj;
+	}
+	
+	/**
+	 * @param pathToValue | Array with variables creating path to required value, nested in multiple sub-scopes.
+	 * 
+	 * @return Value of variable at given path. If no path is given (length is 0) then this {@link GenericScope} will be returned.<br>
+	 * If 1 path argument is given then this behaves similarly to {@link GenericScope#get(Object)}.<br>
+	 * if 2+ path arguments are given then it will search the sub-scopes and return first match value. For example:<br>
+	 * Consider this scope tree:<br>
+	 * <pre>
+	 * <code>
+	 * {
+	 *   125: {
+	 *   	"hello": {
+	 *   		"value" true
+	 *   	}
+	 *   }
+	 * }
+	 * </code>
+	 * </pre>
+	 * Then to get value of "value" you can do <code>scope.get(125, "hello", "value")</code>!<br>
+	 * If there is no other variable called "value" in the scope tree then you can also simplify it to <code>scope.get("value")</code>, but make sure that there is no equally-named variable!<br>
+	 * Note: Make sure that you are not calling {@link GenericScope#get(Object, Object)} by accident when you are using inline vargas array (unspecified count of arguments)!
+	 * 
+	 * @since 1.3.7
+	 */
+	@SuppressWarnings("unchecked")
+	public <V extends ValT> V get(KeyT... pathToValue)
+	{
+		try
+		{
+			if (pathToValue.length <= 0)
+				return (V) this;
+			Object obj = get((KeyT) pathToValue[0]);
+			if (obj instanceof GenericScope)
+				return ((GenericScope<KeyT, V>) obj).get(pathToValue = Arrays.copyOfRange(pathToValue, 1, pathToValue.length));
+			for (Map.Entry<KeyT, ValT> var : varEntrySet())
+				if (var.getValue() instanceof GenericScope)
+					try 
+					{
+						GenericScope<KeyT, V> sc = (GenericScope<KeyT, V>) var.getValue();
+						if ((sc = sc.getGenericScope(pathToValue[0])) != null)
+							return sc.get(pathToValue = Arrays.copyOfRange(pathToValue, 1, pathToValue.length));
+					}
+					catch (Exception e) {}
+			
+			return (V) obj;
+		}
+		catch (ClassCastException e)
+		{}
+		return null;
+	}
+	
+	/**
+	 * @param variableKey | Variables name.
+	 * @param cls | Default value to return.
+	 * @param defaultValue | Class that you want the obtained object to be converted into! Exact conversion algorithm can differ based on its implementations.
+	 * 
+	 * @return Value of variable with name given converted to object of cls or defaultValue if there is no such a one!
+	 * 
+	 * @throws Exception | If converting to object of cls failed from some reason! This can differ from implementation to implementation! By default it uses {@link GenericScope#toObject(cls)}
+	 * 
+	 * @since 1.3.7
+	 */
+	public <V extends ValT> V get(KeyT variableKey, Class<V> cls, V defaultValue) throws Exception
+	{
+		V obj = get(variableKey, defaultValue);
+		if (obj != null && obj.getClass() == cls)
+			return obj;
+		if (obj instanceof GenericScope)
+			return ((GenericScope<?, ?>) obj).toObject(cls);
+		return obj;
 	}
 	
 	/**
@@ -312,7 +383,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * @param valueIndex | Index of independent value. Also can be negative, in this case u will get elements from back!
 	 * {@link IndexOutOfBoundsException} will be thrown if index is too big!
 	 * 
-	 * @return Independent value with valueIndex.
+	 * @return Independent value with valueIndex of this {@link GenericScope}!
 	 * 
 	 * @since 1.2.0
 	 */
@@ -321,6 +392,26 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	{
 		V obj = (V) values().get(valueIndex < 0 ? valuesCount() + valueIndex : valueIndex);
 		return obj instanceof NULL ? null : obj;
+	}
+	
+	/**
+	 * @param valueIndex | Index of independent value. Also can be negative, in this case u will get elements from back!
+	 * @param cls | Class that you want the obtained object to be converted into! Exact conversion algorithm can differ based on its implementations.
+	 * 
+	 * @return Independent value with valueIndex of this converted to object of cls!
+	 * 
+	 * @throws Exception | If converting to object of cls failed from some reason! This can differ from implementation to implementation!
+     *
+     * @since 1.3.7
+	 */
+	public <V extends ValT> V get(int valueIndex, Class<V> cls) throws Exception
+	{
+		V obj = get(valueIndex);
+		if (obj != null && obj.getClass() == cls)
+			return obj;
+		if (obj instanceof GenericScope)
+			return ((GenericScope<?, ?>) obj).toObject(cls);
+		return obj;
 	}
 	
 	/**
@@ -383,10 +474,10 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	}
 	
 	/**
-	 * @param scopesPath | Array with variables creating path to required scope.
+	 * @param pathToScope | Array with variables creating path to required scope.
 	 * 
-	 * @return Sub-scope stored by variable with required name (last element) in inserted path or null if there is no such a one in inserted path. If there is more than one result, the first one found will be returned!
-	 * This search will also includes sub-scopes of scope but variables from lower ones are prioritize! <br>
+	 * @return Sub-scope stored by variable with required name (last element of pathToScope) or null if there is no such a one in inserted path. If there is more than one result, the first one found will be returned!
+	 * This search will also includes sub-scopes stored by variables of this scope while variables from lower ones are prioritize!<br>
 	 * If this function is called with no arguments then self will be returned!
 	 * Note: Remember that this search includes variables only, no values! <br>
 	 * Note: Also remember that this function will work only when this scope generically allows to store other scopes inside (when ValT is base class of {@link GenericScope})
@@ -394,30 +485,14 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * @since 1.2.0
 	 */
 	@SuppressWarnings("unchecked")
-	public <K, V> GenericScope<K, V> getGenericScope(K... scopesPath)
+	public <K, V> GenericScope<K, V> getGenericScope(K... pathToScope)
 	{
-		try
-		{
-			if (scopesPath.length <= 0)
-				return (GenericScope<K, V>) this;
-			Object obj = get((KeyT) scopesPath[0]);
-			if (obj instanceof GenericScope)
-				return ((GenericScope<K, V>) obj).getGenericScope(scopesPath = Arrays.copyOfRange(scopesPath, 1, scopesPath.length));
-			for (Map.Entry<KeyT, ValT> var : varEntrySet())
-				if (var.getValue() instanceof GenericScope)
-					try 
-					{
-						GenericScope<K, V> sc = (GenericScope<K, V>) var.getValue();
-						if ((sc = sc.getGenericScope(scopesPath[0])) != null)
-							return sc.getGenericScope(scopesPath = Arrays.copyOfRange(scopesPath, 1, scopesPath.length));
-					}
-					catch (Exception e) {}
-			
-			if (containsVariable((KeyT) scopesPath[0]))
-				LogProvider.instance.logErr("Variable with name \"" + scopesPath[0] + "\" does exists! However its value is not instance of scope, use \"get\" function instead if possible!", null);
-		}
-		catch (ClassCastException e)
-		{}
+		Object obj = get((KeyT[]) pathToScope);
+		if (obj instanceof GenericScope)
+			return (GenericScope<K, V>) obj;
+
+		if (containsVariable((KeyT) pathToScope[0]))
+			LogProvider.instance.logErr("Variable with name \"" + pathToScope[0] + "\" does exists! However its value is not instance of scope, use \"get\" function instead if possible!", null);
 		return null;
 	}
 	
@@ -657,7 +732,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * 
 	 * @since 1.3.0
 	 */
-	public GenericScope<KeyT, ValT> addAll(GenericScope<KeyT, ? extends ValT> scope)
+	public GenericScope<KeyT, ValT> addAll(GenericScope<? extends KeyT, ? extends ValT> scope)
 	{
 		values().addAll(scope.values());
 		variables().putAll(scope.variables());
@@ -719,23 +794,27 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 */
 	public GenericScope<?, ?> getParent()
 	{
-		return getParent(false);	
+		return getParent(1);	
 	}
 	
 	/**
-	 * @param absoluteParent | If true, absolute parent of this scope will be returned (parent of parent of parent...)!
-	 * 
-	 * @return The parent scope of this scope or null if this scope has no parent such as default one in file.
+	 * @param depth | Positive number representing how many times will this method call itself... <br> For example 0 or less = this, 1 = parent, 2 = parentOfParent (parent.getParent()) and so on...
+	 * If you want to get the root parent (the one that has no parent), simply put a big number as depth. 99 should be enough!
+	 *
+	 * @return The parent scope based on depth or null if this scope has no parent which means its already root (default one in file).
+	 * If depth was bigger than 1, null will be never returned, last not null parent will be returned instead!<br>
 	 * 
 	 * @since 1.3.2
 	 */
-	public GenericScope<?, ?> getParent(boolean absoluteParent)
+	public GenericScope<?, ?> getParent(int depth)
 	{
-		if (!absoluteParent)
-			return parent; 
-		GenericScope<?, ?> parent = this.parent;
-		for (GenericScope<?, ?> tmpPar; parent != null && (tmpPar = parent.getParent()) != null; parent = tmpPar);
-		return parent;
+		if (depth < 1)
+			return this;
+		
+		GenericScope<?, ?> parentsParent;
+		if (depth == 1 || parent == null || (parentsParent = parent.getParent(--depth)) == null)
+			return parent;
+		return parentsParent;
 	}
 	
 	/**

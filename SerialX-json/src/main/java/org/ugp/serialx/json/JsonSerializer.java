@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.JussSerializer;
 import org.ugp.serialx.Registry;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
@@ -28,10 +27,11 @@ import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.DataParser.ParserRegistry;
 import org.ugp.serialx.converters.NullConverter;
 import org.ugp.serialx.converters.StringConverter;
-import org.ugp.serialx.converters.VariableConverter;
 import org.ugp.serialx.json.converters.JsonCharacterConverter;
 import org.ugp.serialx.json.converters.JsonNumberConverter;
 import org.ugp.serialx.json.converters.JsonObjectConverter;
+import org.ugp.serialx.juss.JussSerializer;
+import org.ugp.serialx.juss.converters.VariableConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 

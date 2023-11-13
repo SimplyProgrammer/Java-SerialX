@@ -12,4 +12,12 @@
   
   <name>SerialX-juss</name>
   <description>SerialX support for Java Universal Serial Script data format, custom default format of SerialX!</description>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>org.ugp.serialx</groupId>
+  		<artifactId>core</artifactId>
+  		<version>${revision}</version>
+  	</dependency>
+  </dependencies>
 </project>

@@ -1,25 +1,22 @@
 package org.ugp.serialx.converters;
 
 import static org.ugp.serialx.Utils.Instantiate;
-import static org.ugp.serialx.Utils.InvokeStaticFunc;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
 import static org.ugp.serialx.Utils.isOneOf;
 import static org.ugp.serialx.Utils.splitValues;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.JussSerializer;
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Registry;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
+import org.ugp.serialx.Utils;
 import org.ugp.serialx.converters.imports.ImportsProvider;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
@@ -60,7 +57,7 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
  * 
  * @since 1.3.0
  */
-public class ObjectConverter implements DataConverter 
+public class ProtocolConverter implements DataConverter 
 {
 	/**
 	 * Set this on true to force program to use {@link Base64} serialization on {@link Serializable} objects.
@@ -74,173 +71,88 @@ public class ObjectConverter implements DataConverter
 	 */
 	protected boolean useBase64IfCan = false;
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public Object parse(ParserRegistry myHomeRegistry, String str, Object... compilerArgs) 
-	{
-		Class<?> objectClass = null, oldObjectClass;
-		boolean hasOp, hasCls = false;
-		char ch;
-
-		if (str.length() > 0 && ((hasOp = (ch = str.charAt(0)) == '{' || ch == '[') && (hasCls = (ch = str.charAt(str.length()-1)) == '}' || ch == ']') /*|| containsNotInObj(str, ' ')*/ || (objectClass = getProtocolExprClass(str, compilerArgs)) != null))
+	public Object parse(ParserRegistry myHomeRegistry, String str, Object... compilerArgs)
+	{	
+		int len;	
+		if ((len = str.length()) > 0)
 		{
-			if (objectClass != null) //TODO: Preferably separate this to ProtocolConverter
-			{
-				if (objectClass == IsSelectorScope.class)
-				{
-					StringBuilder sb = new StringBuilder(str);
-					sb.setCharAt(str.indexOf(' '), '=');
-					return myHomeRegistry.parse(sb.toString(), compilerArgs);
-				}
-				else
-				{
-					if (compilerArgs.length < 5)
-						compilerArgs = Arrays.copyOf(compilerArgs, 5);
-					oldObjectClass = (Class<?>) compilerArgs[4];
-					compilerArgs[4] = objectClass;
-				}
-				
-				String[] args = splitValues(str = str.trim(), ' ');
-				if (!isOneOf(args[0].charAt(0), '{', '[') && args[0].contains("::"))
-				{
-					String[] clsAttr = args[0].split("::");
-					if (clsAttr.length > 1)
-					{
-						if (args.length > 1)
-							try
-							{
-								Object rtrn = InvokeStaticFunc(objectClass, clsAttr[1], parseAll(myHomeRegistry, args, 1, true, compilerArgs));
-								compilerArgs[4] = oldObjectClass;
-								return rtrn;
-							}
-							catch (InvocationTargetException e) 
-							{
-								LogProvider.instance.logErr("Exception while calling method \"" + clsAttr[1] + "\":", e);
-								e.printStackTrace();
-							}
-						else
-							try
-							{
-								compilerArgs[4] = oldObjectClass;
-								return clsAttr[1].equals("class") ? objectClass : clsAttr[1].equals("new") ? Instantiate(objectClass) : objectClass.getField(clsAttr[1]).get(null);
-							}
-							catch (NoSuchFieldException e)
-							{
-								try
-								{
-									Object rtrn = InvokeStaticFunc(objectClass, clsAttr[1], parseAll(myHomeRegistry, args, 1, true, compilerArgs));
-									compilerArgs[4] = oldObjectClass;
-									return rtrn;
-								}
-								catch (InvocationTargetException e2) 
-								{
-									LogProvider.instance.logErr("Exception while calling method \"" + clsAttr[1] + "\":", e2);
-									e.printStackTrace();
-								}
-							}
-							catch (Exception e) 
-							{
-								LogProvider.instance.logErr("Unable to obtain value of field \"" + clsAttr[1] + "\" in class \"" + objectClass.getSimpleName() + "\" because:", e);
-								e.printStackTrace();
-							}
-					/*catch (ClassNotFoundException e) 
-					{
-						LogProvider.instance.logErr("Unable to invoke \"" + args[0].split("::")[1] + "\" because class \"" + args[0].split("::")[0] + "\" was not found!");
-					} */
-					}
-				}
-				else
-				{
-					try
-					{
-						if ((ch = str.charAt(str.length()-1)) == ';' || ch == ',')
-							throw new ClassNotFoundException();
-						
-						Object[] objArgs = parseAll(myHomeRegistry, args, 1, true, compilerArgs);
-						if (objArgs.length == 1 && objArgs[0] instanceof Scope && Scope.class.isAssignableFrom(objectClass))
-							return objArgs[0];
-						compilerArgs[4] = oldObjectClass;
-						return SerializationProtocol.unserializeObj(compilerArgs.length > 3 && compilerArgs[3] instanceof ProtocolRegistry ? (ProtocolRegistry) compilerArgs[3] : SerializationProtocol.REGISTRY, objectClass, objArgs);
-						
-						/*Object obj;
-						if (objArgs.length == 1 && objArgs[0] instanceof Scope)
-						{
-							Scope scope = (Scope) objArgs[0];
-							if ((obj = p.unserialize(objectClass, scope.toValArray())) != null)
-								return obj;
-							return p.unserialize(objectClass, scope);
-						}
-						else
-						{
-							if ((obj = p.unserialize(objectClass, objArgs)) != null)
-								return obj;
-							return p.unserialize(objectClass, new Scope(objArgs));
-						}*/
-					}
-					catch (Exception e) 
-					{
-						LogProvider.instance.logErr("Exception while unserializing instance of \"" + objectClass.getName() + "\":", e);
-						e.printStackTrace();
-					}
-				}
-				compilerArgs[4] = oldObjectClass;
-			}
-			else
-			{
-				Serializer scope;
-				try 
-				{
-					if (compilerArgs.length > 0 && compilerArgs[0] instanceof Serializer)
-					{
-						if (compilerArgs.length > 4 && compilerArgs[4] instanceof Class && Serializer.class.isAssignableFrom((Class<?>) compilerArgs[4]))
-							scope = ((Serializer) compilerArgs[0]).emptyClone((Class<Serializer>) compilerArgs[4], (GenericScope<?, ?>) compilerArgs[0]);
-						else
-							scope = ((Serializer) compilerArgs[0]).emptyClone();
-					} 
-					else
-						scope = getPreferredSerializer();
-				} 
-				catch (Exception e) 
-				{
-					scope = getPreferredSerializer();
-				}
-				
-				if (indexOfNotInObj(str, '=', ':', ';', ',') > -1)
-				{
-					compilerArgs = compilerArgs.clone();
-					compilerArgs[0] = false;
-					//TODO: Prevent neccesity of scope parent inheritance.
-					return ((Serializer) scope.inheritParent()).LoadFrom(new StringReader(str), compilerArgs);
-				}
-				
-				if (hasOp && hasCls)
-				{
-					str = str.substring(1, str.length()-1).trim();
-					if (str.isEmpty())
-						return scope;
-					
-					int index;
-					if ((index = indexOfNotInObj(str, '=', ';', ',')) > -1 && (index >= str.length()-1 || str.charAt(index+1) != ':') || (objectClass = getProtocolExprClass(str, compilerArgs)) == null || objectClass == IsSelectorScope.class)
-					{
-						compilerArgs = compilerArgs.clone();
-						compilerArgs[0] = false;
-						return ((Serializer) scope.inheritParent()).LoadFrom(new StringReader(str), compilerArgs);
-					}
-					
-					if (objectClass != null && indexOfNotInObj(str, "::") > -1)
-						return myHomeRegistry.parse(str, compilerArgs);
-					return parse(myHomeRegistry, str, compilerArgs);
-				}
-				else if (str.split(" ").length > 1)
-				{
-					LogProvider.instance.logErr("Unable to unserialize \"" + str + "\"! Possible reason of this is absence of comma or semicolon, try to insert them into empty spaces!", null);
-					return null;
-				}
-			}
-			LogProvider.instance.logErr("Unable to unserialize \"" + str + "\" because there is no such class or source string is corrupted!", null);
-			return null;
+			if ((str.charAt(0) | ' ') == '{' && (str.charAt(--len) | ' ') == '}') // Unwrap if wrapped in {}
+				str = str.substring(1, len).trim();
+			
+			Class<?> objClass;
+			if ((objClass = getProtocolExprClass(str, compilerArgs)) != null) // Get class of protocol expr or continue if there is none
+				return parse(myHomeRegistry, objClass, str, compilerArgs);
 		}
 		return CONTINUE;
+	}
+	
+	/**
+	 * @param myHomeRegistry | Same as {@link DataParser#parse(ParserRegistry, String, Object...)}.
+	 * @param objClass | Class of object to parse using {@link SerializationProtocol}.
+	 * @param str | String that starts with {@link Class} of object to deserialized (it will be used with {@link SerializationProtocol#unserializeObj(ProtocolRegistry, Class, Object...)}).
+	 * @param compilerArgs | Same as {@link DataParser#parse(ParserRegistry, String, Object...)}.
+	 * 
+	 * @return Object od objClass parsed from str in accordance with compilerArgs!
+	 * 
+	 * @since 1.3.7
+	 */
+	protected Object parse(ParserRegistry myHomeRegistry, Class<?> objClass, String str, Object... compilerArgs)
+	{
+		if (objClass == IsSelectorScope.class) 
+		{
+			StringBuilder sb = new StringBuilder(str);
+			sb.setCharAt(str.indexOf(' '), '=');
+			return myHomeRegistry.parse(sb.toString(), compilerArgs);
+		}
+
+		if (compilerArgs.length < 5)
+			compilerArgs = Arrays.copyOf(compilerArgs, 5);
+		Class<?> oldObjectClass = (Class<?>) compilerArgs[4];
+		compilerArgs[4] = objClass;
+		
+		String[] args = splitValues(str, ' ');
+		int nameIndex;
+		if (!isOneOf(args[0].charAt(0), '{', '[') && (nameIndex = args[0].indexOf("::")) > -1) //Is static member invocation
+		{
+			String memberName = args[0].substring(nameIndex + 2);
+			if (args.length > 1)
+				return InvokeStaticFunc(objClass, oldObjectClass, memberName, parseAll(myHomeRegistry, args, 1, true, compilerArgs), compilerArgs);
+			
+			try
+			{
+				compilerArgs[4] = oldObjectClass;
+				return memberName.equals("class") ? objClass : memberName.equals("new") ? Instantiate(objClass) : objClass.getField(memberName).get(null);
+			}
+			catch (NoSuchFieldException e)
+			{
+				return InvokeStaticFunc(objClass, oldObjectClass, memberName, parseAll(myHomeRegistry, args, 1, true, compilerArgs), compilerArgs);
+			}
+			catch (Exception e) 
+			{
+				LogProvider.instance.logErr("Unable to obtain value of field \"" + memberName + "\" in class \"" + objClass.getSimpleName() + "\" because:", e);
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		try
+		{
+//			if ((ch = str.charAt(str.length()-1)) == ';' || ch == ',')
+//				throw new ClassNotFoundException();
+			
+			Object[] objArgs = parseAll(myHomeRegistry, args, 1, true, compilerArgs);
+			if (objArgs.length == 1 && objArgs[0] instanceof Scope && Scope.class.isAssignableFrom(objClass))
+				return objArgs[0];
+			compilerArgs[4] = oldObjectClass;
+			return SerializationProtocol.unserializeObj(compilerArgs.length > 3 && compilerArgs[3] instanceof ProtocolRegistry ? (ProtocolRegistry) compilerArgs[3] : SerializationProtocol.REGISTRY, objClass, objArgs);
+		}
+		catch (Exception e) 
+		{
+			LogProvider.instance.logErr("Exception while unserializing instance of \"" + objClass.getName() + "\":", e);
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
@@ -269,97 +181,54 @@ public class ObjectConverter implements DataConverter
 		if (useBase64IfCan && arg instanceof Serializable)
 			return CONTINUE;
 		
-		if (arg instanceof Scope)
+		if (preferedProtocol != null || (preferedProtocol = (SerializationProtocol<Object>) getProtocolFor(arg, SerializationProtocol.MODE_SERIALIZE, args)) != null)
 		{
-			Serializer serializer;
+			Object[] objArgs;
+			Class<?> oldObjectClass = null;
 			try
 			{
-				if (arg instanceof Serializer)
-					serializer = (Serializer) arg;
-				else if (args.length > 0 && args[0] instanceof Serializer)
-					(serializer = ((Serializer) args[0]).emptyClone()).addAll((GenericScope<String, ?>) arg);
-				else
-					serializer = getPreferredSerializer();
-			}
-			catch (Exception e)
-			{
-				serializer = getPreferredSerializer();
-			}
-			
-			if (serializer instanceof JussSerializer)
-				((JussSerializer) serializer).setGenerateComments(args.length > 5 && args[5] instanceof Boolean && (boolean) args[5]);
-
-			try 
-			{
-				if (args.length < 4)
-					args = Arrays.copyOf(args, 4);
-				else
-					args = args.clone(); 
-				args[2] = 0;
-				args[3] = serializer.getProtocols();
+				int tabs = 0, index = 0;
+				if (args.length > 1 && args[1] instanceof Integer)
+					tabs = (int) args[1];
 				
-				StringBuilder sb = new StringBuilder();
-				GenericScope<?, ?> parent;
-				if ((parent = serializer.getParent()) == null || serializer.getClass() != parent.getClass())
-					sb.append(ImportsProvider.getAliasFor(serializer, getClass()) + " ");
-				return serializer.SerializeAsSubscope(sb, args);
-			} 
-			catch (IOException e) 
-			{
-				throw new RuntimeException(e);
-			}
-		}
-		else //TODO: Preferably separate this to ProtocolConverter
-		{
-			if (preferedProtocol != null || (preferedProtocol = (SerializationProtocol<Object>) getProtocolFor(arg, SerializationProtocol.MODE_SERIALIZE, args)) != null)
-			{
-				Object[] objArgs;
-				Class<?> oldObjectClass = null;
-				try
-				{
-					int tabs = 0, index = 0;
-					if (args.length > 1 && args[1] instanceof Integer)
-						tabs = (int) args[1];
-					
-					if (args.length > 2 && args[2] instanceof Integer)
-						index = (int) args[2];
-					
-					if (args.length < 5)
-						args = Arrays.copyOf(args, 5);
-					oldObjectClass = (Class<?>) args[4];
-					args[4] = arg.getClass();;
+				if (args.length > 2 && args[2] instanceof Integer)
+					index = (int) args[2];
+				
+				if (args.length < 5)
+					args = Arrays.copyOf(args, 5);
+				oldObjectClass = (Class<?>) args[4];
+				args[4] = arg.getClass();;
 
-					objArgs = preferedProtocol.serialize(arg);
-					StringBuilder sb = new StringBuilder(ImportsProvider.getAliasFor(args.length > 0 ? args[0] : null, arg.getClass()) + (objArgs.length <= 0 ? "" : " "));
-					
-					args = args.clone();
-					for (int i = 0, sizeEndl = 10000; i < objArgs.length; i++) 
-					{
-						if (args.length > 2)
-							args[2] = index + 1;
-						sb.append(myHomeRegistry.toString(objArgs[i], args));
-						if (i < objArgs.length-1)
-							if (sb.length() > sizeEndl)
-							{
-								sb.append('\n'); 
-								for (int j = 0; j < tabs+1; j++) 
-									sb.append('\t');
-								sizeEndl += 10000;
-							}
-							else 
-								sb.append(' ');
-					}
-					
-					args[4] = oldObjectClass;
-					return index > 0 && objArgs.length > 0 ? sb.insert(0, '{').append('}') : sb;
-				}
-				catch (Exception e) 
+				objArgs = preferedProtocol.serialize(arg);
+				StringBuilder sb = new StringBuilder(ImportsProvider.getAliasFor(args.length > 0 ? args[0] : null, arg.getClass()) + (objArgs.length <= 0 ? "" : " "));
+				
+				args = args.clone();
+				for (int i = 0, sizeEndl = 10000; i < objArgs.length; i++) 
 				{
-					LogProvider.instance.logErr("Exception while serializing instance of \"" + arg.getClass().getName() + "\":", e);
-					e.printStackTrace();
+					if (args.length > 2)
+						args[2] = index + 1;
+					sb.append(myHomeRegistry.toString(objArgs[i], args));
+					if (i < objArgs.length-1)
+						if (sb.length() > sizeEndl)
+						{
+							sb.append('\n'); 
+							for (int j = 0; j < tabs+1; j++) 
+								sb.append('\t');
+							sizeEndl += 10000;
+						}
+						else 
+							sb.append(' ');
 				}
+				
 				args[4] = oldObjectClass;
+				return index > 0 && objArgs.length > 0 ? sb.insert(0, '{').append('}') : sb;
 			}
+			catch (Exception e) 
+			{
+				LogProvider.instance.logErr("Exception while serializing instance of \"" + arg.getClass().getName() + "\":", e);
+				e.printStackTrace();
+			}
+			args[4] = oldObjectClass;
 		}
 		return CONTINUE;
 	}
@@ -372,16 +241,6 @@ public class ObjectConverter implements DataConverter
 		else if (obj instanceof CharSequence && indexOfNotInObj((CharSequence) obj, '\n', '\r') != -1)
 			return "Multiline char sequence!";
 		return new StringBuilder("Object of ").append(obj.getClass().getName()).append(": \"").append(obj.toString()).append("\" serialized using ").append(getProtocolFor(obj, SerializationProtocol.MODE_ALL, argsUsedConvert).toString()).append("!");
-	}
-	
-	/**
-	 * @return Serializer that is supposed to be used for serializing sub-scopes if there is no other option.
-	 * 
-	 * @since 1.3.5
-	 */
-	public Serializer getPreferredSerializer()
-	{
-		return new JussSerializer();
 	}
 
 	/**
@@ -445,7 +304,7 @@ public class ObjectConverter implements DataConverter
 	 *
 	 * @since 1.3.0
 	 */
-	public static Class<?> getProtocolExprClass(String str, Object[] compilerArgs)
+	public static Class<?> getProtocolExprClass(String str, Object... compilerArgs)
 	{
 		int i = 0, len = str.length();
 		for (char ch; i < len; i++)
@@ -454,13 +313,13 @@ public class ObjectConverter implements DataConverter
 
 		try 
 		{
-			Class<?> cls = ImportsProvider.forName(compilerArgs.length > 0 ? compilerArgs[0] : null, str.substring(0, i), false, ObjectConverter.class.getClassLoader());
+			Class<?> cls = ImportsProvider.forName(compilerArgs.length > 0 ? compilerArgs[0] : null, str.substring(0, i), false, ProtocolConverter.class.getClassLoader());
 			if (cls != null)
 				return cls;
 			for (char ch; i < len; i++)
 			{
 				if ((ch = str.charAt(i)) > 32)
-					if (ch == '{' || ch == '[')
+					if ((ch | ' ') == '{')
 						return IsSelectorScope.class;
 					else
 						return null;
@@ -508,6 +367,32 @@ public class ObjectConverter implements DataConverter
 	public static char[] secondarySubscopeWrappers()
 	{
 		return new char[] {'[', ']'};
+	}
+	
+	/**
+	 * @param cls | Class to invoke method from.
+	 * @param oldCls | Old class to set (obtained from compilerArgs[4]).
+	 * @param name | Name of public static method to be called.
+	 * @param args | Arguments of method. Arguments should be certain if method is overloaded!
+	 * @param compilerArgs | Arguments provided by parser.
+	 * 
+	 * @return {@link Utils#InvokeStaticFunc(Class, String, Object...)} or null if {@link InvocationTargetException} occurred. <br>
+	 * Note: If you are not sure what this does, preferably use {@link Utils#InvokeStaticFunc(Class, String, Object...)}!
+	 * 
+	 * @since 1.3.7
+	 */
+	public static Object InvokeStaticFunc(Class<?> cls, Class<?> oldCls, String name, Object[] args, Object... compilerArgs) {
+		try
+		{
+			compilerArgs[4] = oldCls;
+			return Utils.InvokeStaticFunc(cls, name, args);
+		}
+		catch (InvocationTargetException e) 
+		{
+			LogProvider.instance.logErr("Exception while calling method \"" + name + "\":", e);
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	/**

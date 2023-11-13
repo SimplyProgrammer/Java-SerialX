@@ -11,16 +11,15 @@ package org.ugp.serialx.protocols;
  */
 public class SelfSerializableProtocol extends UniversalObjectInstantiationProtocol<SelfSerializable> 
 {
+	public SelfSerializableProtocol() 
+	{
+		super(SelfSerializable.class);
+	}
+	
 	@Override
 	public Object[] serialize(SelfSerializable object) 
 	{
 		return object.serialize();
-	}
-
-	@Override
-	public Class<? extends SelfSerializable> applicableFor() 
-	{
-		return SelfSerializable.class;
 	}
 	
 	@Override

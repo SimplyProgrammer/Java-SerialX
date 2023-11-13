@@ -3,7 +3,7 @@ package org.ugp.serialx.converters.imports;
 import java.lang.reflect.Type;
 
 import org.ugp.serialx.Serializer;
-import org.ugp.serialx.converters.imports.ImportConverter.Imports;
+import org.ugp.serialx.converters.imports.ImportsProvider.Imports;
 
 /**
  * This class is represents single import. It stores target class of import and its alias! <br>
@@ -59,13 +59,24 @@ public class Import implements Cloneable, Type
 	 * @param alias | Alias of class!
 	 * @param owner | Owner/provider of this Import!
 	 * 
+	 * @throws IllegalArgumentException | When alias is invalid! Alias should follow java class naming conventions without necessity of package specification!
+	 * 
 	 * @since 1.3.5
 	 */
-	public Import(Class<?> cls, String alias, ImportsProvider owner) 
+	public Import(Class<?> cls, String alias, ImportsProvider owner) throws IllegalArgumentException
 	{
 		this.cls = cls;
-		this.alias = alias;
-		this.owner = owner;
+		
+		if (alias.isEmpty())
+			throw new IllegalArgumentException("Import alias cant be empty! Try \"" + cls.getSimpleName() + "\" instead!");
+		int ch0 = alias.charAt(0);
+		if (ch0 == '_' || (ch0 = ch0 | ' ') >= 'a' && ch0 <= 'z')
+		{
+			this.alias = alias;
+			this.owner = owner;
+		}
+		else
+			throw new IllegalArgumentException("Import alias \"" + alias + "\" is illegal! Alias cant begin with special char or number! Try \"_" + alias + "\" instead!");
 	}
 	
 	@Override

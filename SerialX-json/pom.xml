@@ -16,7 +16,7 @@
   <dependencies>
   	<dependency>
   		<groupId>org.ugp.serialx</groupId>
-  		<artifactId>core</artifactId>
+  		<artifactId>juss</artifactId>
   		<version>${revision}</version>
   	</dependency>
   </dependencies>

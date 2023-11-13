@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
-import org.ugp.serialx.converters.ArrayConverter;
+import org.ugp.serialx.Utils;
 import org.ugp.serialx.converters.DataParser;
 
 /**
@@ -64,7 +64,7 @@ public class ArithmeticOperators implements DataParser
 
 				cof1 = cofs.get(index = index < 0 ? 0 : index);
 				if (cof1 instanceof String)
-					cof1 = registryForParsers.parse(cof1.toString().trim(), i > 0, new Class[] {getClass(), ArrayConverter.class}, argsForParsers);
+					cof1 = registryForParsers.parse(cof1.toString().trim(), i > 0, new Class[] {getClass()}, argsForParsers);
 				cof1 = cof1 instanceof ResultWrapper ? ((ResultWrapper) cof1).obj : cof1;
 	
 			    cof2 = cofs.remove(index + 1);
@@ -186,14 +186,14 @@ public class ArithmeticOperators implements DataParser
 		}
 		
 		if (cof.getClass().isArray())
-			return ArrayConverter.mergeArrays(cof, cof2);
+			return Utils.mergeArrays(cof, cof2);
 		
 		if (cof instanceof Collection)
 		{
 			if (cof2 instanceof Collection)
 				((Collection) cof).addAll(((Collection) cof2));
 			else if (cof2.getClass().isArray())
-				((Collection) cof).addAll(Arrays.asList(ArrayConverter.fromAmbiguous(cof2)));
+				((Collection) cof).addAll(Arrays.asList(Utils.fromAmbiguousArray(cof2)));
 			else 
 				((Collection) cof).add(cof2);
 			return cof;
@@ -206,7 +206,7 @@ public class ArithmeticOperators implements DataParser
 			else if (cof2 instanceof Collection)
 				((Scope) cof).addAll((Collection) cof2);
 			else if (cof2.getClass().isArray())
-				((Scope) cof).addAll(ArrayConverter.fromAmbiguous(cof2));
+				((Scope) cof).addAll(Utils.fromAmbiguousArray(cof2));
 			else 
 				((Scope) cof).add(cof2);
 			return cof;
@@ -241,7 +241,7 @@ public class ArithmeticOperators implements DataParser
 			if (cof2 instanceof Collection)
 				((Collection) cof).removeAll(((Collection) cof2));
 			else if (cof2.getClass().isArray())
-				((Collection) cof).removeAll(Arrays.asList(ArrayConverter.fromAmbiguous(cof2)));
+				((Collection) cof).removeAll(Arrays.asList(Utils.fromAmbiguousArray(cof2)));
 			else 
 				((Collection) cof).remove(cof2);
 			return cof;
@@ -370,9 +370,9 @@ public class ArithmeticOperators implements DataParser
 			char ch = str.charAt(i);
 			if (ch == '\"')
 				quote++;
-			else if (ch == '{' || ch == '[')
+			else if ((ch | ' ') == '{')
 				brackets++;
-			else if (ch == '}' || ch == ']')
+			else if ((ch | ' ') == '}')
 				brackets--;
 			
 			if (type == 1 || quote % 2 == 0 && brackets == 0)
@@ -420,9 +420,9 @@ public class ArithmeticOperators implements DataParser
 					quote++;
 				else if (quote % 2 == 0)
 				{
-					if (ch == '{' || ch == '[')
+					if ((ch | ' ') == '{')
 						brackets++;
-					else if (ch == '}' || ch == ']')
+					else if ((ch | ' ') == '}')
 						brackets--;
 					else if (brackets == 0)
 					{

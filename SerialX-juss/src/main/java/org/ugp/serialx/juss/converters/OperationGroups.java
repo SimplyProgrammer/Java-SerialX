@@ -1,4 +1,4 @@
-package org.ugp.serialx.converters;
+package org.ugp.serialx.juss.converters;
 
 import static org.ugp.serialx.Utils.isOneOf;
 
@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Serializer;
+import org.ugp.serialx.converters.DataParser;
 
 /**
  * This parser provides ability to use expression groups that can define order of expression evaluation and compilation! 
@@ -122,9 +123,9 @@ public class OperationGroups implements DataParser
 				quote++;
 			else if (quote % 2 == 0)
 			{
-				if (ch == '{' || ch == '[')
+				if ((ch | ' ') == '{')
 					brackets++;
-				else if (ch == '}' || ch == ']')
+				else if ((ch | ' ') == '}')
 				{
 					if (brackets > 0)
 						brackets--;
@@ -158,9 +159,9 @@ public class OperationGroups implements DataParser
 				quote++;
 			else if (quote % 2 == 0)
 			{
-				if (ch == '{' || ch == '[')
+				if ((ch | ' ') == '{')
 					brackets++;
-				else if (ch == '}' || ch == ']')
+				else if ((ch | ' ') == '}')
 				{
 					if (brackets > 0)
 						brackets--;

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,8 +25,14 @@ import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.DataParser.ParserRegistry;
 import org.ugp.serialx.protocols.SerializationProtocol;
 
-
-public class Utils {
+/**
+ * Provides general utility used across SerialX library, mostly string analysis/manipulation and reflection.
+ * 
+ * @author PETO
+ * 
+ * @since 1.3.7
+ */
+public final class Utils {
 	private Utils() {}
 	
 	/**
@@ -98,6 +105,8 @@ public class Utils {
 		r.close();
 		return sb.toString();
 	}
+	
+	/* Reflect */
 	
 	/**
 	 * @param cls | Class to invoke method from.
@@ -421,6 +430,8 @@ public class Utils {
 		return classes;
 	}
 	
+	/* Characters */
+	
 	/**
 	 * @param ch | String to multiply!
 	 * @param times | Count of multiplication!
@@ -522,9 +533,9 @@ public class Utils {
 					result.add(s.substring(lastIndex == 0 ? 0 : lastIndex + 1, lastIndex = i).trim());
 					count++;
 				}
-				else if (ch == '{' || ch == '[')
+				else if ((ch | ' ') == '{')
 					brackets++;
-				else if (ch == '}' || ch == ']')
+				else if ((ch | ' ') == '}')
 				{
 					if (brackets > 0)
 						brackets--;
@@ -551,7 +562,7 @@ public class Utils {
 	 * @param s | CharSequence to search!
 	 * @param oneOf | Characters to find!
 	 * 
-	 * @return Index of first found character that is not in object meaning it is not in string nor between '{' or '[' and ']' or '}'!
+	 * @return Index of first found character that is not in object meaning it is not in string nor between '{' or '[' and ']' or '}', otherwise -1!
 	 * 
 	 * @since 1.3.0
 	 */
@@ -565,7 +576,7 @@ public class Utils {
 	 * @param firstIndex | If true, first index will be returned, if false last index will be returned.
 	 * @param oneOf | Characters to find!
 	 * 
-	 * @return Index of first found character that is not in object meaning it is not in string nor between '{' or '[' and ']' or '}'!
+	 * @return Index of first found character that is not in object meaning it is not in string nor between '{' or '[' and ']' or '}', otherwise -1!
 	 * 
 	 * @since 1.3.5
 	 */
@@ -586,9 +597,9 @@ public class Utils {
 					if (firstIndex)
 						return found;
 				}
-				else if (ch == '{' || ch == '[')
+				else if ((ch | ' ') == '{')
 					brackets++;
-				else if (ch == '}' || ch == ']')
+				else if ((ch | ' ') == '}')
 				{
 					if (brackets > 0)
 						brackets--;
@@ -643,9 +654,9 @@ public class Utils {
 						match = 0;
 					}
 				}
-				else if (ch == '{' || ch == '[')
+				else if ((ch | ' ') == '{')
 					brackets++;
-				else if (ch == '}' || ch == ']')
+				else if ((ch | ' ') == '}')
 				{
 					if (brackets > 0)
 						brackets--;
@@ -673,11 +684,11 @@ public class Utils {
 	    int targetLength = target.length();
 	    if (targetLength == 0) 
 	        return str;
-	    
+
 	    int i1 = 0, i2 = str.indexOf(target);
 	    if (i2 < 0) 
 	        return str;
-	    
+
 	    StringBuilder sb = new StringBuilder(targetLength > replacement.length() ? str.length() : str.length() * 2);
 	    do 
 	    {
@@ -739,6 +750,66 @@ public class Utils {
 	{
 		return str + "\n" + multilpy(' ', pos) + "^";	
 	}
+	
+	/* Arrays */
+	
+	/**
+	 * @param sourceArray | Array to cast!
+	 * @param toType | Type to cast array in to!
+	 * 
+	 * @return Array object casted in to required type!
+	 * 
+	 * @since 1.3.2
+	 */
+	public static Object castArray(Object[] sourceArray, Class<?> toType)
+	{
+		int len = sourceArray.length;
+		Object arr = Array.newInstance(ToClasses(toType)[0], len);
+		for (int i = 0; i < len; i++) 
+			Array.set(arr, i, sourceArray[i]);
+		return arr;
+	}
+	
+	/**
+	 * @param arr1 | Object one that might be array!
+	 * @param arr2 | Object two that might be array!
+	 * 
+	 * @return New array consisting of array 1 and array 2!
+	 * 
+	 * @throws IllegalArgumentException if object one is not an array!
+	 * 
+	 * @since 1.3.2
+	 */
+	public static Object[] mergeArrays(Object arr1, Object arr2) 
+	{
+		Object[] array1 = fromAmbiguousArray(arr1), array2 = arr2.getClass().isArray() ? fromAmbiguousArray(arr2) : new Object[] { arr2 };
+		Object[] result = Arrays.copyOf(array1, array1.length + array2.length);
+	    System.arraycopy(array2, 0, result, array1.length, array2.length);
+	    return result;
+	}
+	
+	/**
+	 * @param array | Object that might be array!
+	 * 
+	 * @return Object transformed in to primitive array! If array is already an instance of primitive array then it will be simply returned!
+	 * 
+	 * @throws IllegalArgumentException if the specified object is not an array!
+	 * 
+	 * @since 1.3.2 (since 1.3.7 moved from ArrayConverter)
+	 */
+	public static Object[] fromAmbiguousArray(Object array)
+	{
+		if (array instanceof Object[])
+			return (Object[]) array;
+		
+		int len = Array.getLength(array);
+		Object[] arr = new Object[len];
+		for (int i = 0; i < len; i++) 
+			arr[i] = Array.get(array, i);
+		return arr;
+	}
+	
+	/* Others... */
 	
 	/**
 	 * This will serialize serializer into http query post request however this is not the best networking and you should implement your own http client if you want SerialX to serialize and deserialize remote content!

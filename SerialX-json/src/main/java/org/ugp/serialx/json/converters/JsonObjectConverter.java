@@ -2,9 +2,9 @@ package org.ugp.serialx.json.converters;
 
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
-import org.ugp.serialx.converters.ArrayConverter;
-import org.ugp.serialx.converters.ObjectConverter;
+import org.ugp.serialx.Utils;
 import org.ugp.serialx.json.JsonSerializer;
+import org.ugp.serialx.juss.converters.ObjectConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
 
 /**
@@ -21,7 +21,7 @@ public class JsonObjectConverter extends ObjectConverter
 	public CharSequence toString(ParserRegistry myHomeRegistry, Object arg, Object... args) 
 	{
 		if (arg.getClass().isArray())
-			arg = new Scope(ArrayConverter.fromAmbiguous(arg));
+			arg = new Scope(Utils.fromAmbiguousArray(arg));
 		
 		SerializationProtocol<Object> prot = (SerializationProtocol<Object>) getProtocolFor(arg, SerializationProtocol.MODE_SERIALIZE, args);
 

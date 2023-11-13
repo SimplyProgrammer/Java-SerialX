@@ -73,9 +73,9 @@ public class ConditionalAssignmentOperators implements DataParser
 			char ch = str.charAt(i);
 			if (ch == '\"')
 				quote++;
-			else if (ch == '{' || ch == '[')
+			else if ((ch | ' ') == '{')
 				brackets++;
-			else if (ch == '}' || ch == ']')
+			else if ((ch | ' ') == '}')
 				brackets--;
 			else if (quote % 2 == 0 && brackets == 0)
 			{
@@ -110,9 +110,9 @@ public class ConditionalAssignmentOperators implements DataParser
 			char ch = str.charAt(from);
 			if (ch == '\"')
 				quote++;
-			else if (ch == '{' || ch == '[')
+			else if ((ch | ' ') == '{')
 				brackets++;
-			else if (ch == '}' || ch == ']')
+			else if ((ch | ' ') == '}')
 				brackets--;
 			else if (quote % 2 == 0 && brackets == 0 && ch == oneChar && oldCh != oneChar && (from >= len-1 || str.charAt(from+1) != oneChar))
 				return from;

@@ -18,6 +18,18 @@ import org.ugp.serialx.Utils;
  */
 public class UniversalObjectInstantiationProtocol<T> extends SerializationProtocol<T> {
 
+	protected final Class<T> applicableFor;
+	
+	/**
+	 * @param applicableFor | Class that can be serialized using this protocol.
+	 * 
+	 * @since 1.3.7
+	 */
+	public UniversalObjectInstantiationProtocol(Class<T> applicableFor)
+	{
+		this.applicableFor = applicableFor;
+	}
+	
 	@Override
 	public Object[] serialize(T object) 
 	{
@@ -46,11 +58,10 @@ public class UniversalObjectInstantiationProtocol<T> extends SerializationProtoc
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Class<? extends T> applicableFor() 
 	{
-		return (Class<? extends T>) Object.class;
+		return applicableFor;
 	}
 	
 	@Override
