@@ -316,7 +316,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 				if (generateComments && (!(var.getValue() instanceof Scope) || ((Scope) var.getValue()).isEmpty()))
 					GenerateComment(source, reg, var);
 			
-				if (i++ < varLen-1 || valuesLen > 0)
+				if (++i < varLen || valuesLen > 0)
 					source.append('\n');
 			}
 		}
@@ -325,10 +325,10 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		{
 			if (i > 0)
 				source.append('\n');
-			
+
 			Object obj = objs.get(i);
 			CharSequence serialized = reg.toString(obj, args);
-			
+
 			appandVal(source, serialized, obj, tabs, i >= valuesLen-1);
 			if (generateComments && (!(obj instanceof Scope) || ((Scope) obj).isEmpty()))
 				GenerateComment(source, reg, obj);
