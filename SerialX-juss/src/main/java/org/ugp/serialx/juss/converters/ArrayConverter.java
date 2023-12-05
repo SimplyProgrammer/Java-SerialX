@@ -103,23 +103,24 @@ public class ArrayConverter implements DataConverter
 				StringBuilder sb = new StringBuilder();
 				for (int i = 0, length = elms.length, sizeEndl = 10000; i < length; i++) 
 				{
-					CharSequence str = myHomeRegistry.toString(elms[i], args);
-					char ch = str.charAt(0);
-					if ((ch | ' ') == '{')
-						sb.append("("+str+")");
-					else
-						sb.append(str);
-						
-					if (i < length-1)
+					if (i > 0)
 						if (sb.length() > sizeEndl)
 						{
-							sb.append('\n'); 
+							sb.append('\n');
 							for (int j = 0; j < tabs+1; j++) 
 								sb.append('\t');
 							sizeEndl += 10000;
 						}
 						else 
 							sb.append(' ');
+
+					CharSequence str = myHomeRegistry.toString(elms[i], args);
+					char ch = str.charAt(0);
+					if ((ch | ' ') == '{')
+						sb.append('(').append(str).append(')');
+					else
+						sb.append(str);
+
 				}
 				return index > 0 ? sb.insert(0, '(').append(')') : sb;
 			}

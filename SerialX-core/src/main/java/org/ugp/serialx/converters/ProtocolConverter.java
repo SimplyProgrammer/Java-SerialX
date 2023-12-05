@@ -205,10 +205,7 @@ public class ProtocolConverter implements DataConverter
 				args = args.clone();
 				for (int i = 0, sizeEndl = 10000; i < objArgs.length; i++) 
 				{
-					if (args.length > 2)
-						args[2] = index + 1;
-					sb.append(myHomeRegistry.toString(objArgs[i], args));
-					if (i < objArgs.length-1)
+					if (i > 0)
 						if (sb.length() > sizeEndl)
 						{
 							sb.append('\n'); 
@@ -218,6 +215,10 @@ public class ProtocolConverter implements DataConverter
 						}
 						else 
 							sb.append(' ');
+
+					if (args.length > 2)
+						args[2] = index + 1;
+					sb.append(myHomeRegistry.toString(objArgs[i], args));
 				}
 				
 				args[4] = oldObjectClass;

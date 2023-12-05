@@ -323,15 +323,15 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		
 		for (i = 0; i < valuesLen; i++) //Values
 		{
+			if (i > 0)
+				source.append('\n');
+			
 			Object obj = objs.get(i);
 			CharSequence serialized = reg.toString(obj, args);
 			
 			appandVal(source, serialized, obj, tabs, i >= valuesLen-1);
 			if (generateComments && (!(obj instanceof Scope) || ((Scope) obj).isEmpty()))
 				GenerateComment(source, reg, obj);
-		
-			if (i < valuesLen-1)
-				source.append('\n');
 		} 
 
 		if (source instanceof Flushable)
