@@ -1,0 +1,21 @@
+/* THIS EXAMPLE IS DEMONSTRATING CAPABILITIES OF SERIALX AS A DOMAIN SPECIFIC LANGUAGE TOOLKIT BY CREATING AN SIMPLE SCRIPT */
+/* In this case, we are writing a simple script that will print "Hello world!" and then analyze your age category from the age given! */
+
+System::out->println "Hello world!"; //Saying the famous "Hello world" in our custom script by calling java methods!
+
+//Handling possible errors!
+result = try { //Convenient usage of JUSS scope as a code block...
+	System::out->print "Enter your age: "; //Asking for input!
+	
+	input = java.util.Scanner System::in; //Declaring input scanner object!
+	age = double ($input->nextLine); //Reading input from console as number!
+	
+	//Printing age message
+	System::out->println ($age >= 18 ? "You are an adult!" : $age <= 0 ? "Well, you are not yet..." : "You are sill a child!");
+}
+
+//Printing adequate error message...
+$result instanceof java.lang.RuntimeException ? (System::err->println "Age must be a number you dummy...");
+
+//Voidification of used variables that are not needed! This is not really a necessity but it nice to know about it...
+result = void; //Voidification will remove the variable from this scope releasing some memory!

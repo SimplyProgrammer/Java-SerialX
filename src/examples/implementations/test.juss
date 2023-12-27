@@ -1,0 +1,31 @@
+//java.util.Collections => _22;
+//
+//_22::emptyList;
+//{ ArrayList 11 22 33 {     ArrayList 41 42 43
+//	} 		555			}
+//ArrayList;
+//java.util.Collections::unmodifiableCollection {ArrayList {java.util.Collections::unmodifiableCollection {ArrayList 125 {100, 200}}}};
+//
+//{5111}
+//{	 }
+//var = 59;
+//{$var; $var::class}
+
+
+
+//Tt 5 5;
+//List 1 2 3;
+//List 1 2 3 {List 5 5 5} 4;
+//{1}
+
+
+hi = "hellp",
+hah = t;
+
+a: {
+	lol : {
+		kkt = {
+				a = 55555;
+		}
+	}
+}

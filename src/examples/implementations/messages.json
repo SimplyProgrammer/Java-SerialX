@@ -1,0 +1,14 @@
+[
+	{
+		"str" : "Hi!",
+		"date" : 1
+	},
+	{
+		"str" : "My name is Json.",
+		"date" : 2
+	},
+	{
+		"str" : "And I am data format!",
+		"date" : 3
+	}
+]
