@@ -38,3 +38,5 @@ tmp/
 .project
 
 target/
+
+src/kop/
