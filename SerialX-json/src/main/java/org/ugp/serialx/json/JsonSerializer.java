@@ -35,8 +35,6 @@ import org.ugp.serialx.juss.converters.VariableConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 
-import javafx.beans.binding.When;
-
 /**
  * This is implementation of {@link JussSerializer} for serializing in <a href = "https://www.json.org/json-en.html">Json</a>!
  * It should generate and work with .json files!
