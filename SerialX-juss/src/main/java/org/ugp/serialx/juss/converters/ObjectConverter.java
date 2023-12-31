@@ -43,11 +43,16 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 		    <td>new ArrayList<>(Arrays.asList(2, 4, 6))</td>
 	  	</tr>
 		<tr>
+		    <td>{ ... }</td>
+		    <td>new Scope( ... )</td>
+	  	</tr>
+		<tr>
 		    <td>java.lang.Math::max 10 5</td>
 		    <td>10</td>
 	  	</tr>
 	</table>
-		<br>
+	Note: Be aware that invocation of static members such as functions and fields (:: operator) is disabled by default for the sake of security...<br> 
+	<br>
 	This parser requires additional parser arg at index 0 of type {@link GenericScope} or {@link Serializer} that will be used for further parsing and operating (default new {@link JussSerializer}).<br>
 	This parser requires additional parser arg at index 3 of type {@link ProtocolRegistry} or {@link SerializationProtocol} itself that will be used for parsing protocol expressions (default {@link SerializationProtocol#REGISTRY}).<br>
  *  This parser will insert one additional argument into array of additional parser args at index 4, in case of serialization index 5, that will be of type {@link Class} and it will contains information about class of object that is being unserialized or serialized using protocol!</br>
@@ -107,6 +112,8 @@ public class ObjectConverter extends ProtocolConverter
 				}
 				
 				//TODO: Prevent neccesity of scope parent inheritance.
+				compilerArgs = compilerArgs.clone();
+				compilerArgs[0] = false; //No extra formating...
 				return str.isEmpty() ? scope : ((Serializer) scope/*.inheritParent()*/).LoadFrom(new StringReader(str), compilerArgs);
 			}
 		}

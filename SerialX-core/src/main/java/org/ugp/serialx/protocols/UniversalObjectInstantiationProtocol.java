@@ -33,7 +33,7 @@ public class UniversalObjectInstantiationProtocol<T> extends SerializationProtoc
 	@Override
 	public Object[] serialize(T object) 
 	{
-		throw new UnsupportedOperationException(getClass().getSimpleName() + ": This protocol is only for reading! It cant serialize " + object);
+		throw new UnsupportedOperationException("This protocol is only for reading! It cant serialize " + object);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -54,7 +54,7 @@ public class UniversalObjectInstantiationProtocol<T> extends SerializationProtoc
 				catch (IllegalArgumentException e) 
 				{}
 		}
-		LogProvider.instance.logErr(getClass().getSimpleName() + ": Unable to call create new instance of \"" + objectClass + "\" because inserted arguments " + Arrays.asList(args) + " cannot be applied on any public constructor in required class!", null);
+		LogProvider.instance.logErr("Unable to create new instance of \"" + objectClass + "\" because inserted arguments " + Arrays.asList(args) + " cannot be applied on any public constructor in required class!", null);
 		return null;
 	}
 

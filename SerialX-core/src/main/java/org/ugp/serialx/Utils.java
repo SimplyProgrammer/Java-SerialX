@@ -426,7 +426,7 @@ public final class Utils {
 		}
 		
 		for (int i = 0; i < classes.length; i++) 
-			classes[i] = objs[i].getClass();
+			classes[i] = objs[i] == null ? Object.class : objs[i].getClass();
 		return classes;
 	}
 	

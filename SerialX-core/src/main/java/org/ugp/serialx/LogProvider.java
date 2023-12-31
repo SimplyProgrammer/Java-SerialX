@@ -40,7 +40,17 @@ public class LogProvider
 				throw new RuntimeException(obj.toString());
 			throw new RuntimeException(ex);
 		}
-		System.err.println(obj);
+		
+		try 
+		{
+			StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
+			String callerName = caller.getClassName();
+			System.err.println(callerName.substring(callerName.lastIndexOf('.')+1) + "#" + caller.getMethodName() + ": " + obj);
+		}
+		catch (Exception e)
+		{
+			System.err.println(obj);
+		}
 	}
 
 	/**

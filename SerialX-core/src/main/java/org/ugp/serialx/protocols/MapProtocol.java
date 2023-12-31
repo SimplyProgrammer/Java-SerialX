@@ -37,7 +37,7 @@ public class MapProtocol extends SerializationProtocol<Map<Object, Object>>
 	{
 		boolean isFromScope = args.length == 1 && args[0] instanceof GenericScope;
 		if (args.length % 2 != 0 && !isFromScope)
-			LogProvider.instance.logErr(getClass().getSimpleName() + ": Some variables have no values, this is not good!", null);
+			LogProvider.instance.logErr("Some variables have no values, this is not good!", null);
 		
 		if (objectClass.isInterface())
 			objectClass = (Class<? extends Map<Object, Object>>) HashMap.class;

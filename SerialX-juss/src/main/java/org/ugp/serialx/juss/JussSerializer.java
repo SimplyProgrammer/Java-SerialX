@@ -63,7 +63,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @since 1.3.2
 	 */
-	public static final ParserRegistry JUSS_PARSERS = new ParserRegistry(new OperationGroups(), new VariableConverter(), new StringConverter(), new ObjectConverter(), new ArrayConverter(), new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter());
+	public static final ParserRegistry JUSS_PARSERS = new ParserRegistry(new ImportConverter(), new OperationGroups(), new VariableConverter(), new StringConverter(), new ObjectConverter(), new ArrayConverter(), new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter());
 	
 	/**
 	 * {@link ParserRegistry} with all parsers required to parse JUSS with additional operators.

@@ -23,7 +23,6 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 
 /**
  * This converter is capable of converting any Object using {@link SerializationProtocol} as well as invoking static functions!
- * This is also responsible for {@link Scope}!
  * Its case sensitive!
  * <br>
  * <br>
@@ -48,14 +47,15 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 		    <td>10</td>
 	  	</tr>
 	</table>
-		<br>
+	Note: Be aware that invocation of static members such as functions and fields (:: operator) is disabled by default for the sake of security...<br> 
+	<br>
 	This parser requires additional parser arg at index 0 of type {@link GenericScope} or {@link Serializer} that will be used for further parsing and operating (default new {@link JussSerializer}).<br>
 	This parser requires additional parser arg at index 3 of type {@link ProtocolRegistry} or {@link SerializationProtocol} itself that will be used for parsing protocol expressions (default {@link SerializationProtocol#REGISTRY}).<br>
  *  This parser will insert one additional argument into array of additional parser args at index 4, in case of serialization index 5, that will be of type {@link Class} and it will contains information about class of object that is being unserialized or serialized using protocol!</br>
  *  
  * @author PETO
  * 
- * @since 1.3.0
+ * @since 1.3.0 (separated from ObjectConverter since 1.3.7)
  */
 public class ProtocolConverter implements DataConverter 
 {
@@ -70,6 +70,8 @@ public class ProtocolConverter implements DataConverter
 	 * @since 1.0.0 (moved to {@link SerializableBase64Converter} since 1.3.0 and since 1.3.5 into {@link ObjectConverter})
 	 */
 	protected boolean useBase64IfCan = false;
+	
+	protected boolean allowStaticMemberInvocation = false;
 	
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... compilerArgs)
@@ -99,11 +101,11 @@ public class ProtocolConverter implements DataConverter
 	 */
 	protected Object parse(ParserRegistry myHomeRegistry, Class<?> objClass, String str, Object... compilerArgs)
 	{
-		if (objClass == IsSelectorScope.class) 
+		if (objClass == IsSelectorScope.class) //Handle css-like selector scope to variable assignment
 		{
 			StringBuilder sb = new StringBuilder(str);
 			sb.setCharAt(str.indexOf(' '), '=');
-			return myHomeRegistry.parse(sb.toString(), compilerArgs);
+			return myHomeRegistry.parse(sb.toString(), compilerArgs); //Should work only when ObjectConverter and VariableConverter are present...
 		}
 
 		if (compilerArgs.length < 5)
@@ -116,6 +118,12 @@ public class ProtocolConverter implements DataConverter
 		if (!isOneOf(args[0].charAt(0), '{', '[') && (nameIndex = args[0].indexOf("::")) > -1) //Is static member invocation
 		{
 			String memberName = args[0].substring(nameIndex + 2);
+			if (!isAllowStaticMemberInvocation())
+			{
+				LogProvider.instance.logErr("Invocation of static member \"" + memberName + "\" from class \"" + objClass.getName() + "\" was denied because this feature is disabled by default for security reasons!", null);
+				return null;
+			}
+				
 			if (args.length > 1)
 				return InvokeStaticFunc(objClass, oldObjectClass, memberName, parseAll(myHomeRegistry, args, 1, true, compilerArgs), compilerArgs);
 			
@@ -272,6 +280,26 @@ public class ProtocolConverter implements DataConverter
 	public void setUseBase64IfCan(boolean useBase64IfCan) 
 	{
 		this.useBase64IfCan = useBase64IfCan;
+	}
+
+	/**
+	 * @return True if invocation of static members (:: operator) is allowed (false by default)!
+	 * 
+	 * @since 1.3.7
+	 */
+	public boolean isAllowStaticMemberInvocation()
+	{
+		return allowStaticMemberInvocation;
+	}
+
+	/**
+	 * @param allowStaticMemberInvocation | Enable/disable the invocation of static members (:: operator) (false by default)!
+	 * 
+	 * @since 1.3.7
+	 */
+	public void setAllowStaticMemberInvocation(boolean allowStaticMemberInvocation) 
+	{
+		this.allowStaticMemberInvocation = allowStaticMemberInvocation;
 	}
 
 	/**

@@ -94,7 +94,7 @@ public class DebugParserRegistry extends ParserRegistry
 			}
 		}
 		
-		LogProvider.instance.logErr(DataConverter.class.getSimpleName() + ": Unable to convert \"" + obj == null ? "null" : obj.getClass().getName() + "\" to string because none of registered converters were aplicable for this object!", null);
+		LogProvider.instance.logErr("Unable to convert \"" + obj == null ? "null" : obj.getClass().getName() + "\" to string because none of registered converters were aplicable for this object!", null);
 		return null;
 	}
 	
@@ -149,7 +149,7 @@ public class DebugParserRegistry extends ParserRegistry
 		if (returnAsStringIfNotFound)
 			return str;
 
-		LogProvider.instance.logErr(DataParser.class.getSimpleName() + ": Unable to parse \"" + str + "\" because none of registred parsers were suitable!", null);
+		LogProvider.instance.logErr("Unable to parse \"" + str + "\" because none of registred parsers were suitable!", null);
 		return null;
 	}
 	

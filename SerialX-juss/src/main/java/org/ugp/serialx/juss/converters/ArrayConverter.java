@@ -97,7 +97,10 @@ public class ArrayConverter implements DataConverter
 					tabs = (int) args[1];
 
 				if (args.length > 2)
+				{
+					args = args.clone(); //Necessary for preventing this from affecting other objects and arrays...
 					args[2] = index + 1;
+				}
 				
 				Object[] elms = fromAmbiguousArray(obj);
 				StringBuilder sb = new StringBuilder();

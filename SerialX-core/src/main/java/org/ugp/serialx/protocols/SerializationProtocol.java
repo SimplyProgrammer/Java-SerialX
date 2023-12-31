@@ -30,7 +30,7 @@ public abstract class SerializationProtocol<T>
 	 * 
 	 * @since 1.3.0
 	 */
-	public static final ProtocolRegistry REGISTRY = new ProtocolRegistry(new UniversalObjectInstantiationProtocol<>(Object.class), new ListProtocol(), new MapProtocol(), new StringProtocol(), new ScopeProtocol(), new SelfSerializableProtocol(), new EnumProtocol());
+	public static final ProtocolRegistry REGISTRY = new ProtocolRegistry(/*This might be unsafe: new UniversalObjectInstantiationProtocol<>(Object.class),*/ new ListProtocol(), new MapProtocol(), new StringProtocol(), new ScopeProtocol(), new SelfSerializableProtocol(), new EnumProtocol());
 	
 	/**
 	 * This mode is for protocols that are used for serialization only!
@@ -191,7 +191,7 @@ public abstract class SerializationProtocol<T>
 		SerializationProtocol<O> prot = registry.GetProtocolFor(object, MODE_SERIALIZE);
 		if (prot == null)
 		{
-			LogProvider.instance.logErr(SerializationProtocol.class.getSimpleName() + ": Unable to serialize \"" + object + "\" because there is no registered and active protocol for serializing " + object.getClass() + "!", null);
+			LogProvider.instance.logErr("Unable to serialize \"" + object + "\" because there is no registered and active protocol for serializing " + object.getClass() + "!", null);
 			return null;
 		}
 		return prot.serialize(object);
@@ -231,7 +231,7 @@ public abstract class SerializationProtocol<T>
 		SerializationProtocol<O> prot = (SerializationProtocol<O>) registry.GetProtocolFor(objectClass, MODE_DESERIALIZE);
 		if (prot == null)
 		{
-			LogProvider.instance.logErr(SerializationProtocol.class.getSimpleName() + ": Unable to unserialize " + Arrays.toString(args) + " because there is no registered and active protocol for unserializing \"" + objectClass + "\"!", null);
+			LogProvider.instance.logErr("Unable to unserialize " + Arrays.toString(args) + " because there is no registered and active protocol for unserializing \"" + objectClass + "\"!", null);
 			return null;
 		}
 		return (O) prot.unserialize(objectClass, args);
@@ -294,7 +294,7 @@ public abstract class SerializationProtocol<T>
 		public void add(int index, SerializationProtocol<?> element) 
 		{
 			if (GetProtocolFor(element.applicableFor()) != null && element.applicableFor() != Object.class)
-				LogProvider.instance.logErr(getClass().getSimpleName() + ": Protocol applicable for \"" + element.applicableFor().getName() + "\" is already registred!", null);
+				LogProvider.instance.logErr("Protocol applicable for \"" + element.applicableFor().getName() + "\" is already registred!", null);
 			addDuplicatively(index, element);
 		}
 		

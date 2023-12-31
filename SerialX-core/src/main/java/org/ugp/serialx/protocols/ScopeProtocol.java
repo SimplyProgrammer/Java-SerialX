@@ -23,7 +23,7 @@ public class ScopeProtocol extends SerializationProtocol<GenericScope<?, ?>>
 	{
 		if (object.getClass() != Scope.class)
 			return new Object[] {object.castTo(Scope.class)};
-		throw new UnsupportedOperationException(getClass().getSimpleName() + ": You are trying to serialize GenericScope or Scope via protocol! This is not good and should not even be possible! Scopes are meant to be serialized via converters!");
+		throw new UnsupportedOperationException("You are trying to serialize GenericScope or Scope via protocol! This is not good and should not even be possible! Scopes are meant to be serialized via converters!");
 	}
 
 	@Override
