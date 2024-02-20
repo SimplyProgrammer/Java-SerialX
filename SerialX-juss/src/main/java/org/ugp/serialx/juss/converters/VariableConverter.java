@@ -14,8 +14,10 @@ import java.util.Map.Entry;
 import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
+import org.ugp.serialx.Utils;
 import org.ugp.serialx.Utils.NULL;
 import org.ugp.serialx.converters.DataConverter;
+import org.ugp.serialx.converters.DataParser;
 
 /**
  * This converter is capable of converting {@link Map.Entry} and reading variables from {@link Scope} via "$"!
@@ -70,7 +72,7 @@ public class VariableConverter implements DataConverter
 				
 				if (enrty.length > 1 && !objString.isEmpty())
 				{
-					obj = NULL.toOopNull(myHomeRegistry.parse(objString, args));
+					obj = myHomeRegistry.parse(objString, args);
 				}
 
 				for (int i = 0; i < enrty.length-1; i++)
@@ -105,12 +107,38 @@ public class VariableConverter implements DataConverter
 			}
 			else if (arg.charAt(0) == '$' && !contains(arg, ' ', '+', '-', '*', '/', '%', '>', '<', '=', '&', '|', '^', '?', '='))
 			{
+//				Object obj; 
+//				if ((arg = fastReplace(arg, "$", "")).indexOf('.') > -1)
+//				{
+//					Object[] path = splitValues(fastReplace(fastReplace(arg, "::new", ""), "::class", ""), '.');
+//					GenericScope<Object, Object> sc = (GenericScope<Object, Object>) scope.getGenericScope(Arrays.copyOfRange(path, 0, path.length-1)); //TODO: Prevent neccesity of scope parent inheritance.
+//					obj = sc == null ? null : sc.variables().get(path[path.length-1]);
+//					/*if (sc == null || !sc.containsVariable(tree[tree.length-1]))
+//						LogProvider.instance.logErr("Variable \"" + tree[tree.length-1] + "\" was not declared in \"" + arg.substring(0, arg.length() - tree[tree.length-1].length() - 1) + "\"! Defaulting to null!");*/
+//				}
+//				else
+//				{
+//					String str = fastReplace(fastReplace(arg, "::new", ""), "::class", "");
+//					/*if (!scope.containsVariable(str))
+//						LogProvider.instance.logErr("Variable \"" + str + "\" was not declared! Defaulting to null!");*/
+//					obj = scope.variables().get(str);
+//				}
+				
 				Object obj; 
 				if ((arg = fastReplace(arg, "$", "")).indexOf('.') > -1)
 				{
-					Object[] tree = splitValues(fastReplace(fastReplace(arg, "::new", ""), "::class", ""), '.');
-					GenericScope<Object, Object> sc = (GenericScope<Object, Object>) scope.getGenericScope(Arrays.copyOfRange(tree, 0, tree.length-1)); //TODO: Prevent neccesity of scope parent inheritance.
-					obj = sc == null ? null : sc.variables().get(tree[tree.length-1]);
+					Object[] path = splitValues(fastReplace(fastReplace(arg, "::new", ""), "::class", ""), '.');
+					if ((obj = scope.get(path)) == null && !scope.variables().containsKey(path[0]))
+					{
+						for (GenericScope<Object, Object> parent = scope.getParent(); parent != null; parent = parent.getParent())
+							if (parent.variables().containsKey(path[0]))
+							{
+								obj = parent.get(path);
+								break;
+							}
+					}
+						
+//					GenericScope<Object, Object> sc = (GenericScope<Object, Object>) scope.getGenericScope(Arrays.copyOfRange(path, 0, path.length-1)); //TODO: Prevent neccesity of scope parent inheritance.
 					/*if (sc == null || !sc.containsVariable(tree[tree.length-1]))
 						LogProvider.instance.logErr("Variable \"" + tree[tree.length-1] + "\" was not declared in \"" + arg.substring(0, arg.length() - tree[tree.length-1].length() - 1) + "\"! Defaulting to null!");*/
 				}
@@ -119,9 +147,16 @@ public class VariableConverter implements DataConverter
 					String str = fastReplace(fastReplace(arg, "::new", ""), "::class", "");
 					/*if (!scope.containsVariable(str))
 						LogProvider.instance.logErr("Variable \"" + str + "\" was not declared! Defaulting to null!");*/
-					obj = scope.variables().get(str);
+					if ((obj = scope.variables().getOrDefault(str, VOID)) == VOID)
+					{
+						for (GenericScope<Object, Object> parent = scope.getParent(); parent != null; parent = parent.getParent())
+							if ((obj = parent.variables().getOrDefault(str, VOID)) != VOID)
+								break;
+					}
 				}
 
+				if (obj == null || obj == VOID) // Was not found...
+					return null;
 				return arg.endsWith("::class") ? obj.getClass() : arg.endsWith("::new") ? Clone(obj) : obj;
 			}
 		}

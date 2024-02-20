@@ -286,6 +286,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * @return Value of variable at given path. If no path is given (length is 0) then this {@link GenericScope} will be returned.<br>
 	 * If 1 path argument is given then this behaves similarly to {@link GenericScope#get(Object)}.<br>
 	 * if 2+ path arguments are given then it will search the sub-scopes and return first match value. For example:<br>
+	 * In either way, if there is no suitable result then null will be returned!<br>
 	 * Consider this scope tree:<br>
 	 * <pre>
 	 * <code>
@@ -361,10 +362,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 */
 	public boolean containsVariable(KeyT variableKey) 
 	{
-		for (Map.Entry<KeyT, ValT> ent : varEntrySet())
-			if (ent.getKey().equals(variableKey))
-				return true;
-		return false;
+		return variables().containsKey(variableKey);
 	}
 	
 	/**
@@ -792,9 +790,9 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * 
 	 * @since 1.2.0
 	 */
-	public GenericScope<?, ?> getParent()
+	public <T extends GenericScope<?, ?>> T getParent()
 	{
-		return getParent(1);	
+		return (T) getParent(1);	
 	}
 	
 	/**
@@ -806,15 +804,15 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * 
 	 * @since 1.3.2
 	 */
-	public GenericScope<?, ?> getParent(int depth)
+	public <T extends GenericScope<?, ?>> T getParent(int depth)
 	{
 		if (depth < 1)
-			return this;
+			return (T) this;
 		
 		GenericScope<?, ?> parentsParent;
 		if (depth == 1 || parent == null || (parentsParent = parent.getParent(--depth)) == null)
-			return parent;
-		return parentsParent;
+			return (T) parent;
+		return (T) parentsParent;
 	}
 	
 	/**

@@ -855,7 +855,7 @@ public final class Utils {
 	 *
 	 * @since 1.2.2
 	 */
-	public static final class NULL
+	public static final class NULL //TODO: REMOVE!!!!
 	{
 		public static Object toOopNull(Object obj)
 		{
@@ -871,7 +871,7 @@ public final class Utils {
 		@Override
 		public String toString() 
 		{
-			return "null";
+			return "NULL";
 		}
 	}
 }
