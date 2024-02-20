@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 import org.ugp.serialx.Utils;
 import org.ugp.serialx.juss.JussSerializer;
+import org.ugp.serialx.juss.converters.ObjectConverter;
 
 /**
  * Testing random algorithms...
@@ -15,6 +16,8 @@ import org.ugp.serialx.juss.JussSerializer;
 public class Testing {
 
 	public static void main(String[] args) throws Exception {
+		
+		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true);
 		
 		File file = new File("src/examples/implementations/test.juss");
 		

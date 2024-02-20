@@ -1,11 +1,12 @@
 package examples;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class Bar extends Foo //Sample object that inheres
 {
 	byte by0 = (byte) 142; 
-	short s0 = 555;
+	short s0 = 515;
 	double d2 = 5;
 	Object sampleParent;
 	
@@ -15,19 +16,32 @@ public final class Bar extends Foo //Sample object that inheres
 		return "Bar[" + a + " " + b + " " + c + " " + d + " " + f + " " + ch + " " + s + " " + nah + " " + l + " " + by0 + " " + s0 + " " + sampleParent+"]";
 	}
 	
-	public static class BarProtocol extends FooProtocol //Protocol to serialize Bar
+	public Bar(Object parent)
+	{
+		this.sampleParent = parent;
+	}
+
+	@Override
+	public boolean equals(Object obj) 
+	{
+		Bar other = (Bar) obj;
+		return super.equals(obj) && by0 == other.by0 && Double.doubleToLongBits(d2) == Double.doubleToLongBits(other.d2) && s0 == other.s0
+				&& Objects.equals(sampleParent, other.sampleParent);
+	}
+
+	public static class BarProtocol extends FooProtocol //Protocol to serialize Bar (and Foo)
 	{
 		@Override
 		public Object[] serialize(Foo object) 
 		{
-			return new Object[] {object.a, object.b, object.c, object.d, object.f, object.ch, object.s, object.nah, object.l, ((Bar) object).by0, ((Bar) object).s0, "${$parent}" /*If serialized with JussSerializer this will try to get value of parent property from certain scope!*/};
+			return new Object[] {object.a, object.b, object.c, object.d, object.f, object.ch, object.s, object.nah, object.l, ((Bar) object).by0, ((Bar) object).s0, ((Bar) object).sampleParent};
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public Foo unserialize(Class<? extends Foo> objectClass, Object... args) 
 		{
-			Bar f = new Bar();
+			Bar f = new Bar(null);
 			f.a = (int) args[0];
 			f.b = (int) args[1];
 			f.c = (int) args[2];

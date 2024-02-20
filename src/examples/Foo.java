@@ -2,7 +2,9 @@ package examples;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -16,14 +18,14 @@ public class Foo //Sample object to be serialized using its protocol!
 	char ch = 'l';
 	String s = "a"; 
 	boolean nah = false;
-	List<Object> l = new CopyOnWriteArrayList<Object>(Arrays.asList(6, 45, 464654, 9.9, 56f));
+	List<Object> l = new CopyOnWriteArrayList<Object>();
 	
 	public Foo() 
 	{
 		l.add(6);
 		l.add(9);
 		l.add(13);
-		l.add(new Random());
+		l.add(new HashMap<>());
 		l.add(new ArrayList<>(Arrays.asList(4, 5, 6d, new ArrayList<>(), "hi")));
 	}
 	
@@ -33,6 +35,16 @@ public class Foo //Sample object to be serialized using its protocol!
 		return "Foo[" + a + " " + b + " " + c + " " + d + " " + f + " " + ch + " " + s + " " + nah + " " + l + "]";
 	}
 	
+
+	@Override
+	public boolean equals(Object obj) {
+		Foo other = (Foo) obj;
+		return a == other.a && b == other.b && c == other.c && ch == other.ch
+				&& Double.doubleToLongBits(d) == Double.doubleToLongBits(other.d)
+				&& Float.floatToIntBits(f) == Float.floatToIntBits(other.f) && l.equals(other.l)
+				&& nah == other.nah && s.equals(other.s);
+	}
+
 	public static class FooProtocol extends SerializationProtocol<Foo> //Protocol to serialize Foo
 	{
 		@Override

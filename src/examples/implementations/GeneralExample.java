@@ -1,18 +1,25 @@
 package examples.implementations;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
-import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.Scope;
+import org.ugp.serialx.converters.StringConverter;
 import org.ugp.serialx.devtools.SerializationDebugger;
 import org.ugp.serialx.juss.JussSerializer;
+import org.ugp.serialx.juss.converters.ObjectConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
 
 import examples.Bar;
@@ -21,7 +28,7 @@ import examples.Foo;
 /**
  * This example is overview of general SerialX API functionalities!
  * We will look at how to serialize and deserialize objects using file. We will also create protocols for our objects as well as for already existing ones!
- * This example is also for benchmarking!
+ * This example is also for testing and benchmarking!
  * 
  * @author PETO
  * 
@@ -29,6 +36,14 @@ import examples.Foo;
  */
 public class GeneralExample 
 {
+	//Test constants...
+	public static final String TEST_1 = "father";
+	public static final String TEST_2 = "has an event horizon... //lol";
+	
+	public static final String TEST_3 = "some string";
+	public static double TEST_4 = 5;
+	public static Scope TEST_5 = new Scope();
+	
 	@Test
 	public void test() throws Exception {
 		GeneralExample.main(new String[0]);
@@ -73,30 +88,39 @@ public class GeneralExample
 
 		//------------------------------------------- Generating mock data -------------------------------------------
 		
-		Random r = new Random();
+		Random r = new Random(123);
 		List<Object> list = new ArrayList<>();
-		for (int i = 0; i < 8; i++)
+		for (int i = 0; i < 10; i++)
 			list.add(r.nextBoolean() ? r.nextInt(i+1) : r.nextBoolean());
+		list.add(new LinkedList<>(list));
 
 		HashMap<String, Object> vars = new HashMap<>(); //Variables to serialize
-		vars.put("yourMom", "is heavier than sun... //lol");
+		vars.put("yourMom", TEST_2);
 		vars.put("num", 6);
 		
 		int[][] ints = {{1, 2, 3}, {4, 5, 4}, {3, 2, 1}};
 		
+		Scope someScope = new Scope(111, 222, new Scope(new ArrayList<>(Arrays.asList("some", "elements", "...", new Scope('c', TEST_5)))));
+		Scope neastedScope1 = new Scope(), neastedScope2 = new Scope();
+		neastedScope2.put("tst4", TEST_4);
+		neastedScope2.add(StringConverter.DirectCode("$num"));
+		neastedScope1.put("neastedTest", neastedScope2);
+		someScope.put("test", neastedScope1);
 
 		//------------------------------------------- Serializing -------------------------------------------
 		
+		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true); //This is necessary since 1.3.7
+		
 		JussSerializer serializer = new JussSerializer(vars); //Creating an instance of Serializer that will serialize objects using Juss! Serializer is instance of scope so it behaves like so!										   
-		//Adding independent values																		         																										 Invokation of static members of this class (calling method "println" and obtaining "hello" field as argument! 
-		serializer.addAll("some string", r, list, serializer.Comment("Size of array"), serializer.Var("arrSize", list.size()), new Bar(), 1, 2.2, 3, 'A', true, false, null, ints, serializer.Code("$num"), new Scope(), serializer.StaticMember(GeneralExample.class, "println", serializer.StaticMember(GeneralExample.class, "hello")));
-											    //This will insert an comment          Another way to add variable except Map<String, Object> 				     				   $ is used to obtain value from variable
+		//Adding independent values																		         																															Invokation of static members of this class (calling method "println" and obtaining "hello" field as argument! 
+		serializer.addAll(TEST_3, r, list, ints, someScope, serializer.Comment("Size of array"), serializer.Var("arrSize", list.size()), new Bar(serializer.Code("$parent")), 1, 2.2, 3, 'A', true, false, null, serializer.Code("$num"), serializer.StaticMember(GeneralExample.class, "println", serializer.StaticMember(GeneralExample.class, "hello")));
+											    			//This will insert an comment          Another way to add variable except put method			     				   									$ is used to obtain value from variable
 		serializer.setGenerateComments(true); //Enabling comment generation
 		
 		serializer.getParsers().resetCache(); //Enabling cache, this can improve performance when serializing a lot of data (not case of this example)!
 
 		double t0 = System.nanoTime();			
-		serializer.SerializeTo(f); //Saving content of serializer to file (serializing)
+//		serializer.SerializeTo(f); //Saving content of serializer to file (serializing)
 		double t = System.nanoTime();						  
 		System.out.println("Write: " + (t-t0)/1000000 + " ms"); //Write benchmark
 		
@@ -105,7 +129,7 @@ public class GeneralExample
 
 		JussSerializer deserializer = new JussSerializer(); //Creating instance of Serializer that will deserialize objects serialized in Juss (same class is responsible for serializing and deserializing)!
 		deserializer.setParsers(JussSerializer.JUSS_PARSERS_AND_OPERATORS); //Doing this will allow us to use operators from org.ugp.serialx.converters.operators while deserializing!
-		deserializer.put("parent", "father"); //Setting global variables
+		deserializer.put("parent", TEST_1); //Setting global variables
 		
 		deserializer.getParsers().resetCache(); //Enabling cache, this can improve performance when serializing a lot of data (not case of this example)!
 		
@@ -119,8 +143,22 @@ public class GeneralExample
 		deserializer = (JussSerializer) deserializer.filter(obj -> obj != null); //This will filter away every null value and variable!
 
 		//Printing values and variables of scope!
-		System.out.println(deserializer.variables());
-		System.out.println(deserializer.values());
+		System.out.println(deserializer.getSubScope(0).getScope("neastedTest").<Object>get(new String[] {"num", "num"}));
+		
+		//Performing test
+		assertEquals(deserializer.getString("parent"), TEST_1);
+		assertEquals(deserializer.getString("yourMom"), TEST_2);
+		assertEquals(deserializer.getInt("arrSize"), list.size());
+		
+		assertEquals(deserializer.getScope(4).getScope("neastedTest").getDouble("tst4"), TEST_4, 0);
+		assertEquals(deserializer.getScope(4).getScope("test", "neastedTest").getParent(2), deserializer.getScope(4));
+		assertEquals(((Scope) deserializer.getScope(4).getSubScope(0).<List<?>>get(0).get(3)).getSubScope(0).totalSize(), TEST_5.totalSize());
+		assertTrue(deserializer.filter(obj -> obj.equals(true)).get(0));
+		
+		assertEquals(deserializer.get(0), TEST_3);
+		assertEquals(deserializer.get(2), list);
+		assertEquals(deserializer.<Object>get(5), new Bar(TEST_1));
+		assertArrayEquals(deserializer.get(3), ints);
  	}
 	
 	//We can invoke static members in JUSS!

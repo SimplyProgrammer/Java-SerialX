@@ -140,21 +140,21 @@ public class Benchmarks {
 		double baseCof = base;
 		for (int ch; end >= start; end--) //Parsing
 		{	
-			if ((ch = str.charAt(end)) == '-')
+			if ((ch = str.charAt(end)) == '-') // Neg
 				result = -result;
-			else if (ch == '.') 
+			else if (ch == '.') //Decimal
 			{
 				result /= baseCof;
 				baseCof = 1;
 				if (type == 0)
 					type = 'd';
 			}
-			else if (base == 10 && (ch | ' ') == 'e')
+			else if (base == 10 && (ch | ' ') == 'e') //Handle E-notation
 			{
 				baseCof = Math.pow(base, result);
 				result = 0;
 			}
-			else if (ch != '_' && ch != '+') 
+			else if (ch != '_' && ch != '+')
 			{
 				result += (ch > '9' ? (ch | ' ') - 'a' + 10 : ch - '0') * baseCof;
 				baseCof *= base;

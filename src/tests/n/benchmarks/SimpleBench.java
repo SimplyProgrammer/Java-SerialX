@@ -1,12 +1,12 @@
 package tests.n.benchmarks;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
+import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.DataParser.ParserRegistry;
@@ -37,6 +37,8 @@ public class SimpleBench {
 		return (RESULT[]) results;
 	}
 	
+	
+	
 	static Random rand = new Random(12345);
 	public static void main(String[] args) throws Exception {
 		Callable<Object> data = () -> rand.nextBoolean() ? rand.nextInt(100000) : rand.nextBoolean();
@@ -44,13 +46,20 @@ public class SimpleBench {
 		ParserRegistry reg = DataParser.REGISTRY;
 		DataConverter benchSubject = new NumberConverter();
 		
-		List<Object> lol = new ArrayList<>();
+		GenericScope<String, Object> hashMap = new GenericScope<>();
+
+        for (int i = 0; i < 1000; i++) {
+            String key = "Key" + i;
+            Object value = i;
+            hashMap.put(key, value);
+        }
+        
+        hashMap.put("hii", null);
+
 
 
 		double t0 = System.nanoTime();
-		for (int i = 0; i < 1_000_000; i++) {
-			lol.add(i);
-		}
+		System.out.println( hashMap.variables().getOrDefault("hiii", DataParser.VOID) );
 		double t = System.nanoTime();
 		System.out.println((t-t0)/1000000);
 
@@ -60,4 +69,5 @@ public class SimpleBench {
 //		}, 10);
 //		System.out.println(results[5].toString());
 	}
+	
 }

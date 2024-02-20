@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.juss.JussSerializer;
+import org.ugp.serialx.juss.converters.ObjectConverter;
 import org.ugp.serialx.juss.converters.VariableConverter;
 
 import examples.MemberInvokeOperator;
@@ -26,6 +27,8 @@ public class AdvancedParsersExample
 {
 	public static void main(String[] args) throws Exception 
 	{
+		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true); //This is necessary since 1.3.7
+		
 		//In this case JussSerializer acts as an interpreter for our custom scripting language.
 		JussSerializer interpreter = new JussSerializer();
 		
@@ -37,7 +40,7 @@ public class AdvancedParsersExample
 		interpreter.LoadFrom(new File("src/examples/implementations/simpleScript.juss")); //Running our script from simpleScript.juss file!
 		
 		//Printing the results of our script...
-		//System.out.println(interpreter); //This is not necessary in this case!
+		System.out.println(interpreter); //This is not necessary in this case!
 		
 	}
 }
