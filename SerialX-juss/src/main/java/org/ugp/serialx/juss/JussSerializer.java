@@ -701,13 +701,13 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * @param variable | Variable to clone!
 	 * @param defaultValue | Default value to return.
 	 * 
-	 * @return Clone of value stored by variable with inserted name or defaultValue if there is no such a one!
+	 * @return Clone of value stored by variable with inserted name or defaultValue if there is no such a one or given key contains null!
 	 * <br><br>
 	 * Note: Cloning is done by {@link Serializer#Clone(Object, Registry, Object[], Object...))}!
 	 * 
 	 * @since 1.3.2
 	 */
-	public <T> T cloneOf(String variableName , T defaultValue)
+	public <T> T cloneOf(String variableName, T defaultValue)
 	{
 		T obj = get(variableName , defaultValue);
 		if (obj == defaultValue)

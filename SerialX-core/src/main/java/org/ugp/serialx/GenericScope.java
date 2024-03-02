@@ -267,7 +267,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * @param variableKey | Variables name.
 	 * @param defaultValue | Default value to return.
 	 * 
-	 * @return Value of variable with name or defaultValue if there is no such a one!
+	 * @return Value of variable with name or defaultValue if there is no such a one or given key contains null!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -337,7 +337,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * @param cls | Default value to return.
 	 * @param defaultValue | Class that you want the obtained object to be converted into! Exact conversion algorithm can differ based on its implementations.
 	 * 
-	 * @return Value of variable with name given converted to object of cls or defaultValue if there is no such a one!
+	 * @return Value of variable with name given converted to object of cls or defaultValue if there is no such a one or given key contains null!
 	 * 
 	 * @throws Exception | If converting to object of cls failed from some reason! This can differ from implementation to implementation! By default it uses {@link GenericScope#toObject(cls)}
 	 * 
@@ -792,7 +792,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 */
 	public <T extends GenericScope<?, ?>> T getParent()
 	{
-		return (T) getParent(1);	
+		return getParent(1);	
 	}
 	
 	/**
@@ -804,6 +804,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * 
 	 * @since 1.3.2
 	 */
+	@SuppressWarnings("unchecked")
 	public <T extends GenericScope<?, ?>> T getParent(int depth)
 	{
 		if (depth < 1)

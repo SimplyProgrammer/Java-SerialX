@@ -159,7 +159,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * @param defaultValue | Default value to return.
 	 * 
-	 * @return Byte value of variable with name or defaultValue if there is no such a one!
+	 * @return Byte value of variable with name or defaultValue if there is no such a one or given key contains null!
 	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
 	 * 
 	 * @since 1.2.5
@@ -186,7 +186,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * @param defaultValue | Default value to return.
 	 * 
-	 * @return Byte value of variable with name or defaultValue if there is no such a one!
+	 * @return Byte value of variable with name or defaultValue if there is no such a one or given key contains null!
 	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
 	 * 
 	 * @since 1.2.5
@@ -213,7 +213,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * @param defaultValue | Default value to return.
 	 * 
-	 * @return Int value of variable with name or defaultValue if there is no such a one!
+	 * @return Int value of variable with name or defaultValue if there is no such a one or given key contains null!
 	 * Int will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
 	 * 
 	 * @since 1.2.5
@@ -240,7 +240,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * @param defaultValue | Default value to return.
 	 * 
-	 * @return Long value of variable with name or defaultValue if there is no such a one!
+	 * @return Long value of variable with name or defaultValue if there is no such a one or given key contains null!
 	 * Long will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
 	 * 
 	 * @since 1.2.5
@@ -267,7 +267,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * @param defaultValue | Default value to return.
 	 * 
-	 * @return Float value of variable with name or defaultValue if there is no such a one!
+	 * @return Float value of variable with name or defaultValue if there is no such a one or given key contains null!
 	 * Float will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
 	 * 
 	 * @since 1.2.5
@@ -294,7 +294,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * @param defaultValue | Default value to return.
 	 * 
-	 * @return Double value of variable with name or defaultValue if there is no such a one!
+	 * @return Double value of variable with name or defaultValue if there is no such a one or given key contains null!
 	 * Double will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
 	 * 
 	 * @since 1.2.5
@@ -328,7 +328,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * @param defaultValue | Default value to return.
 	 * 
-	 * @return String value of variable with name or defaultValue if there is no such a one!
+	 * @return String value of variable with name or defaultValue if there is no such a one or given key contains null!
 	 * String will be also parsed from any object using {@link Object#toString()}!
 	 * 
 	 * @since 1.2.5
@@ -355,7 +355,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * @param defaultValue | Default value to return.
 	 * 
-	 * @return Char value of variable with name or defaultValue if there is no such a one!
+	 * @return Char value of variable with name or defaultValue if there is no such a one or given key contains null!
 	 * Char will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
 	 * 
 	 * @since 1.2.5
@@ -389,7 +389,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * @param defaultValue | Default value to return.
 	 * 
-	 * @return Boolean value of variable with name or defaultValue if there is no such a one!
+	 * @return Boolean value of variable with name or defaultValue if there is no such a one or given key contains null!
 	 * Boolean will be also parsed from {@link Number}, or {@link CharSequence} if possible!
 	 * 
 	 * @since 1.2.5
@@ -715,7 +715,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param objClass | Object of class to create.
 	 * @param defaultValue | Default value to return.
 	 * 
-	 * @return Value of variable with name or defaultValue if there is no such a one! If there is no Scope<Object, ?> stored by variableWithScope this function behaves same as {@link Scope#get(String, Object)}!
+	 * @return Value of variable with name or defaultValue if there is no such a one or given key contains null! If there is no Scope<Object, ?> stored by variableWithScope this function behaves same as {@link Scope#get(String, Object)}!
 	 * If variableWithScope contains {@link GenericScope} like it supposed to, then values of scope are parsed to {@link SerializationProtocol} of objClass.
 	 * 
 	 * @see Serializer#PROTOCOL_REGISTRY
@@ -736,7 +736,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param defaultValue | Default value to return.
 	 * @param protocolsToUse | Registry of protocols to use.
 	 * 
-	 * @return Value of variable with name or defaultValue if there is no such a one! If there is no Scope<Object, ?> stored by variableWithScope this function behaves same as {@link Scope#get(String, Object)}!
+	 * @return Value of variable with name or defaultValue if there is no such a one or given key contains null! If there is no Scope<Object, ?> stored by variableWithScope this function behaves same as {@link Scope#get(String, Object)}!
 	 * If variableWithScope contains {@link GenericScope} like it supposed to, then values of scope are parsed to {@link SerializationProtocol} of objClass.
 	 * 
 	 * @see Serializer#PROTOCOL_REGISTRY

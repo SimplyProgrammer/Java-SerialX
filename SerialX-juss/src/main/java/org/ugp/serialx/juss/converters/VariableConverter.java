@@ -1,6 +1,5 @@
 package org.ugp.serialx.juss.converters;
 
-import static org.ugp.serialx.Utils.Clone;
 import static org.ugp.serialx.Utils.contains;
 import static org.ugp.serialx.Utils.fastReplace;
 import static org.ugp.serialx.Utils.multilpy;
@@ -13,23 +12,20 @@ import java.util.Map.Entry;
 
 import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.LogProvider;
-import org.ugp.serialx.Scope;
-import org.ugp.serialx.Utils;
-import org.ugp.serialx.Utils.NULL;
 import org.ugp.serialx.converters.DataConverter;
-import org.ugp.serialx.converters.DataParser;
+import org.ugp.serialx.converters.VariableParser;
 
 /**
- * This converter is capable of converting {@link Map.Entry} and reading variables from {@link Scope} via "$"!
- * {@link VariableConverter#parse(String, Object...)} required one additional Scope argument in args... argument!
- * Its case insensitive!<br>
+ * This converter is capable of converting {@link Map.Entry} and reading variables from {@link GenericScope} by using "$"!
+ * {@link VariableConverter#parse(String, Object...)} required one additional Scope argument in args... at index 0!
+ * Its case sensitive!<br>
  * Exact outputs of this converter are based on inserted scope!
  * 
  * @author PETO
  *	
  * @since 1.3.0
  */
-public class VariableConverter implements DataConverter
+public class VariableConverter extends VariableParser implements DataConverter
 {
 	protected boolean jsonStyle;
 	
@@ -57,7 +53,7 @@ public class VariableConverter implements DataConverter
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args) 
+	public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args)
 	{
 		if (args.length > 0 && arg.length() > 0 && args[0] instanceof GenericScope)
 		{
@@ -69,7 +65,7 @@ public class VariableConverter implements DataConverter
 
 				Object obj = null;
 				String objString = enrty[enrty.length-1];
-				
+
 				if (enrty.length > 1 && !objString.isEmpty())
 				{
 					obj = myHomeRegistry.parse(objString, args);
@@ -93,7 +89,7 @@ public class VariableConverter implements DataConverter
 									sc.put(genericVar ? myHomeRegistry.parse(tree[tree.length-1], true, null, args) : tree[tree.length-1], obj);
 							}
 							else
-								LogProvider.instance.logErr("Variable \"" + tree[tree.length-2] +"\" was not declared as scope in its scope so variable \"" + tree[tree.length-1] +"\" cant be set to \"" + obj + "\"!", null);
+								LogProvider.instance.logErr("Variable \"" + tree[tree.length-2] + "\" was not declared as scope in its scope so variable \"" + tree[tree.length-1] +"\" cant be set to \"" + obj + "\"!", null);
 						}
 						else if (obj == VOID)
 							scope.variables().remove(enrty[i]);
@@ -101,64 +97,13 @@ public class VariableConverter implements DataConverter
 							scope.put(genericVar ? myHomeRegistry.parse(enrty[i], true, null, args) : enrty[i], obj);
 					}
 				}
+
 				if (arg.charAt(0) == '$')
 					return obj;
 				return VOID;
 			}
-			else if (arg.charAt(0) == '$' && !contains(arg, ' ', '+', '-', '*', '/', '%', '>', '<', '=', '&', '|', '^', '?', '='))
-			{
-//				Object obj; 
-//				if ((arg = fastReplace(arg, "$", "")).indexOf('.') > -1)
-//				{
-//					Object[] path = splitValues(fastReplace(fastReplace(arg, "::new", ""), "::class", ""), '.');
-//					GenericScope<Object, Object> sc = (GenericScope<Object, Object>) scope.getGenericScope(Arrays.copyOfRange(path, 0, path.length-1)); //TODO: Prevent neccesity of scope parent inheritance.
-//					obj = sc == null ? null : sc.variables().get(path[path.length-1]);
-//					/*if (sc == null || !sc.containsVariable(tree[tree.length-1]))
-//						LogProvider.instance.logErr("Variable \"" + tree[tree.length-1] + "\" was not declared in \"" + arg.substring(0, arg.length() - tree[tree.length-1].length() - 1) + "\"! Defaulting to null!");*/
-//				}
-//				else
-//				{
-//					String str = fastReplace(fastReplace(arg, "::new", ""), "::class", "");
-//					/*if (!scope.containsVariable(str))
-//						LogProvider.instance.logErr("Variable \"" + str + "\" was not declared! Defaulting to null!");*/
-//					obj = scope.variables().get(str);
-//				}
-				
-				Object obj; 
-				if ((arg = fastReplace(arg, "$", "")).indexOf('.') > -1)
-				{
-					Object[] path = splitValues(fastReplace(fastReplace(arg, "::new", ""), "::class", ""), '.');
-					if ((obj = scope.get(path)) == null && !scope.variables().containsKey(path[0]))
-					{
-						for (GenericScope<Object, Object> parent = scope.getParent(); parent != null; parent = parent.getParent())
-							if (parent.variables().containsKey(path[0]))
-							{
-								obj = parent.get(path);
-								break;
-							}
-					}
-						
-//					GenericScope<Object, Object> sc = (GenericScope<Object, Object>) scope.getGenericScope(Arrays.copyOfRange(path, 0, path.length-1)); //TODO: Prevent neccesity of scope parent inheritance.
-					/*if (sc == null || !sc.containsVariable(tree[tree.length-1]))
-						LogProvider.instance.logErr("Variable \"" + tree[tree.length-1] + "\" was not declared in \"" + arg.substring(0, arg.length() - tree[tree.length-1].length() - 1) + "\"! Defaulting to null!");*/
-				}
-				else
-				{
-					String str = fastReplace(fastReplace(arg, "::new", ""), "::class", "");
-					/*if (!scope.containsVariable(str))
-						LogProvider.instance.logErr("Variable \"" + str + "\" was not declared! Defaulting to null!");*/
-					if ((obj = scope.variables().getOrDefault(str, VOID)) == VOID)
-					{
-						for (GenericScope<Object, Object> parent = scope.getParent(); parent != null; parent = parent.getParent())
-							if ((obj = parent.variables().getOrDefault(str, VOID)) != VOID)
-								break;
-					}
-				}
-
-				if (obj == null || obj == VOID) // Was not found...
-					return null;
-				return arg.endsWith("::class") ? obj.getClass() : arg.endsWith("::new") ? Clone(obj) : obj;
-			}
+			
+			return parse(myHomeRegistry, arg, scope, args); //Reading vars from scope...
 		}
 		return CONTINUE;
 	}
@@ -176,7 +121,9 @@ public class VariableConverter implements DataConverter
 
 			boolean jsonStyle = isJsonStyle(), genericVar = false;                
 			Object key = (genericVar = !((key = var.getKey()) instanceof String)) ? myHomeRegistry.toString(key, args) : key, val = var.getValue();
-			return new StringBuilder().append(jsonStyle && !genericVar ? "\""+key+"\"" : key).append(val instanceof Scope && !((Scope) val).isEmpty() ? (jsonStyle ? " : " : " =\n" + multilpy('\t', tabs)) : (jsonStyle ? " : " : " = ")).append(myHomeRegistry.toString(val, args));
+			return new StringBuilder().append(jsonStyle && !genericVar ? "\""+key+"\"" : key)
+					.append(val instanceof GenericScope && !((GenericScope<?, ?>) val).isEmpty() ? (jsonStyle ? " : " : " =\n" + multilpy('\t', tabs)) : (jsonStyle ? " : " : " = "))
+					.append(myHomeRegistry.toString(val, args));
 		}
 		return CONTINUE;
 	}
