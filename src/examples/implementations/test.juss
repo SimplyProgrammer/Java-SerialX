@@ -4,12 +4,26 @@
 //2 variables!
 //17 values!
 
-num = {num:6}; //Primitive data type: "6" the integer value! Stored by "num" variable!
+num = 6; //Primitive data type: "6" the integer value! Stored by "num" variable!
 yourMom = "has an event horizon... //lol"; //Object of java.lang.String: "has an event horizon... //lol"! Stored by "yourMom" variable!
 "some string"; //Object of java.lang.String: "some string"!
 java.util.Random 68284896517770L; //Object of java.util.Random: "java.util.Random@17d10166" serialized using examples.implementations.GeneralExample$1[java.util.Random]!
 ArrayList 0 0 T 1 3 0 5 T 5 6 {java.util.LinkedList 0 0 T 1 3 0 5 T 5 6}; //Object of java.util.ArrayList: "[0, 0, true, 1, 3, 0, 5, true, 5, 6, [0, 0, true, 1, 3, 0, 5, true, 5, 6]]" serialized using org.ugp.serialx.protocols.ListProtocol[java.util.Collection]!
 (1 2 3) (4 5 4) (3 2 1); //Primitive array [[I@1b9e1916 converted by org.ugp.serialx.juss.converters.ArrayConverter
+test2 =
+{
+	//Scope serialization summary:
+	//1 variables!
+	neastedTest =
+	{
+
+		//Scope serialization summary:
+		//1 variables!
+		tst4 = 7.0; //Primitive data type: "5.0" the double value! Stored by "tst4" variable!
+		lol = {a : 789};
+	}
+};
+
 {
 	//Scope serialization summary:
 	//1 variables!
@@ -21,13 +35,11 @@ ArrayList 0 0 T 1 3 0 5 T 5 6 {java.util.LinkedList 0 0 T 1 3 0 5 T 5 6}; //Obje
 		//1 variables!
 		neastedTest =
 		{
-				num = 3;
 			//Scope serialization summary:
 			//1 variables!
-			//1 values!
-
 			tst4 = 5.0; //Primitive data type: "5.0" the double value! Stored by "tst4" variable!
-			$num.num; //Manually inserted code!
+			lol = [];
+			$num;
 		}
 	};
 	111; //Primitive data type: "111" the integer value!
@@ -35,16 +47,16 @@ ArrayList 0 0 T 1 3 0 5 T 5 6 {java.util.LinkedList 0 0 T 1 3 0 5 T 5 6}; //Obje
 	{
 		//Scope serialization summary:
 		//1 values!
-		kokot = {
-				
-				hahahaah = $test.neastedTest.tst4;
-		}
 		ArrayList "some" "elements" "..." {
 			//Scope serialization summary:
 			//2 values!
 
 			'99'; //Primitive data type: "c" the character value!
 			{} //Empty scope!
+			{
+				haha2 = $test.neastedTest.lol.a::new;
+				hahahaah = $test.neastedTest.tst4;
+			}
 		}; //Object of java.util.ArrayList: "[some, elements, ..., Scope[c, Scope[]]]" serialized using org.ugp.serialx.protocols.ListProtocol[java.util.Collection]!
 	}
 };

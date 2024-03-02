@@ -143,7 +143,8 @@ public class GeneralExample
 		deserializer = (JussSerializer) deserializer.filter(obj -> obj != null); //This will filter away every null value and variable!
 
 		//Printing values and variables of scope!
-		System.out.println(deserializer.getSubScope(0).getScope("neastedTest").<Object>get(new String[] {"num", "num"}));
+		System.out.println(deserializer.variables());
+		System.out.println(deserializer.values());
 		
 		//Performing test
 		assertEquals(deserializer.getString("parent"), TEST_1);
