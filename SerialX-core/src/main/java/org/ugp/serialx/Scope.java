@@ -514,7 +514,7 @@ public class Scope extends GenericScope<String, Object>
 	 */
 	public String getString(int valueIndex)
 	{
-		return String.valueOf(get(valueIndex));
+		return String.valueOf((Object) get(valueIndex));
 	}
 	
 	/**

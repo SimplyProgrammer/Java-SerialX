@@ -2,7 +2,6 @@ package org.ugp.serialx.converters;
 
 import static org.ugp.serialx.Utils.Instantiate;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
-import static org.ugp.serialx.Utils.isOneOf;
 import static org.ugp.serialx.Utils.splitValues;
 
 import java.io.Serializable;
@@ -115,7 +114,7 @@ public class ProtocolConverter implements DataConverter
 		
 		String[] args = splitValues(str, ' ');
 		int nameIndex;
-		if (!isOneOf(args[0].charAt(0), '{', '[') && (nameIndex = args[0].indexOf("::")) > -1) //Is static member invocation
+		if ((args[0].charAt(0) | ' ') != '{' && (nameIndex = args[0].indexOf("::")) > -1) //Is static member invocation
 		{
 			String memberName = args[0].substring(nameIndex + 2);
 			if (!isAllowStaticMemberInvocation())

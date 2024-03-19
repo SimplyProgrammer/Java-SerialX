@@ -1,12 +1,10 @@
 package org.ugp.serialx.juss.converters;
 
 import static org.ugp.serialx.Utils.contains;
-import static org.ugp.serialx.Utils.fastReplace;
 import static org.ugp.serialx.Utils.multilpy;
 import static org.ugp.serialx.Utils.splitValues;
 
 import java.util.AbstractMap;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -17,13 +15,16 @@ import org.ugp.serialx.converters.VariableParser;
 
 /**
  * This converter is capable of converting {@link Map.Entry} and reading variables from {@link GenericScope} by using "$"!
- * {@link VariableConverter#parse(String, Object...)} required one additional Scope argument in args... at index 0!
+ * {@link VariableConverter#parse(String, Object...)} required one additional Scope argument in args... at index 0!<br>
+ * It manages assign operator <code>=</code> as well as access member operator also known as separator <code>"."</code>.<br>
  * Its case sensitive!<br>
  * Exact outputs of this converter are based on inserted scope!
  * 
  * @author PETO
  *	
  * @since 1.3.0
+ * 
+ * @see VariableParser
  */
 public class VariableConverter extends VariableParser implements DataConverter
 {
@@ -57,64 +58,68 @@ public class VariableConverter extends VariableParser implements DataConverter
 	{
 		if (args.length > 0 && arg.length() > 0 && args[0] instanceof GenericScope)
 		{
-			GenericScope<Object, Object> scope = (GenericScope<Object, Object>) args[0];
-			boolean genericVar = args.length > 4 && args[4] == GenericScope.class;
+			GenericScope<?, Object> scope = (GenericScope<?, Object>) args[0];
 			if (isVarAssignment(arg))
 			{
-				String[] enrty = splitValues(arg, 0, false, new char[] {'?'}, '=', ':');
+				boolean getValueModif = arg.charAt(0) == '$', genericVar = args.length > 4 && args[4] == GenericScope.class;
+				if (getValueModif)
+					arg = arg.substring(1);
+				
+				String vars[] = splitValues(arg, 0, false, new char[] {'?'}, '=', ':'), valStr;
 
-				Object obj = null;
-				String objString = enrty[enrty.length-1];
-
-				if (enrty.length > 1 && !objString.isEmpty())
+				Object val = null;
+				int iVal = vars.length-1;
+				if (vars.length > 1 && !(valStr = vars[iVal]).isEmpty())
 				{
-					obj = myHomeRegistry.parse(objString, args);
+					val = myHomeRegistry.parse(valStr, args);
 				}
 
-				for (int i = 0; i < enrty.length-1; i++)
+				eachVar: for (int i = 0; i < iVal; i++) // Support for assigning multiple vars to the same value...
 				{
-					if (!genericVar && contains(enrty[i] = enrty[i].trim(), ' '))
-						LogProvider.instance.logErr("Variable name \"" + enrty[i] + "\" is invalid, blank characters are not allowed!", null);
-					else
+					String var = vars[i];
+					if (!genericVar && contains(var, ' '))
+						LogProvider.instance.logErr("Variable name \"" + var + "\" is invalid, blank characters are not allowed!", null);
+					else if (var.indexOf('.') > -1)
 					{
-						if ((enrty[i] = fastReplace(enrty[i], "$", "")).indexOf('.') > -1)
+						String[] path = splitValues(var, '.');
+						int iLast = path.length-1, j = 0;
+						
+						backlook: do
 						{
-							String[] tree = splitValues(enrty[i], '.');
-							GenericScope<Object, Object> sc = (GenericScope<Object, Object>) scope.getGenericScope((Object[]) Arrays.copyOfRange(tree, 0, tree.length-1));
-							if (sc != null)
+							Object sc;
+							if ((sc = getMemberOperator(scope, path[0])) != VOID) // Attempt to get only when exists...
 							{
-								if (obj == VOID)
-									sc.variables().remove(enrty[i]);
-								else
-									sc.put(genericVar ? myHomeRegistry.parse(tree[tree.length-1], true, null, args) : tree[tree.length-1], obj);
+								for (j = 1; j < iLast; j++) // Subscope/forward lookup (inner path only)...
+									if ((sc = getMemberOperator(sc, path[j])) == null || sc == VOID)
+										break backlook;
+								
+								setMemberOperator(myHomeRegistry, sc, path[iLast], val, genericVar, args);
+								continue eachVar;
 							}
-							else
-								LogProvider.instance.logErr("Variable \"" + tree[tree.length-2] + "\" was not declared as scope in its scope so variable \"" + tree[tree.length-1] +"\" cant be set to \"" + obj + "\"!", null);
 						}
-						else if (obj == VOID)
-							scope.variables().remove(enrty[i]);
-						else
-							scope.put(genericVar ? myHomeRegistry.parse(enrty[i], true, null, args) : enrty[i], obj);
+						while ((scope = scope.getParent()) != null);
+
+						LogProvider.instance.logErr("Path \"" + var + "\" cannot be set to \"" + val + "\" because \"" + path[j] + "\" is not a accessible or does not exist!", null);
 					}
+					else
+						setMemberOperator(myHomeRegistry, scope, var, val, genericVar, args);
 				}
 
-				if (arg.charAt(0) == '$')
-					return obj;
-				return VOID;
+				return getValueModif ? val : VOID;
 			}
 			
 			return parse(myHomeRegistry, arg, scope, args); //Reading vars from scope...
 		}
+
 		return CONTINUE;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
 	{
 		if (obj instanceof Entry)
 		{
-			Entry<Object, Object> var = (Entry<Object, Object>) obj;	
+			Entry<?, ?> var = (Entry<?, ?>) obj;
 			int tabs = 0;
 			if (args.length > 1 && args[1] instanceof Integer)
 				tabs = (int) args[1];
@@ -134,6 +139,30 @@ public class VariableConverter extends VariableParser implements DataConverter
 	{
 		Entry<String, ?> ent = (Entry<String, ?>) objToDescribe;
 		return new StringBuilder(myHomeRegistry.getConverterFor(ent.getValue(), argsUsedConvert).getDescription(myHomeRegistry, ent.getValue(), argsUsedConvert)).append(" Stored by \"").append(ent.getKey()).append("\" variable!");
+	}
+	
+	/**
+	 * @param myHomeRegistry | {@link ParserRegistry} provided by caller, may or may not be used... 
+	 * @param source | Source object to set the value member. 
+	 * @param member | Name/key of the member to set.
+	 * @param val | Value to set the member to.
+	 * @param genericVar | If true, member is expected be generic (not only string) and further parsing is required, may or may not be used... 
+	 * @param args | Some additional args to be used in case of parsing that are provided by called, may or may not be used... 
+	 *
+	 * @return By default it returns the previous value of the member. If member with provided name/key is not present in the source or its value is not possible to set, {@link VOID} should be returned! 
+	 * 
+	 * @since 1.3.7
+	 */
+	@SuppressWarnings("unchecked")
+	public Object setMemberOperator(ParserRegistry myHomeRegistry, Object source, String member, Object val, boolean genericVar, Object... args)
+	{
+		if (source instanceof GenericScope)
+		{
+			if (val == VOID)
+				return ((GenericScope<Object,?>) source).remove(member);
+			return ((GenericScope<Object, Object>) source).put(genericVar ? myHomeRegistry.parse(member, true, null, args) : member, val);
+		}
+		return VOID;
 	}
 	
 	/**

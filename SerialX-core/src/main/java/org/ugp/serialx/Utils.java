@@ -218,7 +218,7 @@ public final class Utils {
 	 */
 	public static <T> T Clone(T obj)
 	{
-		return Clone(obj, DataParser.REGISTRY, new Object[] {}, new Scope());
+		return Clone(obj, DataParser.REGISTRY, new Object[0], new Scope());
 	}
 	
 	/**
@@ -458,8 +458,8 @@ public final class Utils {
 	 */
 	public static StringBuilder multilpy(CharSequence str, int times)
 	{
-		StringBuilder sb = new StringBuilder(str);
-		while (times-- > 1)
+		StringBuilder sb = new StringBuilder();
+		while (times-- > 0)
 			sb.append(str);
 		return sb;
 	}
@@ -503,7 +503,7 @@ public final class Utils {
 	 * 
 	 * @since 1.3.5
 	 */
-	public static String[] splitValues(String s, int limit, boolean oneOrMore, char[] splitBreaks, char... splitter)
+	public static String[] splitValues(String s, int limit, boolean oneOrMore, char[] splitBreaks, char... splitter) //TODO: This bs is terribly broken! Idk what I was doing back then but its not doing what I would assume at all...
 	{
 		if (splitter.length <= 0 || limit == 1)
 			return new String[] {s};
@@ -727,9 +727,12 @@ public final class Utils {
 	public static boolean contains(CharSequence str, char... oneOf)
 	{
 		if (oneOf.length == 1)
+		{
 			for (int i = 0, len = str.length(); i < len; i++) 
 				if (str.charAt(i) == oneOf[0])
 					return true;
+			return false;
+		}
 			
 		for (int i = 0, len = str.length(); i < len; i++) 
 			if (isOneOf(str.charAt(i), oneOf))
