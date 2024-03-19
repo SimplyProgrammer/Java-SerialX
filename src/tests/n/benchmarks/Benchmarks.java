@@ -13,8 +13,11 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
+import org.openjdk.jmh.runner.options.VerboseMode;
+import org.ugp.serialx.Utils;
 
 @State(Benchmark)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
@@ -33,8 +36,11 @@ public class Benchmarks {
 //	@Param({"java.util.ArrayList 5 5 5", "java.util.concurrent.TimeUnit 1 2 3", "5hjdhjsakhdjsakhdjsahdjhdjak {} 59", "{hjdhjsakhdjsakhdjsahdjhdjak T T T"})
 //	String str;
 	
-	@Param({"a", "{", "["})
+	@Param({"a"})
 	char ch;
+	
+	@Param({"4", "16", "250", "500"})
+	int count;
 	
 //	DataConverter benchSubject = new NumberConverter() {
 //		public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args) {
@@ -55,15 +61,11 @@ public class Benchmarks {
 //	}
 	
 	@Benchmark
-	public Object benchNew() throws ClassNotFoundException {
-		return (ch | ' ')  == '{';
+	public void bench()
+	{
+		Utils.multilpy(ch, count);
 	}
-	
-	@Benchmark
-	public Object benchOld() {
-		return ch == '{' || ch == '[';
-	}
-//	
+
 	public static void main(String[] args) throws Exception {
 		OptionsBuilder ob = new OptionsBuilder();
 		ob.measurementTime(TimeValue.milliseconds(100));
@@ -79,7 +81,7 @@ public class Benchmarks {
 //		System.out.println(reg.parse("--5 --9"));
 //		
 //		ob.verbosity(VerboseMode.SILENT);
-//		new Runner(ob).run();
+		new Runner(ob).run();
 
 //		Scope s = new Scope();
 //		s.add(new Scope("hi".equalsIgnoreCase(null), 123));
@@ -89,6 +91,8 @@ public class Benchmarks {
 //		String str = "0xff";
 //		Object num = numberOf(str, 10, 0);
 //		System.out.println(num + " | " + num.getClass().getSimpleName());
+		
+		System.out.println(Utils.multilpy("iop", 5));
 	}
 	
 	public static boolean equalsLowerCase(CharSequence str, CharSequence lowerCaseOther, int from, int to)
@@ -122,7 +126,7 @@ public class Benchmarks {
 				base = 16;
 				start++;
 			}
-			else
+			else if (ch1 != '.')
 				base = 8;
 
 			start++;
@@ -137,9 +141,9 @@ public class Benchmarks {
 		else
 			result = chEnd > '9' ? chEnd - 'a' + 10 : chEnd - '0';
 
-		double baseCof = base;
+		double baseCof = base, exponent = 1;
 		for (int ch; end >= start; end--) //Parsing
-		{	
+		{
 			if ((ch = str.charAt(end)) == '-') // Neg
 				result = -result;
 			else if (ch == '.') //Decimal
@@ -151,16 +155,20 @@ public class Benchmarks {
 			}
 			else if (base == 10 && (ch | ' ') == 'e') //Handle E-notation
 			{
-				baseCof = Math.pow(base, result);
+				if ((exponent = Math.pow(base, result)) < 1 && type == 0);
+					type = 'd';
 				result = 0;
+				baseCof = 1;
 			}
 			else if (ch != '_' && ch != '+')
 			{
 				result += (ch > '9' ? (ch | ' ') - 'a' + 10 : ch - '0') * baseCof;
 				baseCof *= base;
 			}
-		} 
+		}
 
+		result *= exponent;
+		
 		if (type == 'd')
 			return result;
 		if (type == 'f')

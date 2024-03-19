@@ -1,5 +1,5 @@
 /* THIS IS HOW RESULT OF SERIALX (Juss) REAL LIFE IMPLEMENTATION MIGHT LOOK LIKE */
-import org.ugp.serialx.JsonSerializer => Json; //Importing JsonSerializer and aliasing it as Json!
+import org.ugp.serialx.json.JsonSerializer => Json; //Importing JsonSerializer and aliasing it as Json!
 
 name = "app";
 

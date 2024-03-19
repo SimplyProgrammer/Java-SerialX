@@ -5,6 +5,7 @@ import java.util.List;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.juss.JussSerializer;
+import org.ugp.serialx.juss.converters.ObjectConverter;
 
 /**
  * This example contains brief example of querying and obtaining real data from deserialized content!
@@ -17,12 +18,14 @@ public class SimpleQuerying
 {
 	public static void main(String[] args) throws Exception 
 	{
+		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true); //This is necessary since 1.3.7
+		
 		//Loading complex juss file "commentedExample.juss"!
 		JussSerializer content = JussSerializer.from("src/examples/implementations/commentedExample.juss"); //Since 1.3.5 we can use "from/into API" to load content of scope by just typing its path into "from" method!
 
 		//Printing loaded data!
 		System.out.println("Used content:\n" + content + "\n");
-		
+
 		/*
 		 * Scope#getScope method is capable of getting scopes that are direct sub-scopes of scope but also it will automatically search for required scope 
 		 * through every sub-scope in content! Thats why we can get sub-scope stored by "serialx" variable even though it is neasted in 3 parent scopes, Scope#getScope method will 

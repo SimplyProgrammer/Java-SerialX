@@ -19,10 +19,12 @@ public class Testing {
 	public static void main(String[] args) throws Exception {
 		
 		String str = "123 == 123";
+		double l = 123;
+//		String[] path = Utils.splitValues(str, 0, false, new char[0], '=');
+//		
+//		System.out.println(Arrays.asList(path));
 		
-		String[] path = Utils.splitValues(str, 0, false, new char[0], '=');
-		
-		System.out.println(Arrays.asList(path));
+		System.out.println(Benchmarks.numberOf("1.612e-19", 10, 0));
 		
 //		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true);
 //		
