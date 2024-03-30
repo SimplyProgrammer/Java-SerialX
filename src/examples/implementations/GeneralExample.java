@@ -15,7 +15,9 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
+import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
+import org.ugp.serialx.Utils;
 import org.ugp.serialx.converters.StringConverter;
 import org.ugp.serialx.devtools.SerializationDebugger;
 import org.ugp.serialx.juss.JussSerializer;
@@ -43,9 +45,11 @@ public class GeneralExample
 	public static final String TEST_3 = "some string";
 	public static double TEST_4 = 5;
 	public static Scope TEST_5 = new Scope();
+	public static final String TEST_6 = "HELLO_WORLD";
 	
 	@Test
-	public void test() throws Exception {
+	public void test() throws Exception 
+	{
 		GeneralExample.main(new String[0]);
 	}
 	
@@ -109,6 +113,8 @@ public class GeneralExample
 
 		//------------------------------------------- Serializing -------------------------------------------
 		
+		LogProvider.instance.setReThrowException(true); // This is for testing purposes, so no error are allowed in this case, comment temporary when necessary... 
+		
 		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true); //This is necessary since 1.3.7
 		
 		JussSerializer serializer = new JussSerializer(vars); //Creating an instance of Serializer that will serialize objects using Juss! Serializer is instance of scope so it behaves like so!										   
@@ -120,7 +126,7 @@ public class GeneralExample
 		serializer.getParsers().resetCache(); //Enabling cache, this can improve performance when serializing a lot of data (not case of this example)!
 
 		double t0 = System.nanoTime();			
-//		serializer.SerializeTo(f); //Saving content of serializer to file (serializing)
+		serializer.SerializeTo(f); //Saving content of serializer to file (serializing)
 		double t = System.nanoTime();						  
 		System.out.println("Write: " + (t-t0)/1000000 + " ms"); //Write benchmark
 		
@@ -147,26 +153,29 @@ public class GeneralExample
 		System.out.println(deserializer.values());
 		
 		//Performing test
-		assertEquals(deserializer.getString("parent"), TEST_1);
-		assertEquals(deserializer.getString("yourMom"), TEST_2);
-		assertEquals(deserializer.getInt("arrSize"), list.size());
+		assertEquals(TEST_1, deserializer.getString("parent"));
+		assertEquals(TEST_2, deserializer.getString("yourMom"));
+		assertEquals(list.size(), deserializer.getInt("arrSize"));
 		
-		assertEquals(deserializer.getScope(4).getScope("neastedTest").getDouble("tst4"), TEST_4, 0);
-		assertEquals(deserializer.getScope(4).getScope("test", "neastedTest").getParent(2), deserializer.getScope(4));
+		assertEquals(TEST_4, deserializer.getScope(4).getScope("neastedTest").getDouble("tst4"), 0);
+		assertEquals(deserializer.getScope(4).getScope(Utils.splitValues("test  neastedTest", ' ')).getParent(2), deserializer.getScope(4));
 		assertEquals(((Scope) deserializer.getScope(4).getSubScope(0).<List<?>>get(0).get(3)).getSubScope(0).totalSize(), TEST_5.totalSize());
 		assertTrue(deserializer.filter(obj -> obj.equals(true)).get(0));
 		
-		assertEquals(deserializer.get(0), TEST_3);
-		assertEquals(deserializer.get(2), list);
-		assertEquals(deserializer.<Object>get(5), new Bar(TEST_1));
-		assertArrayEquals(deserializer.get(3), ints);
+		assertEquals(TEST_3, deserializer.get(0));
+		assertEquals(list, deserializer.get(2));
+		assertEquals(new Bar(TEST_1), deserializer.<Object>get(5));
+		assertArrayEquals(ints, deserializer.get(3));
+		
+		assertEquals(TEST_6, deserializer.getString(-1));
  	}
 	
 	//We can invoke static members in JUSS!
 	public static String hello = "Hello world!";
 	
-	public static void println(String str)
+	public static String println(String str)
 	{
 		System.out.println(str);
+		return TEST_6;
 	}
 }

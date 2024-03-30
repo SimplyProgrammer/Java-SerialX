@@ -1,4 +1,4 @@
-//Date created: 02-11-2024 at 16:01:23 CET 
+//Date created: 03-31-2024 at 00:03:32 CET 
 
 //Scope serialization summary:
 //2 variables!
@@ -7,24 +7,9 @@
 num = 6; //Primitive data type: "6" the integer value! Stored by "num" variable!
 yourMom = "has an event horizon... //lol"; //Object of java.lang.String: "has an event horizon... //lol"! Stored by "yourMom" variable!
 "some string"; //Object of java.lang.String: "some string"!
-java.util.Random 68284896517770L; //Object of java.util.Random: "java.util.Random@17d10166" serialized using examples.implementations.GeneralExample$1[java.util.Random]!
+java.util.Random 68284896517770L; //Object of java.util.Random: "java.util.Random@3b95a09c" serialized using examples.implementations.GeneralExample$1[java.util.Random]!
 ArrayList 0 0 T 1 3 0 5 T 5 6 {java.util.LinkedList 0 0 T 1 3 0 5 T 5 6}; //Object of java.util.ArrayList: "[0, 0, true, 1, 3, 0, 5, true, 5, 6, [0, 0, true, 1, 3, 0, 5, true, 5, 6]]" serialized using org.ugp.serialx.protocols.ListProtocol[java.util.Collection]!
-(1 2 3) (4 5 4) (3 2 1); //Primitive array [[I@1b9e1916 converted by org.ugp.serialx.juss.converters.ArrayConverter
-test =
-{
-	//Scope serialization summary:
-	//1 variables!
-	neastedTest =
-	{
-
-		//Scope serialization summary:
-		//1 variables!
-		tst4 = 7.0; //Primitive data type: "5.0" the double value! Stored by "tst4" variable!
-		lol = {a : 789};
-		hiii: []
-	}
-};
-
+(1 2 3) (4 5 4) (3 2 1); //Primitive array [[I@6ae40994 converted by org.ugp.serialx.juss.converters.ArrayConverter
 {
 	//Scope serialization summary:
 	//1 variables!
@@ -34,14 +19,15 @@ test =
 	{
 		//Scope serialization summary:
 		//1 variables!
+
 		neastedTest =
 		{
 			//Scope serialization summary:
 			//1 variables!
+			//1 values!
+
 			tst4 = 5.0; //Primitive data type: "5.0" the double value! Stored by "tst4" variable!
-			lol = [];
-			$num;
-			
+			$num; //Manually inserted code!
 		}
 	};
 	111; //Primitive data type: "111" the integer value!
@@ -49,16 +35,13 @@ test =
 	{
 		//Scope serialization summary:
 		//1 values!
+
 		ArrayList "some" "elements" "..." {
 			//Scope serialization summary:
 			//2 values!
-			test.neastedTest.hiii.a = 135;
+
 			'99'; //Primitive data type: "c" the character value!
 			{} //Empty scope!
-			{
-				haha2 = $test.neastedTest.lol.a::new;
-				hahahaah = $test.neastedTest.tst4;
-			}
 		}; //Object of java.util.ArrayList: "[some, elements, ..., Scope[c, Scope[]]]" serialized using org.ugp.serialx.protocols.ListProtocol[java.util.Collection]!
 	}
 };

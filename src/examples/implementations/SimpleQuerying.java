@@ -1,9 +1,22 @@
 package examples.implementations;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Test;
+import org.ugp.serialx.GenericScope;
+import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
+import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.DataParser;
+import org.ugp.serialx.json.JsonSerializer;
 import org.ugp.serialx.juss.JussSerializer;
 import org.ugp.serialx.juss.converters.ObjectConverter;
 
@@ -16,12 +29,37 @@ import org.ugp.serialx.juss.converters.ObjectConverter;
  */
 public class SimpleQuerying 
 {
+	public static final String TEST_1 = "Is the best!";
+	public static final String TEST_2 = "app";
+	public static final long TEST_3 = 58;
+	public static final String TEST_JSON = "Hello world I am Javascript object notation!";
+	
+	@Test
+	public void test() throws Exception 
+	{
+		SimpleQuerying.main(new String[0]);
+	}
+	
 	public static void main(String[] args) throws Exception 
 	{
+		LogProvider.instance.setReThrowException(true); // This is for testing purposes, so no error are allowed in this case, comment temporary when necessary... 
+		
 		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true); //This is necessary since 1.3.7
 		
-		//Loading complex juss file "commentedExample.juss"!
-		JussSerializer content = JussSerializer.from("src/examples/implementations/commentedExample.juss"); //Since 1.3.5 we can use "from/into API" to load content of scope by just typing its path into "from" method!
+		//Preparing to load complex juss file "commentedExample.juss"!
+		
+		JussSerializer content = new JussSerializer(); // Creating JussSerializer for deserialization...
+		
+		Scope testScope = new Scope(), testScope2 = new Scope(); 
+		testScope2.put("1", TEST_1);
+		testScope.put("", testScope2);
+		content.putAllKv( // Putting initial variables into it before actual deserialization, these variables will then be accessible inside "commentedExample.juss"!
+			"TEST", testScope,
+			"TEST_2", TEST_2,
+			"", TEST_JSON
+		);
+
+		content = (JussSerializer) Serializer.from(content, "src/examples/implementations/commentedExample.juss", new String[0]); //Since 1.3.5 we can use "from/into API" to load content of scope by just typing its path into "from" method!
 
 		//Printing loaded data!
 		System.out.println("Used content:\n" + content + "\n");
@@ -90,6 +128,48 @@ public class SimpleQuerying
 			}
 		});
 		System.out.println("Real \"Java\" residents of " + residence + " are: " + realResidents); //Printing results
+
+		//Performing tests, note that correctness of these tests depends on src/examples/implementations/commentedExample.juss
+		assertEquals(TEST_1, serialx);
+		assertEquals(content.getScope("ppl").valuesCount(), ages.size());
+		assertEquals(filtered.getScope("serialx"), content.getScope("serialx"));
+		
+		assertTrue(residents.valuesCount() > 0); //Should not be 0
+		assertTrue(remappedValues.size() > 0);
+		
+		assertEquals(residents.valuesCount(), realResidents.size());
+		assertFalse(realResidents.contains(DataParser.VOID) || realResidents.contains(null));
+		
+		GenericScope<String, ?> sc = content.getScope("devDependencies", "ppl", "ludvig");
+		assertEquals(TEST_2, content.get(-1));
+		assertEquals(((Scope) sc).getString("residence"), "null");
+		assertEquals(TEST_3, ((Scope) sc).getLong("age"));
+		assertEquals(content.getScope("alienFruit").toObjectOf("variants", List.class), new GenericScope<>(1, 2, 3).values());
+		
+		assertNotEquals(TEST_2, (sc = content.getScope("devDependencies")).get("name"));
+		assertNull(sc.get(-1));
+		assertNull(sc.get("nope"));
+
+		sc = sc.getGenericScope("something");
+		assertNotEquals(sc.get(0), sc.get(1));
+		assertFalse(sc.containsVariable("version"));
+		
+		assertNotNull(content.get("srlxVer1"));
+		assertEquals(content.get("srlxVer1"), content.getString("srlxVer1"));
+		
+		sc = content.getScope("jsonCrossover");
+		assertTrue(sc instanceof JsonSerializer);
+		assertEquals(TEST_JSON, sc.get("hello"));
+		assertFalse(sc.getGenericScope("jsonArray").isEmpty());
+		assertEquals(sc.getClass(), content.get("jsonArrayClass"));
+		
+		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Object>get(Arrays.asList(1, 2, 3)), "123");
+		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Scope>get(Arrays.asList(4, 5, 6)).<Object>get(0), 456d);
+		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Scope>get(Arrays.asList(7, 8, 9)).<Object>get("test"), 789l);
+
+		assertNotNull(sc = content.getScope("arr"));
+		for (Object obj : content.getScope("superArr"))
+			assertTrue(sc.equals(obj));
 	}
 	
 	/**

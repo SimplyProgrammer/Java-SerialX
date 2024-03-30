@@ -1,7 +1,10 @@
 /* THIS IS HOW RESULT OF SERIALX (Juss) REAL LIFE IMPLEMENTATION MIGHT LOOK LIKE */
-import org.ugp.serialx.json.JsonSerializer => Json; //Importing JsonSerializer and aliasing it as Json!
+/* See also SimpleQuerying.java. !! This file is used for unit tests, do not modify! */
 
-name = "app";
+import org.ugp.serialx.json.JsonSerializer => Json; //Importing JsonSerializer and aliasing it as Json!
+import org.ugp.serialx.GenericScope; //Importing without aliasing!
+
+name = $TEST_2; //"TEST_XY" variables are not declared in here as you can see, they are expected to be provided by the deserializer!
 
 dependencies = 
 {
@@ -35,7 +38,7 @@ dependencies =
 			serialx = 
 			{
 				version = "The best version!";
-				"Is the best!"
+				$TEST..1 // this one is also provided by deserializer, also this one is a bit tricky...
 			}
 			totalVersion = "9.9.9"
 		},
@@ -87,7 +90,12 @@ dependencies =
 	},
 	"lololoolollool"; //This is independent value of this scope.
 },
-$dependencies.something.dataStorage.serialx.version; //Obtaining value of "serialx" variable in "dependencies" sub-scopes!
+$srlxVer1 = srlxVer2 = $dependencies.something.dataStorage.serialx.version; //Obtaining value of "serialx" variable in "dependencies" sub-scopes!
+
+something = 
+[
+	test = "NOPE"
+} //Well yea... [} or {] is possible. In 99% cases the interpreter sees these 2 chars as the same one... but it does not mean that you should adopt this convention...
 
 devDependencies = 
 {
@@ -99,23 +107,33 @@ devDependencies =
 	version = "1.2.3",
 	something = 
 	{
+		$version,
+		version = "9.9.9",
+		$version,
+		version = void, //We can use void in order to remove variable entirely
+		
 		dataStorage = {},
 		ppl = {}
 	}
+	
+	nope = $something.test,
+	
+	$something.dataStorage.xml.version
 };
 //Setting variable of scope from outer world (possible since 1.3.2)
 devDependencies.something.ppl.ludvig = 
 {
-	age = 60;
+	age = Math::max {int::valueOf "50"} {Math::pow {Double::valueOf {String::valueOf Math::PI}} 3.55};
 	residence = "russia";	
 };
 
 //Since 1.2.5 Serializer fully supports Json and JavaScript object!
 jsonCrossover = Json {
-	"hello" : "Hello world I am Javascript object notation!",
+	/* Yes... $ are not valid values in Json. But in SerialX, Json is the superset of Juss so it is possible. In real usecase you probably want to avoid this! */
+	"hello" : $, // As we know, $ is for getting value of the variable however there is no variable name right...? Well actually it is "", the name-less variable. Yea... thats also a thing...
 	"jsObject": {
-		name: "John", 
-		age: 31, 
+		name: "John",
+		age: 31,
 		city: "New York"
 	},
 	"jsonArray": [
@@ -125,6 +143,15 @@ jsonCrossover = Json {
 	    4
 	]
 },
+jsonArrayClass = $jsonCrossover.jsonArray::class;
+
+//Since 1.3.5, generic scopes are supported. They allow ussage of anything as a key not only strings!
+genericScope = GenericScope {
+	ArrayList 1 2 3: String 49y 50s 51,
+	ArrayList 4 5 6: {456.000d},
+	ArrayList 7 8 9: {test: 789L}
+}
+//But there is no way to read them if they are not string...
 
 //Since SerialX 1.3.5 we can use "from/into API" to load files from external locations!
 alienFruit = Json::from "src/examples/implementations/test.json"; //Loading content of external file by using JsonSerializer!
@@ -137,6 +164,8 @@ bullshit =
     server = "service server",
 	build = "service build",
 	sql = "service sql";
+    
+    devDependencies.something.ppl.ludvig.residence = ; //Same as = null
 },
 $bullshit; //Now we can access variable "bullshit"
 
