@@ -14,8 +14,8 @@ import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.VariableParser;
 
 /**
- * This converter is capable of converting {@link Map.Entry} and reading variables from {@link GenericScope} by using "$"!
- * {@link VariableConverter#parse(String, Object...)} required one additional Scope argument in args... at index 0!<br>
+ * This converter is capable of converting {@link Map.Entry} and reading variables from {@link GenericScope} by using <code>$</code>!<br>
+ * {@link VariableConverter#parse(String, Object...)} requires one additional Scope argument in args... at index 0!<br>
  * It manages assign operator <code>=</code> as well as access member operator also known as separator <code>"."</code>.<br>
  * Its case sensitive!<br>
  * Exact outputs of this converter are based on inserted scope!
@@ -59,13 +59,17 @@ public class VariableConverter extends VariableParser implements DataConverter
 		if (args.length > 0 && arg.length() > 0 && args[0] instanceof GenericScope)
 		{
 			GenericScope<?, Object> scope = (GenericScope<?, Object>) args[0];
-			if (isVarAssignment(arg))
+			int op0Index;
+			if ((op0Index = isVarAssignment(arg)) > -1)
 			{
 				boolean getValueModif = arg.charAt(0) == '$', genericVar = args.length > 4 && args[4] == GenericScope.class;
 				if (getValueModif)
+				{
 					arg = arg.substring(1);
+					op0Index--;
+				}
 				
-				String vars[] = splitValues(arg, 0, false, new char[] {'?'}, '=', ':'), valStr;
+				String vars[] = splitValues(arg, op0Index, 0, 1, new char[] {'?'}, '=', ':'), valStr;
 
 				Object val = null;
 				int iVal = vars.length-1;
@@ -74,14 +78,14 @@ public class VariableConverter extends VariableParser implements DataConverter
 					val = myHomeRegistry.parse(valStr, args);
 				}
 
-				eachVar: for (int i = 0; i < iVal; i++) // Support for assigning multiple vars to the same value...
+				eachVar: for (int i = 0; i < iVal; i++) // Support for assigning multiple vars to the same value... Yea this is not the prettiest code but it does the job and mainly it does it fast so shut up!
 				{
 					String var = vars[i];
-					if (!genericVar && contains(var, ' '))
+					if (!genericVar && contains(var, ' '))				
 						LogProvider.instance.logErr("Variable name \"" + var + "\" is invalid, blank characters are not allowed!", null);
-					else if (var.indexOf('.') > -1)
+					else if ((op0Index = var.indexOf('.')) > -1)
 					{
-						String[] path = splitValues(var, '.');
+						String[] path = splitValues(var, op0Index, 0, 0, new char[0],  '.');
 						int iLast = path.length-1, j = 0;
 						
 						backlook: do
@@ -188,11 +192,11 @@ public class VariableConverter extends VariableParser implements DataConverter
 	/**
 	 * @param s | CharSequence to search!
 	 * 
-	 * @return true if inserted expression is variable assignment expression such as <code>variable = 4</code> otherwise false!
+	 * @return Index of first assignment operator ('=' or ':') if inserted expression is variable assignment expression such as <code>variable = 4</code>, otherwise -1!
 	 * 
 	 * @since 1.3.0
 	 */
-	public static boolean isVarAssignment(CharSequence s)
+	public static int isVarAssignment(CharSequence s)
 	{
 		for (int i = 0, brackets = 0, quote = 0, len = s.length(), oldCh = -1, chNext; i < len; i++)
 		{
@@ -203,9 +207,9 @@ public class VariableConverter extends VariableParser implements DataConverter
 			if (quote % 2 == 0)
 			{
 				if (ch == '?')
-					return false;
+					return -1;
 				else if (brackets == 0 && (ch == '=' || ch == ':') && !(oldCh == '=' || oldCh == ':' || oldCh == '!' || oldCh == '>'|| oldCh == '<') && (i >= len-1 || !((chNext = s.charAt(i+1)) == '=' || chNext == ':' || chNext ==  '!' || chNext == '>'|| chNext == '<')))
-					return true;	
+					return i;	
 				else if ((ch | ' ') == '{')
 					brackets++;
 				else if ((ch | ' ') == '}')
@@ -214,7 +218,7 @@ public class VariableConverter extends VariableParser implements DataConverter
 			}
 			oldCh = ch;
 		}
-		return false;
+		return -1;
 	}
 	
 //	public static <K, V> V getValueOf(GenericScope<K, V> scope, K... pathToScope) 

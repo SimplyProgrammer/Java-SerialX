@@ -28,13 +28,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.ugp.serialx.converters.BooleanConverter;
-import org.ugp.serialx.converters.CharacterConverter;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.DataParser.ParserRegistry;
-import org.ugp.serialx.converters.NullConverter;
-import org.ugp.serialx.converters.NumberConverter;
-import org.ugp.serialx.converters.SerializableBase64Converter;
 import org.ugp.serialx.converters.StringConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
@@ -56,7 +51,7 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.3.2
 	 */
-	public static final ParserRegistry COMMON_PARSERS = new ParserRegistry(new StringConverter(), /* TODO: new ProtocolConverter() */ new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter());
+	public static final ParserRegistry COMMON_PARSERS = DataParser.REGISTRY.clone();
 	
 	protected ParserRegistry parsers;
 	protected ProtocolRegistry protocols;
@@ -1064,8 +1059,9 @@ public abstract class Serializer extends Scope
 			</tr>
 		</table>
 	 *	
-	 * @throws Exception if calling of some {@link PropertyDescriptor}s write method fails (should not happen often) or when something went wrong during deserialization!
+	 * @throws Exception if calling of some {@link PropertyDescriptor}s write method fails (should not happen often) or when something went very wrong during deserialization!
 	 * @throws IntrospectionException when there were no PropertyDescriptor found for obj class!
+	 * @throws RuntimeException in case of something went wrong during deserialization process and {@link LogProvider#isReThrowException()} is set to true!
 	 * 
 	 * @since 1.3.5
 	 */
@@ -1073,20 +1069,18 @@ public abstract class Serializer extends Scope
 	{
 		if (fromObj instanceof CharSequence)
 		{
-			if (indexOfNotInObj((CharSequence) fromObj, "http") == 0)
-				try
-				{
-					return newInstance.LoadFrom(new URL(fromObj.toString()).openStream());
-				}
-				catch (IOException e)
-				{}
-			
 			try
 			{
-				return newInstance.LoadFrom(new File(fromObj.toString()));
+				String fromStr;
+				if (indexOfNotInObj(fromStr = fromObj.toString(), "http") == 0)
+					return newInstance.LoadFrom(new URL(fromStr).openStream());
+				return newInstance.LoadFrom(new File(fromStr));
 			}
 			catch (Exception e)
-			{}
+			{
+				if (e instanceof RuntimeException)
+					throw e;
+			}
 
 			return newInstance.LoadFrom((CharSequence) fromObj);
 		}

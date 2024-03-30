@@ -111,10 +111,9 @@ public class ObjectConverter extends ProtocolConverter
 					scope = getPreferredSerializer();
 				}
 				
-				//TODO: Prevent neccesity of scope parent inheritance.
 				compilerArgs = compilerArgs.clone();
 				compilerArgs[0] = false; //No extra formating...
-				return str.isEmpty() ? scope : ((Serializer) scope/*.inheritParent()*/).LoadFrom(new StringReader(str), compilerArgs);
+				return str.isEmpty() ? scope : scope.LoadFrom(new StringReader(str), compilerArgs);
 			}
 		}
 		return CONTINUE;

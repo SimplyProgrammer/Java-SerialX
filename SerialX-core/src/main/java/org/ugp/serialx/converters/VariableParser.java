@@ -10,9 +10,9 @@ import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
 
 /**
- * This parser is capable of reading variables from {@link GenericScope} by using "$"!
- * {@link VariableConverter#parse(String, Object...)} required one additional Scope argument in args... at index 0!<br>
- * It also manages access member operator also known as separator <code>"."</code>.
+ * This parser is capable of reading variables from {@link GenericScope} by using <code>$</code>!<br>
+ * {@link VariableParser#parse(String, Object...)} requires one additional Scope argument in args... at index 0!<br>
+ * It also manages access member operator also known as separator <code>"."</code>.<br>
  * Its case sensitive!<br>
  * Exact outputs of this converter are based on inserted scope!
  * 
@@ -71,9 +71,10 @@ public class VariableParser implements DataParser
 				str = str.substring(0, str.length()-5);
 			
 			Object obj = null;
-			if (str.indexOf('.') > -1)
+			int op0Index;
+			if ((op0Index = str.indexOf('.')) > -1)
 			{
-				String[] path = splitValues(str, '.');
+				String[] path = splitValues(str, op0Index, 0, 0, new char[0], '.');
 				int iLast = path.length-1;
 				
 				backlook: do 

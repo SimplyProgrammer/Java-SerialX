@@ -497,10 +497,6 @@ public class JussSerializer extends Serializer implements ImportsProvider
 
 		if (parent == null)
 			getImports().removeImportsOf(this);
-//		else
-//			for (Map.Entry<?, ?> ent : parent.varEntrySet())
-//				if (variables().get(ent.getKey()) == ent.getValue())
-//					variables().remove(ent.getKey());//TODO: Prevent neccesity of scope parent inheritance.
 		return (S) this;
 	}
 	

@@ -468,42 +468,65 @@ public final class Utils {
 	 * @param s | String to split and check some syntax.
 	 * @param splitter | Chars where string will be split!
 	 * 
-	 * @return String splitted after splitters. If there is more than one splitter in row, it will be taken as one whole!
+	 * @return String splitted after splitters. More than one splitter in row will be take as 1. Each resulting token will be {@link String#trim() trim}<code>med</code>!
 	 * 
 	 * @since 1.0.0
 	 */
 	public static String[] splitValues(String s, char... splitter)
 	{
-		return splitValues(s, 0, true, splitter);
+		return splitValues(s, 0, 2, splitter);
 	}
 	
 	/**
 	 * @param s | String to split and check some syntax.
 	 * @param limit | If 0 or less = no limit, 1 = no splitting, more than 1 = count of results!
-	 * @param oneOrMore | If true, string will be splitted after one or more splitters in row, if false splitting will occur only after single splitter (this is similar to "+" in regex)!
+	 * @param splittingStrategy | <b>If 0</b>, splitting will occur after each splitter! 
+	 * 	<b>If 1</b>, string will be splitted after only one splitter, more than one splitters in row will be ignored! 
+	 * 	<b>If 2</b>, splitting will occur after any number of splitters, n number of splitters in row will be treated as 1!
 	 * @param splitter | Chars where string will be split!
 	 * 
-	 * @return String splitted after splitters according to arguments. If there is more than one splitter in row, it will be taken as one whole!
+	 * @return String splitted after splitters according to arguments. Each resulting token will be {@link String#trim() trim}<code>med</code>!
 	 * 
 	 * @since 1.3.0
 	 */
-	public static String[] splitValues(String s, int limit, boolean splitAfterSingleCharOnly, char... splitter)
+	public static String[] splitValues(String s, int limit, int splittingStrategy, char... splitter)
 	{
-		return splitValues(s, limit, splitAfterSingleCharOnly, new char[0], splitter);
+		return splitValues(s, 0, limit, splittingStrategy, new char[0], splitter);
 	}
 	
 	/**
 	 * @param s | String to split and check some syntax.
 	 * @param limit | If 0 or less = no limit, 1 = no splitting, more than 1 = count of results!
-	 * @param oneOrMore | If true, string will be splitted after one or more splitters in row, if false splitting will occur only after single splitter (this is similar to "+" in regex)!
+	 * @param splittingStrategy | <b>If 0</b>, splitting will occur after each splitter! 
+	 * 	<b>If 1</b>, string will be splitted after only one splitter, more than one splitters in row will be ignored! 
+	 * 	<b>If 2</b>, splitting will occur after any number of splitters, n number of splitters in row will be treated as 1!
 	 * @param splitBreaks | When some of these characters is encountered, splitting is terminated for the rest of the string! 
 	 * @param splitter | Chars where string will be split!
 	 * 
-	 * @return String splitted after splitters according to arguments. If there is more than one splitter in row, it will be taken as one whole!
+	 * @return String splitted after splitters according to arguments. Each resulting token will be {@link String#trim() trim}<code>med</code>!
 	 * 
 	 * @since 1.3.5
 	 */
-	public static String[] splitValues(String s, int limit, boolean oneOrMore, char[] splitBreaks, char... splitter) //TODO: This bs is terribly broken! Idk what I was doing back then but its not doing what I would assume at all...
+	public static String[] splitValues(String s, int limit, int splittingStrategy, char[] splitBreaks, char... splitter)
+	{
+		return splitValues(s, 0, limit, splittingStrategy, splitBreaks, splitter);
+	}
+
+	/**
+	 * @param s | String to split and check some syntax.
+	 * @param i | Index of character to start at. Note that everything before this index will be ignored by other options...
+	 * @param limit | If 0 or less = no limit, 1 = no splitting, more than 1 = count of results!
+	 * @param splittingStrategy | <b>If 0</b>, splitting will occur after each splitter! 
+	 * 	<b>If 1</b>, string will be splitted after only one splitter, more than one splitters in row will be ignored! 
+	 * 	<b>If 2</b>, splitting will occur after any number of splitters, n number of splitters in row will be treated as 1!
+	 * @param splitBreaks | When some of these characters is encountered, splitting is terminated for the rest of the string! 
+	 * @param splitter | Chars where string will be split!
+	 * 
+	 * @return String splitted after splitters according to arguments. Each resulting token will be {@link String#trim() trim}<code>med</code>!
+	 * 
+	 * @since 1.3.7
+	 */
+	public static String[] splitValues(String s, int i, int limit, int splittingStrategy, char[] splitBreaks, char... splitter)
 	{
 		if (splitter.length <= 0 || limit == 1)
 			return new String[] {s};
@@ -512,9 +535,9 @@ public final class Utils {
 //			return splitValues(" "+s, limit, oneOrMore, splitBreaks, splitter);
 		
 		List<String> result = new ArrayList<>();
-
-		int brackets = 0, quote = 0, lastIndex = 0;
-		for (int i = 0, count = 1, len = s.length(), oldCh = splitter[0]; i < len && (limit <= 0 || count < limit); i++)
+		
+		int brackets = 0, quote = 0, lastIndex = 0, len = s.length();
+		for (int count = 1, oldCh = 0; i < len && (limit <= 0 || count < limit); i++)
 		{
 			char ch = s.charAt(i);
 			if (ch == '"')
@@ -528,10 +551,17 @@ public final class Utils {
 					break;
 				}
 				
-				if (brackets == 0 && oldCh != ch && isOneOf(ch, splitter) && (oneOrMore || (i >= len-1 || !isOneOf(s.charAt(i+1), splitter))))
+				if (brackets == 0 && isOneOf(ch, splitter) &&
+					(splittingStrategy != 1 || ch != oldCh && (i >= len-1 || !isOneOf(s.charAt(i+1), splitter))))
 				{	
-					result.add(s.substring(lastIndex == 0 ? 0 : lastIndex + 1, lastIndex = i).trim());
-					count++;
+					String tok = s.substring(lastIndex, i).trim();
+					if (splittingStrategy < 2 || result.isEmpty() || !tok.isEmpty())
+					{
+						result.add(tok);
+						lastIndex = i + 1;
+						
+						count++;
+					}
 				}
 				else if ((ch | ' ') == '{')
 					brackets++;
@@ -545,14 +575,14 @@ public final class Utils {
 			}
 			oldCh = ch;
 		}
-
+		
 		if (brackets > 0)
 			throw new IllegalArgumentException("Unclosed brackets in: " + s);
 		else if (quote % 2 != 0)
 			throw new IllegalArgumentException("Unclosed or missing quotes in: " + s);
 		else
 		{
-			result.add(s.substring(lastIndex == 0 ? 0 : lastIndex + 1, s.length()).trim());
+			result.add(s.substring(lastIndex, len).trim());
 		}
 		
 		return result.toArray(new String[0]);
