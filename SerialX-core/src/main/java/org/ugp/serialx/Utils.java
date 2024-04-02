@@ -890,7 +890,7 @@ public final class Utils {
 	 * 
 	 * @deprecated (in 1.3.7) NO LONGER NEEDED, DO NOT USE THIS! You were never supposed to...
 	 */
-	public static final class NULL //TODO: REMOVE!!!!
+	public static final class NULL //TODO: REMOVE IN NEXT V!!!!
 	{
 		public static Object toOopNull(Object obj)
 		{
