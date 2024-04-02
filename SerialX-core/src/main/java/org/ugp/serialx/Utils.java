@@ -261,7 +261,7 @@ public final class Utils {
 		{
 			ParserRegistry parsers = parsersToUse instanceof ParserRegistry ? (ParserRegistry) parsersToUse : new ParserRegistry(parsersToUse);
 			
-			Object cln = NULL.toOopNull(parsers.parse(parsers.toString(obj, converterArgs).toString(), parserArgs));
+			Object cln = parsers.parse(parsers.toString(obj, converterArgs).toString(), parserArgs);
 			if (cln != null && cln != VOID)
 				return (T) cln;
 			

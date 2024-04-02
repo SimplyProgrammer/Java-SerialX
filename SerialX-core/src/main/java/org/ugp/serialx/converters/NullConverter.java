@@ -1,7 +1,5 @@
 package org.ugp.serialx.converters;
 
-import org.ugp.serialx.Utils.NULL;
-
 /**
  * This converter is capable of converting "nothing" otherwise known as null and {@link DataParser#VOID}.
  * Its case insensitive!
@@ -48,7 +46,7 @@ public class NullConverter implements DataConverter
 	@Override
 	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
 	{
-		if (obj == null || obj instanceof NULL)
+		if (obj == null)
 			return "null";
 		return CONTINUE;
 	}

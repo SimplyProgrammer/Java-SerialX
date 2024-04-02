@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.ugp.serialx.Utils.NULL;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
@@ -277,7 +276,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 		V obj = (V) variables().get(variableKey);
 		if (obj == null)
 			return defaultValue;
-		return obj instanceof NULL ? null : obj;
+		return obj;
 	}
 	
 	/**
@@ -388,8 +387,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	@SuppressWarnings("unchecked")
 	public <V extends ValT> V get(int valueIndex)
 	{
-		V obj = (V) values().get(valueIndex < 0 ? valuesCount() + valueIndex : valueIndex);
-		return obj instanceof NULL ? null : obj;
+		return (V) values().get(valueIndex < 0 ? valuesCount() + valueIndex : valueIndex);
 	}
 	
 	/**
@@ -600,7 +598,6 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 			try
 			{
 				Object obj = ent.getValue();
-				obj = obj instanceof NULL ? null : obj;
 				if (obj instanceof GenericScope && includeSubScopes)
 				{ 
 					GenericScope<?, V> sc = ((GenericScope<?, ValT>) obj).transform(trans, includeSubScopes);
@@ -655,8 +652,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 		List<V> fltVals = new ArrayList<>();
 		for (Object obj : this)
 			try
-			{	
-				obj = obj instanceof NULL ? null : obj;
+			{
 				if (obj instanceof GenericScope && includeSubScopes)
 				{ 
 					GenericScope<?, V> sc = ((GenericScope<?, ValT>) obj).transform(trans, includeSubScopes);

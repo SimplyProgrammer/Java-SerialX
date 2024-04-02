@@ -29,7 +29,6 @@ import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.Registry;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
-import org.ugp.serialx.Utils.NULL;
 import org.ugp.serialx.converters.BooleanConverter;
 import org.ugp.serialx.converters.CharacterConverter;
 import org.ugp.serialx.converters.DataConverter;
@@ -676,7 +675,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 */
 	protected Object parseObject(ParserRegistry registry, String str, Object... parserArgs)
 	{
-		return NULL.toOopNull(registry.parse(str, parserArgs));
+		return registry.parse(str, parserArgs);
 	}
 	
 	/**

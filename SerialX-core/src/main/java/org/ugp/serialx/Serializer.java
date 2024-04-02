@@ -653,7 +653,7 @@ public abstract class Serializer extends Scope
 						if (semicolon > index)
 						{
 							lineReader.close();
-							return (T) NULL.toOopNull(DataParser.parseObj(DataParser.REGISTRY, sb.toString(), this));
+							return (T) DataParser.parseObj(DataParser.REGISTRY, sb.toString(), this);
 						}
 						
 						if (multLineCom > -1 || com > -1) //Is comment
@@ -722,7 +722,7 @@ public abstract class Serializer extends Scope
 		else if (quote % 2 != 0)
 			throw new IllegalArgumentException("Unclosed or missing quotes!");
 		else if (!(line = sb.toString()).isEmpty())
-			return (T) NULL.toOopNull(DataParser.parseObj(DataParser.REGISTRY, line, this));
+			return (T) DataParser.parseObj(DataParser.REGISTRY, line, this);
 		LogProvider.instance.logErr("Value with index " + index + " is out of bounds!");
 		return null;
 	}
@@ -808,7 +808,7 @@ public abstract class Serializer extends Scope
 						int start = sb.indexOf("=", findIndex-fromIndexOrig);
 						if (start <= -1)
 							start = sb.indexOf(":", findIndex-fromIndexOrig);
-						return (T) NULL.toOopNull(DataParser.parseObj(DataParser.REGISTRY, sb.substring(start+1), this));
+						return (T) DataParser.parseObj(DataParser.REGISTRY, sb.substring(start+1), this);
 					}
 					
 					if (multLineCom > -1 || com > -1) //Is comment

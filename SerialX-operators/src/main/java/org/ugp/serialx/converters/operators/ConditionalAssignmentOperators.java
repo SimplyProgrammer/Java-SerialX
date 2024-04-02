@@ -3,7 +3,6 @@ package org.ugp.serialx.converters.operators;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
 
 import org.ugp.serialx.LogProvider;
-import org.ugp.serialx.Utils.NULL;
 import org.ugp.serialx.converters.DataParser;
 
 /**
@@ -45,7 +44,7 @@ public class ConditionalAssignmentOperators implements DataParser
 			if ((index = str.indexOf("??")) > -1)
 			{
 				Object obj = myHomeRegistry.parse(str.substring(0, index).trim(), args);
-				if (obj != null && !(obj instanceof NULL))
+				if (obj != null)
 					return obj;
 				
 				String next = str.substring(index+2);
