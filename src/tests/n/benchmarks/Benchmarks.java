@@ -30,7 +30,7 @@ import org.ugp.serialx.converters.NumberConverter;
 	Mode.SingleShotTime
 //	Mode.Throughput
 )
-@Fork(4) // 1 or 2
+@Fork(2) // 1 or 2
 public class Benchmarks {
 	
 	@Param({"0", "0b11l", "12345", "-14445", "0xff", "0b11111111", "011", "15.222", "16.88e2", "1234_5678_91011"})
@@ -72,6 +72,8 @@ public class Benchmarks {
 	@Benchmark
 	public void benchOld(Blackhole hole)
 	{
+//		hole.consume(Integer.valueOf(value));
+//		hole.consume(Double.valueOf(value));
 		hole.consume(benchSubjectOld.parse(null, value));
 	}
 
