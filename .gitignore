@@ -30,6 +30,7 @@ npm-debug.log*
 /plugins
 /www
 
+
 bin/
 tmp/
 .metadata
@@ -37,4 +38,7 @@ tmp/
 .settings
 .project
 
+.gradle
+
 target/
+build/
