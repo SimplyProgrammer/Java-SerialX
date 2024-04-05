@@ -1,69 +1,80 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>SerialXTest</groupId>
-  <artifactId>SerialXTest</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>SerualX-test</name>
-  <description>Used for testing</description>
-  
-  <dependencies>
-	  <dependency>
-	  	<groupId>org.ugp.serialx</groupId>
-	  	<artifactId>json</artifactId>
-	  	<version>1.3.7</version>
-	  </dependency>
-	  <dependency>
-	  	<groupId>org.ugp.serialx</groupId>
-	  	<artifactId>devtools</artifactId>
-	  	<version>1.3.7</version>
-	  </dependency>
-	  <dependency>
-	  	<groupId>org.ugp.serialx</groupId>
-	  	<artifactId>operators</artifactId>
-	  	<version>1.3.7</version>
-	  </dependency>
-	  
-	  <dependency>
-		    <groupId>org.openjdk.jmh</groupId>
-		    <artifactId>jmh-core</artifactId>
-		    <version>1.36</version>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>SerialXTest</groupId>
+	<artifactId>SerialXTest</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>SerualX-test</name>
+	<description>Used for testing</description>
+
+	<properties>
+		<java.version>8</java.version>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.ugp.serialx</groupId>
+			<artifactId>json</artifactId>
+			<version>1.3.7</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.openjdk.jmh</groupId>
-		    <artifactId>jmh-generator-annprocess</artifactId>
-		    <version>1.36</version>
+			<groupId>org.ugp.serialx</groupId>
+			<artifactId>devtools</artifactId>
+			<version>1.3.7</version>
 		</dependency>
-  </dependencies>
-  
-  <build>
-    <sourceDirectory>src</sourceDirectory>
-    <resources>
-      <resource>
-        <directory>src</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </resource>
-    </resources>
-    
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-compiler-plugin</artifactId>
-		
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-       <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-                <forkMode>always</forkMode>
-                <redirectTestOutputToFile>true</redirectTestOutputToFile>
-            </configuration>
-        </plugin>
-    </plugins>
-  </build>
+		<dependency>
+			<groupId>org.ugp.serialx</groupId>
+			<artifactId>operators</artifactId>
+			<version>1.3.7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openjdk.jmh</groupId>
+			<artifactId>jmh-core</artifactId>
+			<version>1.36</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjdk.jmh</groupId>
+			<artifactId>jmh-generator-annprocess</artifactId>
+			<version>1.36</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.10.1</version>
+
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<forkMode>always</forkMode>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
