@@ -1,5 +1,8 @@
 package org.ugp.serialx.converters;
 
+import static java.lang.Boolean.*;
+import static org.ugp.serialx.Utils.equalsLowerCase;
+
 /**
  * This converter is capable of converting {@link String}. 
  * Its case insensitive!
@@ -19,19 +22,19 @@ package org.ugp.serialx.converters;
 		</tr>
 		<tr>
 		    <td>true</td>
-		    <td>new Boolean(true)</td>
+		    <td>Boolean.TRUE</td>
 	  	</tr>
 	    <tr>
 		    <td>t</td>
-		    <td>new Boolean(true)</td>
+		    <td>Boolean.TRUE</td>
 		</tr>
 	  	<tr>
 		    <td>false</td>
-		    <td>new Boolean(false)</td>
+		    <td>Boolean.FALSE</td>
 		</tr>
 		<tr>
 		    <td>f</td>
-		    <td>new Boolean(false)</td>
+		    <td>Boolean.FALSE</td>
 		</tr>
 	</table>
 	
@@ -54,12 +57,16 @@ public class BooleanConverter implements DataConverter
 	}
 	
 	@Override
-	public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args)
+	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args)
 	{
-		if (arg.equalsIgnoreCase("T") || arg.equalsIgnoreCase("true"))
-			return new Boolean(true);
-		if (arg.equalsIgnoreCase("F") || arg.equalsIgnoreCase("false"))
-			return new Boolean(false);
+		int len, ch0;
+		if ((len = str.length()) > 0)
+		{
+			if ((ch0 = str.charAt(0) | ' ') == 't' && (len == 1 || len == 4 && equalsLowerCase(str, "true", 1, 4)))
+				return TRUE;
+			if (ch0 == 'f' && (len == 1 || len == 5 && equalsLowerCase(str, "false", 1, 5)))
+				return FALSE;
+		}
 		return CONTINUE;
 	}
 

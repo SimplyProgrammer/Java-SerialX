@@ -1,7 +1,5 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.Utils.fastReplace;
-
 /**
  * This converter is capable of converting {@link Character}.
  * Its case sensitive!
@@ -38,16 +36,17 @@ public class CharacterConverter implements DataConverter
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args) 
 	{
-		if (str.length() > 1 && str.charAt(0) == '\'' && str.charAt(str.length()-1) == '\'')
+		int len;
+		if ((len = str.length()) > 1 && str.charAt(0) == '\'' && str.charAt(--len) == '\'')
 			try
 			{
-				if (str.equals("''")) // TODO: str.length() == 2 + mby cache len
-					return new Character(' ');
-				return new Character((char) Integer.parseInt(str = fastReplace(str, "'", "")));
+				if (len == 1) // str == "''"
+					return ' ';
+				return (char) Integer.parseInt(str.substring(1, len));
 			}
 			catch (Exception e) 
 			{
-				return new Character(str.charAt(0));
+				return str.charAt(0);
 			}
 		return CONTINUE;
 	}

@@ -771,6 +771,26 @@ public final class Utils {
 	}
 	
 	/**
+	 * @param str | Source string to compare.
+	 * @param lowerCaseOther | Other lower-case string to compare with. This must be lower-case in order for this to work! 
+	 * @param from | The beginning index, where to start with comprising (inclusive, most likely 0).
+	 * @param to | The ending marking index, index where to end the comparing (exclusive, most likely <code>str.length()</code>)
+	 * 
+	 * @return True if str is equal to lowerCaseOther given that str case is ignored and lowerCaseOther is lower-case, otherwise false. Similar to {@link String#equalsIgnoreCase(String)} but more optimal!<br>
+	 * Note that this function was designed for non-blank ASCII strings and may not work properly for others...<br>
+	 * Also sufficient length of both strings is not checked so adjust from and to accordingly.
+	 * 
+	 * @since 1.3.7
+	 */
+	public static boolean equalsLowerCase(CharSequence str, CharSequence lowerCaseOther, int from, int to)
+	{
+		for (; from < to; from++)
+			if ((str.charAt(from) | ' ') != lowerCaseOther.charAt(from))
+				return false;
+		return true;
+	}
+	
+	/**
 	 * @param str | String to display!
 	 * @param pos | Position to display!
 	 * 

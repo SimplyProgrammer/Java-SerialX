@@ -7,8 +7,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import org.ugp.serialx.LogProvider;
-
 /**
  * This converter is capable of converting {@link Number} including all common implementations like {@link Double}, {@link Float}, {@link Integer} and others. They are determine by suffixes like in java!
  * Its case insensitive!
@@ -66,6 +64,8 @@ import org.ugp.serialx.LogProvider;
 		    <td>new Integer(15)</td>
 		</tr>
 	</table>
+ *
+ * @see NumberConverter#numberOf(CharSequence, char, int, int)
  * 
  * @author PETO
  * 
@@ -89,47 +89,15 @@ public class NumberConverter implements DataConverter
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args) 
 	{
-		if (arg.length() > 0)
+		int len;
+		if ((len = arg.length()) > 0)
 		{
-			char ch = arg.charAt(0);
-			if (ch == '+' || ch == '-' || ch == '.' || (ch >= '0' && ch <= '9'))
+			char ch0 = arg.charAt(0);
+			if (ch0 == '+' || ch0 == '-' || ch0 == '.' || (ch0 >= '0' && ch0 <= '9'))
 			{
-				arg = normFormatNum(arg.toLowerCase());
-				ch = arg.charAt(arg.length()-1); //ch = last char
-				
-				if (ch == '.')
-					return CONTINUE;
-				if (contains(arg, '.') || (!arg.startsWith("0x") && ch == 'f' || ch == 'd'))
-				{
-					if (ch == 'f')
-						return new Float(fastReplace(arg, "f", ""));
-					return new Double(fastReplace(arg, "d", ""));
-				}
-				 
-				try
-				{
-					// TODO: Use decode method instead of this mess if possible...
-					if (ch == 'l')
-						return new Long(Long.parseLong(fastReplace(fastReplace(fastReplace(arg, "l", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
-					if (ch == 's')
-						return new Short(Short.parseShort(fastReplace(fastReplace(fastReplace(arg, "s", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
-					if (ch == 'y')
-						return new Byte(Byte.parseByte(fastReplace(fastReplace(arg, "y", ""), "0b", ""), arg.startsWith("0b") ? 2 : 10));
-					return new Integer(Integer.parseInt(fastReplace(fastReplace(arg, "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
-				}
-				catch (NumberFormatException e)
-				{
-					if (arg.matches("[0-9.]+"))
-						try
-						{	
-							return new Long(Long.parseLong(fastReplace(fastReplace(fastReplace(arg, "l", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
-						}
-						catch (NumberFormatException e2)
-						{
-							LogProvider.instance.logErr("Number " + arg + " is too big for its datatype! Try to change its datatype to double (suffix D)!", e2);
-							return null;
-						}
-				}
+				Number num;
+				if ((num = numberOf(arg, ch0, --len, 10, 0)) != null)
+					return num;
 			}
 		}
 		return CONTINUE;
@@ -174,6 +142,101 @@ public class NumberConverter implements DataConverter
 		return num.toString();
 	}
 
+	/**
+	 * @param str | Source char sequence with number to parse.
+	 * @param ch0 | Should be <code>str.charAt(0)</code>. This is to ensure that string is not null or empty and also for possible optimizations.
+	 * @param end | Index of where to end with parsing. If whole string is meant to be parsed, then <code>str.length()-1</code>, should not be greater than that!
+	 * @param base | Base of the parsed number. Theoretically can be anything but usually should be 2, 8, 10 or 16... Note that base will be overridden by suffixes <code>#</code>. for 16, <code>0x</code> for 16, <code>0b</code> for 2 or <code>0</code> for 8 (only if not followed by <code>.</code>).
+	 * @param type | Preferred datatype of of the number represented by suffixes 'S' for {@link Short}, 'Y' for {@link Byte}, 'L' for {@link Long}, 'D' for {@link Double}, 'F' for {@link Float}. Other stands for {@link Integer}.<br> 
+	 * Note that floating point numberer will be treated as {@link Double} if no suffix is present by default. Also numbers in E-notation format with negative exponents can be converted to {@link Double}. Further more, integers will be auto-converted to {@link Long} if overflow should occur!<br>
+	 * Important thing to know is that this argument will be overridden by suffix from str if present!
+	 * 
+	 * @return 
+	 * 
+	 * @since 1.3.7
+	 */
+	public static Number numberOf(CharSequence str, char ch0, int end, int base, int type) //TODO
+	{
+		int start = 0;
+
+		if (ch0 == '#') //Determine base
+		{
+			base = 16;
+			start++;
+		}
+		else if (ch0 == '0' && end > 0)
+		{
+			int ch1 = str.charAt(1) | ' ';
+			if (ch1 == 'b')
+			{
+				base = 2;
+				start++;
+			}
+			else if (ch1 == 'x')
+			{
+				base = 16;
+				start++;
+			}
+			else if (ch1 != '.')
+				base = 8;
+
+			start++;
+		}
+		
+		double result = 0, baseCof = 1, exponent = 1;
+		int chEnd = str.charAt(end--) | ' '; //Determine data type
+		if (base == 10 ? chEnd >= 'd' : chEnd >= 'l')
+			type = chEnd;
+		else if (chEnd == '.')
+			type = 'd';
+		else
+		{
+			result = chEnd > '9' ? chEnd - 'a' + 10 : chEnd - '0';
+			baseCof = base;
+		}
+
+		for (int ch; end >= start; end--) //Parsing
+		{
+			if ((ch = str.charAt(end)) == '-') // Neg
+				result = -result;
+			else if (ch == '.') //Decimal
+			{
+				result /= baseCof;
+				baseCof = 1;
+				if (type == 0)
+					type = 'd';
+			}
+			else if ((ch |= ' ') == 'e' && base == 10) //Handle E-notation
+			{
+				if ((exponent = Math.pow(base, result)) < 1 && type == 0)
+					type = 'd';
+				result = 0;
+				baseCof = 1;
+			}
+			else if (ch == ' ') //Not valid
+				return null;
+			else if (ch != 127 && ch != '+')
+			{
+				result += (ch > '9' ? ch - 'a' + 10 : ch - '0') * baseCof;
+				baseCof *= base;
+			}
+		}
+
+		result *= exponent;
+
+		if (type == 'd')
+			return result;
+		if (type == 'f')
+			return (float) result;
+		if (type == 'l' || result > 0x7fffffff || result < 0x80000000)
+			return (long) result;
+		if (type == 's')
+			return (short) result;
+		if (type == 'y')
+			return (byte) result;
+		return (int) result;
+	}
+	
 	/**
 	 * @param num | Number string to format!
 	 * 

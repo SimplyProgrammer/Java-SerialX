@@ -44,6 +44,17 @@ public class StringConverter implements DataConverter
 	public static boolean serializeStringNormally = true; 
 	
 	@Override
+	public String parse(ParserRegistry myHomeRegistry, String str, Object... args) 
+	{	
+		int len;
+		if ((len = str.length()) > 1 && str.charAt(0) == '\"' && str.charAt(--len) == '\"' && indexOfNotInObj(str, ' ') == -1)
+		{
+			return str.substring(1, len);
+		}
+		return CONTINUE;
+	}
+	
+	@Override
 	public CharSequence toString(ParserRegistry myHomeRegistry, Object arg, Object... args) 
 	{
 		if (arg instanceof String)
@@ -64,14 +75,6 @@ public class StringConverter implements DataConverter
 					return "\""+str+"\"";
 			}
 		}
-		return CONTINUE;
-	}
-	
-	@Override
-	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args) 
-	{	
-		if (str.length() > 1 && str.charAt(0) == '\"' && str.charAt(str.length()-1) == '\"' && indexOfNotInObj(str, ' ') == -1)
-			return str.substring(1, str.length() - 1);
 		return CONTINUE;
 	}
 	

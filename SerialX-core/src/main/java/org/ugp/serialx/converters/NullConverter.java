@@ -1,5 +1,7 @@
 package org.ugp.serialx.converters;
 
+import static org.ugp.serialx.Utils.equalsLowerCase;
+
 /**
  * This converter is capable of converting "nothing" otherwise known as null and {@link DataParser#VOID}.
  * Its case insensitive!
@@ -19,7 +21,7 @@ package org.ugp.serialx.converters;
 		</tr>
 		<tr>
 		    <td>null</td>
-		    <td>null (object)</td>
+		    <td>null</td>
 	  	</tr>
 	  	<tr>
 		    <td>void</td>
@@ -36,10 +38,13 @@ public class NullConverter implements DataConverter
 	@Override
 	public Object parse(ParserRegistry registry, String str, Object... args)
 	{
-		if (str.equalsIgnoreCase("null"))
-			return null;
-		if (str.equalsIgnoreCase("void"))
-			return VOID;
+		if (str.length() == 4)
+		{
+			if (equalsLowerCase(str, "null", 0, 4))
+				return null;
+			if (equalsLowerCase(str, "void", 0, 4))
+				return VOID;
+		}
 		return CONTINUE;
 	}
 
