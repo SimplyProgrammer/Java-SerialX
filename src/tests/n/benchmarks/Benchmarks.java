@@ -1,6 +1,7 @@
 package tests.n.benchmarks;
 
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
+import static org.ugp.serialx.Utils.*;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -19,21 +20,24 @@ import org.openjdk.jmh.results.RunResult;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
+import org.ugp.serialx.LogProvider;
+import org.ugp.serialx.Utils;
+import org.ugp.serialx.converters.BooleanConverter;
 import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.NumberConverter;
 
 @State(Benchmark)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Warmup(iterations = 0)
-@Measurement(iterations = 20)
+@Measurement(iterations = 25)
 @BenchmarkMode(
-	Mode.SingleShotTime
-//	Mode.Throughput
+//	Mode.SingleShotTime
+	Mode.Throughput
 )
-@Fork(2) // 1 or 2
+@Fork(1) // 1 or 2
 public class Benchmarks {
 	
-	@Param({"0", "0b11l", "12345", "-14445", "0xff", "0b11111111", "011", "15.222", "16.88e2", "1234_5678_91011"})
+	@Param({"0", "0b11l", "12345", "-14445", "1 1", "0xff", "0b11111111", "011", "15.222", "16.88e2", "1234_5678_91011"})
 	String value;
 	
 //	@Param({"java.util.ArrayList 5 5 5", "java.util.concurrent.TimeUnit 1 2 3", "5hjdhjsakhdjsakhdjsahdjhdjak {} 59", "{hjdhjsakhdjsakhdjsahdjhdjak T T T"})
@@ -45,18 +49,68 @@ public class Benchmarks {
 //	@Param({"4", "16", "250", "500"})
 //	int count;
 	
-	DataConverter benchSubject = new NumberConverter() {
-		public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args) {
+	DataConverter benchSubject = new NumberConverter();
+	
+	DataConverter benchSubjectOld = new NumberConverter() {
+		public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args ) 
+		{
 			if (arg.length() > 0)
 			{
 				char ch = arg.charAt(0);
 				if (ch == '+' || ch == '-' || ch == '.' || (ch >= '0' && ch <= '9'))
-					return numberOf(arg, ch, 10, 0);
+				{
+					arg = normFormatNum(arg.toLowerCase());
+					ch = arg.charAt(arg.length()-1); //ch = last char
+					
+					if (ch == '.')
+						return CONTINUE;
+					if (Utils.contains(arg, '.') || (!arg.startsWith("0x") && ch == 'f' || ch == 'd'))
+					{
+						if (ch == 'f')
+							return new Float(fastReplace(arg, "f", ""));
+						return new Double(fastReplace(arg, "d", ""));
+					}
+					 
+					try
+					{
+						if (ch == 'l')
+							return new Long(Long.parseLong(fastReplace(fastReplace(fastReplace(arg, "l", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
+						if (ch == 's')
+							return new Short(Short.parseShort(fastReplace(fastReplace(fastReplace(arg, "s", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
+						if (ch == 'y')
+							return new Byte(Byte.parseByte(fastReplace(fastReplace(arg, "y", ""), "0b", ""), arg.startsWith("0b") ? 2 : 10));
+						return new Integer(Integer.parseInt(fastReplace(fastReplace(arg, "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
+					}
+					catch (NumberFormatException e)
+					{
+						if (arg.matches("[0-9.]+"))
+							try
+							{	
+								return new Long(Long.parseLong(fastReplace(fastReplace(fastReplace(arg, "l", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
+							}
+							catch (NumberFormatException e2)
+							{
+								LogProvider.instance.logErr("Number " + arg + " is too big for its datatype! Try to change its datatype to double (suffix D)!", e2);
+								return null;
+							}
+					}
+				}
 			}
+			return CONTINUE;
+		}
+	};
+	
+	BooleanConverter boolConv = new BooleanConverter();
+	
+	BooleanConverter boolConvOld = new BooleanConverter() {
+		public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args) {
+			if (arg.equalsIgnoreCase("T") || arg.equalsIgnoreCase("true"))
+				return new Boolean(true);
+			if (arg.equalsIgnoreCase("F") || arg.equalsIgnoreCase("false"))
+				return new Boolean(false);
 			return CONTINUE;
 		};
 	};
-	DataConverter benchSubjectOld = new NumberConverter();
 	
 //	@Setup()
 //	public void setup() {
@@ -105,96 +159,9 @@ public class Benchmarks {
 		
 //        for (char i = 0; i < 128; i++)
 //            System.out.println((int)i + " " + i + " | " + (i | ' ') + " " + (char)(i | ' '));
-		System.out.println(numberOf("0b11l", '0', 10, 0) + " " + 0b11l);
-		System.out.println(numberOf("1_0_0", '1', 10, 0) + " " + 1_0_0);
-		System.out.println(numberOf(".1e2", '1', 10, 0) + " " + .1e2);
-	}
-	
-	public static boolean equalsLowerCase(CharSequence str, CharSequence lowerCaseOther, int from, int to)
-	{
-		for (; from < to; from++)
-			if ((str.charAt(from) | ' ') != lowerCaseOther.charAt(from))
-				return false;
-		return true;
-	}
-	
-	public static Number numberOf(CharSequence str, char ch0, int base, int type)
-	{
-		int len = str.length(), start = 0, end = len - 1;
-
-		if (ch0 == '#') //Determine base
-		{
-			base = 16;
-			start++;
-		}
-		else if (ch0 == '0' && len > 1)
-		{
-			int ch1 = str.charAt(1) | ' ';
-			if (ch1 == 'b')
-			{
-				base = 2;
-				start++;
-			}
-			else if (ch1 == 'x')
-			{
-				base = 16;
-				start++;
-			}
-			else if (ch1 != '.')
-				base = 8;
-
-			start++;
-		}
-		
-		double result = 0, baseCof = 1, exponent = 1;
-		int chEnd = str.charAt(end--) | ' '; //Determine data type
-		if (base == 10 ? chEnd >= 'd' : chEnd >= 'l')
-			type = chEnd;
-		else if (chEnd == '.')
-			type = 'd';
-		else
-		{
-			result = chEnd > '9' ? chEnd - 'a' + 10 : chEnd - '0';
-			baseCof = base;
-		}
-
-		for (int ch; end >= start; end--) //Parsing
-		{
-			if ((ch = str.charAt(end)) == '-') // Neg
-				result = -result;
-			else if (ch == '.') //Decimal
-			{
-				result /= baseCof;
-				baseCof = 1;
-				if (type == 0)
-					type = 'd';
-			}
-			else if ((ch |= ' ') == 'e' && base == 10) //Handle E-notation
-			{
-				if ((exponent = Math.pow(base, result)) < 1 && type == 0)
-					type = 'd';
-				result = 0;
-				baseCof = 1;
-			}
-			else if (ch != 127 && ch != '+')
-			{
-				result += (ch > '9' ? ch - 'a' + 10 : ch - '0') * baseCof;
-				baseCof *= base;
-			}
-		}
-
-		result *= exponent;
-
-		if (type == 'd')
-			return result;
-		if (type == 'f')
-			return (float) result;
-		if (type == 'l' || result > 0x7fffffff || result < 0x80000000)
-			return (long) result;
-		if (type == 's')
-			return (short) result;
-		if (type == 'y')
-			return (byte) result;
-		return (int) result;
+		System.out.println(NumberConverter.numberOf("0b11l", '0', 4, 10, 0) + " " + 0b11l);
+		System.out.println(NumberConverter.numberOf("1_0_0", '1', 4, 10, 0) + " " + 1_0_0);
+		System.out.println(NumberConverter.numberOf(".1e2", '1', 3, 10, 0) + " " + .1e2);
+		System.out.println(NumberConverter.numberOf("0", '0', 0, 10, 0) + " " + 0);
 	}
 }
