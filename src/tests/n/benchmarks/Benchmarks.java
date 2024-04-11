@@ -182,7 +182,7 @@ public class Benchmarks {
 		System.out.println(NumberConverter.numberOf("0b11l", '0', 4, 10, 0) + " " + 0b11l);
 		System.out.println(NumberConverter.numberOf("1_0_0", '1', 4, 10, 0) + " " + 1_0_0);
 		System.out.println(NumberConverter.numberOf(".1e2", '1', 3, 10, 0) + " " + .1e2);
-		System.out.println(NumberConverter.numberOf("10e2", '1', 3, 10, 0).getClass() + " " + 10e2);
+		System.out.println(NumberConverter.numberOf("10e2", '1', 3, 10, 0) + " " + 10e2);
 		
 //		for (String bval : Arrays.asList("true", "f", "TRue", "FaLse", "tru0", "asdasdzxc", "falsr")) {
 //			System.out.println(new BooleanConverter().parse(null, bval));
