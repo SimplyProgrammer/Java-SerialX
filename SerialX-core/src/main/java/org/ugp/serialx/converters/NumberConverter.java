@@ -63,9 +63,29 @@ import java.util.Locale;
 		    <td>0b1111</td>
 		    <td>new Integer(15)</td>
 		</tr>
+	    <tr>
+		    <td>0112</td>
+		    <td>new Integer(74)</td>
+		</tr>
+	    <tr>
+		    <td>0112</td>
+		    <td>new Integer(74)</td>
+		</tr>
+	    <tr>
+		    <td>10e2</td>
+		    <td>new Integer(10e2)</td>
+		</tr>
+	    <tr>
+		    <td>10e2</td>
+		    <td>new Integer(10e2)</td>
+		</tr>
+	    <tr>
+		    <td>.1e2</td>
+		    <td>new Double(0.1e2)</td>
+		</tr>
 	</table>
  *
- * @see NumberConverter#numberOf(CharSequence, char, int, int)
+ * @see NumberConverter#numberOf(CharSequence, char, int, int, int)
  * 
  * @author PETO
  * 
@@ -151,7 +171,8 @@ public class NumberConverter implements DataConverter
 	 * Note that floating point numberer will be treated as {@link Double} if no suffix is present by default. Also numbers in E-notation format with negative exponents can be converted to {@link Double}. Further more, integers will be auto-converted to {@link Long} if overflow should occur!<br>
 	 * Important thing to know is that this argument will be overridden by suffix from str if present!
 	 * 
-	 * @return 
+	 * @return {@link Number} parsed from str with rules specified above. This function was designed to act as more optimized merger of {@link Byte#valueOf(String, int)}, {@link Short#valueOf(String, int)}, {@link Integer#valueOf(String, int)}, {@link Long#valueOf(String, int)} and {@link Float#valueOf(String)}, {@link Double#valueOf(String)} all encapsulated in 1 universal function.<br>
+	 * Note: This function will not check for incorrect number formats in order to save performance. Only incorrect format is when inserted string contains space, in this case it will return null!
 	 * 
 	 * @since 1.3.7
 	 */
