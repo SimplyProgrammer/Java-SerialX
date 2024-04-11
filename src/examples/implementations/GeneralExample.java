@@ -156,7 +156,7 @@ public class GeneralExample
 		assertEquals(TEST_1, deserializer.getString("parent"));
 		assertEquals(TEST_2, deserializer.getString("yourMom"));
 		assertEquals(list.size(), deserializer.getInt("arrSize"));
-		
+
 		assertEquals(TEST_4, deserializer.getScope(4).getScope("neastedTest").getDouble("tst4"), 0);
 		assertEquals(deserializer.getScope(4).getScope(Utils.splitValues("test  neastedTest", ' ')).getParent(2), deserializer.getScope(4));
 		assertEquals(((Scope) deserializer.getScope(4).getSubScope(0).<List<?>>get(0).get(3)).getSubScope(0).totalSize(), TEST_5.totalSize());

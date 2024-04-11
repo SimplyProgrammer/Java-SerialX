@@ -3,8 +3,11 @@ package tests.n.benchmarks;
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
 import static org.ugp.serialx.Utils.*;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+
+import javax.sound.midi.SysexMessage;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -29,7 +32,7 @@ import org.ugp.serialx.converters.NumberConverter;
 @State(Benchmark)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Warmup(iterations = 0)
-@Measurement(iterations = 25)
+@Measurement(iterations = 20)
 @BenchmarkMode(
 //	Mode.SingleShotTime
 	Mode.Throughput
@@ -37,8 +40,8 @@ import org.ugp.serialx.converters.NumberConverter;
 @Fork(1) // 1 or 2
 public class Benchmarks {
 	
-	@Param({"0", "0b11l", "12345", "-14445", "1 1", "0xff", "0b11111111", "011", "15.222", "16.88e2", "1234_5678_91011"})
-	String value;
+//	@Param({"0", "0b11l", "12345", "-14445", "1 1", "0xff", "0b11111111", "011", "15.222", "16.88e2", "1234_5678_91011"})
+//	String nvalue;
 	
 //	@Param({"java.util.ArrayList 5 5 5", "java.util.concurrent.TimeUnit 1 2 3", "5hjdhjsakhdjsakhdjsahdjhdjak {} 59", "{hjdhjsakhdjsakhdjsahdjhdjak T T T"})
 //	String str;
@@ -48,6 +51,9 @@ public class Benchmarks {
 //	
 //	@Param({"4", "16", "250", "500"})
 //	int count;
+	
+	@Param({"true", "f", "TRue", "FaLse", "tru0", "asdasdzxc", "falsr"})
+	String bvalue;
 	
 	DataConverter benchSubject = new NumberConverter();
 	
@@ -117,10 +123,24 @@ public class Benchmarks {
 //		
 //	}
 	
+//	@Benchmark
+//	public void bench(Blackhole hole)
+//	{
+//		hole.consume(benchSubject.parse(null, nvalue));
+//	}
+//	
+//	@Benchmark
+//	public void benchOld(Blackhole hole)
+//	{
+////		hole.consume(Integer.valueOf(value));
+////		hole.consume(Double.valueOf(value));
+//		hole.consume(benchSubjectOld.parse(null, nvalue));
+//	}
+	
 	@Benchmark
 	public void bench(Blackhole hole)
 	{
-		hole.consume(benchSubject.parse(null, value));
+		hole.consume(boolConv.parse(null, bvalue));
 	}
 	
 	@Benchmark
@@ -128,7 +148,7 @@ public class Benchmarks {
 	{
 //		hole.consume(Integer.valueOf(value));
 //		hole.consume(Double.valueOf(value));
-		hole.consume(benchSubjectOld.parse(null, value));
+		hole.consume(boolConvOld.parse(null, bvalue));
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -146,7 +166,7 @@ public class Benchmarks {
 //		System.out.println(reg.parse("--5 --9"));
 //		
 //		ob.verbosity(VerboseMode.SILENT);
-		Collection<RunResult> runResults = new Runner(ob).run();
+//		Collection<RunResult> runResults = new Runner(ob).run();
 
 //		Scope s = new Scope();
 //		s.add(new Scope("hi".equalsIgnoreCase(null), 123));
@@ -162,6 +182,10 @@ public class Benchmarks {
 		System.out.println(NumberConverter.numberOf("0b11l", '0', 4, 10, 0) + " " + 0b11l);
 		System.out.println(NumberConverter.numberOf("1_0_0", '1', 4, 10, 0) + " " + 1_0_0);
 		System.out.println(NumberConverter.numberOf(".1e2", '1', 3, 10, 0) + " " + .1e2);
-		System.out.println(NumberConverter.numberOf("0", '0', 0, 10, 0) + " " + 0);
+		System.out.println(NumberConverter.numberOf("10e2", '1', 3, 10, 0).getClass() + " " + 10e2);
+		
+//		for (String bval : Arrays.asList("true", "f", "TRue", "FaLse", "tru0", "asdasdzxc", "falsr")) {
+//			System.out.println(new BooleanConverter().parse(null, bval));
+//		}
 	}
 }
