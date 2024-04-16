@@ -3,6 +3,8 @@ package org.ugp.serialx.converters;
 import static org.ugp.serialx.Utils.contains;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
 
+import java.util.Map;
+
 import org.ugp.serialx.Registry;
 
 /**
@@ -41,14 +43,24 @@ public class StringConverter implements DataConverter
 	 * 
 	 * @since 1.2.0 (moved to {@link StringConverter} since 1.3.0)
 	 */
-	public static boolean serializeStringNormally = true; 
+	public static boolean serializeStringNormally = true; //TODO
+	
+	protected Map<String, String> parsingCache;
 	
 	@Override
 	public String parse(ParserRegistry myHomeRegistry, String str, Object... args) 
 	{	
+		String result;
 		int len;
 		if ((len = str.length()) > 1 && str.charAt(0) == '\"' && str.charAt(--len) == '\"' && indexOfNotInObj(str, ' ') == -1)
 		{
+			if (parsingCache != null)
+			{
+				if ((result = parsingCache.get(str)) != null)
+					return result;
+				parsingCache.put(str, result = str.substring(1, len));
+				return result;
+			}
 			return str.substring(1, len);
 		}
 		return CONTINUE;
@@ -88,6 +100,31 @@ public class StringConverter implements DataConverter
 		if (!hasComment)
 			return new StringBuilder().append("Object of ").append(obj.getClass().getName()).append(": \"").append(obj.toString()).append("\"!");
 		return "";
+	}
+	
+	/**
+	 * @param cache | Instance of {@link Map}, preferably {@link HashMap}, that will be used as cache for parsed strings where keys will be strings with " and values will be string without them. This cache will then be prioritized over creating a new instance of string during parsing, similarly to Java's string pool. Doing this can save you some memory with minimal performance overhead!<br>
+	 * Setting this to null will disable the parsing result caching by this {@link StringConverter} as it is by default.<br>
+	 * Recommended: Enable this when parsing a lot of strings that are the same, otherwise this will not have a big impact.<br>
+	 * Rule of thumb, is that this cache should be modified only by this converter however adding some pre-cached entries is possible but should be performed with caution!
+	 * 
+	 * @since 1.3.7
+	 */
+	public void setParsingCache(Map<String, String> cache)
+	{
+		parsingCache = cache;
+	}
+	
+	/**
+	 * @return Instance of {@link Map}, preferably {@link HashMap}, that will be used as cache for parsed strings where keys will be strings with " and values will be string without them. This cache will then be prioritized over creating a new instance of string during parsing, similarly to Java's string pool.<br>
+	 * Null will be returned if caching is disabled, which is by default...<br>
+	 * Note: Rule of thumb, is that this cache should be modified only by this converter however adding some pre-cached entries is possible but should be performed with caution!
+	 * 
+	 * @since 1.3.7
+	 */
+	public Map<String, String> getParsingCache()
+	{
+		return parsingCache;
 	}
 	
 	/**

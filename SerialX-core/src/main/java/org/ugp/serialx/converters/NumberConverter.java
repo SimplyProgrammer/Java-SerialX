@@ -176,7 +176,7 @@ public class NumberConverter implements DataConverter
 	 * 
 	 * @since 1.3.7
 	 */
-	public static Number numberOf(CharSequence str, char ch0, int end, int base, int type) //TODO
+	public static Number numberOf(CharSequence str, char ch0, int end, int base, int type)
 	{
 		int start = 0;
 
