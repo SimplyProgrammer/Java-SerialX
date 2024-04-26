@@ -1,10 +1,11 @@
-package org.ugp.serialx.protocols;
+package org.ugp.serialx.juss.protocols;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Utils;
+import org.ugp.serialx.protocols.SerializationProtocol;
 
 /**
  * Universal protocol for deserializing any object using its constructor. Args array of {@link UniversalObjectInstantiationProtocol#unserialize(Class, Object...)} must have elements applicable as arguments for some constructor of required objects class!
@@ -18,14 +19,15 @@ import org.ugp.serialx.Utils;
  */
 public class UniversalObjectInstantiationProtocol<T> extends SerializationProtocol<T> {
 
-	protected final Class<T> applicableFor;
+	protected final Class<? extends T> applicableFor;
 	
 	/**
 	 * @param applicableFor | Class that can be serialized using this protocol.
+	 * Note: Passing {@link Object#getClass()} will make this protocol universal and work for any {@link Object} instance, this can be considered unsafe in some cases...
 	 * 
 	 * @since 1.3.7
 	 */
-	public UniversalObjectInstantiationProtocol(Class<T> applicableFor)
+	public UniversalObjectInstantiationProtocol(Class<? extends T> applicableFor)
 	{
 		this.applicableFor = applicableFor;
 	}

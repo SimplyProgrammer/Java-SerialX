@@ -1,4 +1,6 @@
-package org.ugp.serialx.protocols;
+package org.ugp.serialx.juss.protocols;
+
+import static org.ugp.serialx.Utils.Instantiate;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -8,7 +10,7 @@ import java.util.List;
 
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
-import org.ugp.serialx.Utils;
+import org.ugp.serialx.protocols.SerializationProtocol;
 
 /**
  * This is automatic protocol that will automatically serialize every or selected field in object that has valid and public getter and setter!
@@ -128,7 +130,7 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 	 */
 	public T createBlankInstance(Class<? extends T> objectClass) throws Exception
 	{
-		return Utils.Instantiate(objectClass);
+		return Instantiate(objectClass);
 	}
 	
 	@Override

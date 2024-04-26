@@ -30,7 +30,7 @@ public abstract class SerializationProtocol<T>
 	 * 
 	 * @since 1.3.0
 	 */
-	public static final ProtocolRegistry REGISTRY = new ProtocolRegistry(/*This might be unsafe: new UniversalObjectInstantiationProtocol<>(Object.class),*/ new ListProtocol(), new MapProtocol(), new StringProtocol(), new ScopeProtocol(), new SelfSerializableProtocol(), new EnumProtocol());
+	public static final ProtocolRegistry REGISTRY = new ProtocolRegistry(/*This might be unsafe: new UniversalObjectInstantiationProtocol<>(Object.class), new SelfSerializableProtocol(SelfSerializable.class),*/ new ListProtocol(), new MapProtocol(), new StringProtocol(), new ScopeProtocol(), new EnumProtocol());
 	
 	/**
 	 * This mode is for protocols that are used for serialization only!

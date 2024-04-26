@@ -1,9 +1,7 @@
  package org.ugp.serialx.protocols;
 
-import java.util.Collection;
-
 /**
- * EnumProtocol is universal protocol to serialize any enumerator ({@link Collection} instance).
+ * EnumProtocol is universal protocol to serialize any enumerator ({@link Enum} instance).
  * 
  * @author PETO
  *

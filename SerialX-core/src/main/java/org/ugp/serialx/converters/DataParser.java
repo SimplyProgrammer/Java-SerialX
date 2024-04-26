@@ -7,7 +7,7 @@ import org.ugp.serialx.Registry;
 import org.ugp.serialx.Scope;
 
 /**
- * This class supposed to be used to parse strings back to java objects using {@link DataParser#parse(String, Object...)}!
+ * This interface is supposed to be used to parse strings back to java objects using {@link DataParser#parse(String, Object...)}!
  * Instance of DataParser should be registered into {@link DataParser#REGISTRY} or other external registry in order to work, also only one instance of each DataParser should be used and accessed via this registry! <br>
  * Static method {@link DataParser#parseObj} is used to walk this registry and parse inserted string in process, in other words we can say that this interface contains <a href = "https://en.wikipedia.org/wiki/Recursive_descent_parser">recursive descent parse</a> that uses its own implementations!
  * 
