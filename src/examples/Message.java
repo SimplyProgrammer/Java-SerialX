@@ -1,10 +1,10 @@
 package examples;
 
-import org.ugp.serialx.protocols.SelfSerializable;
+import org.ugp.serialx.juss.protocols.SelfSerializable;
 
 /**
  * Example of self-serializable object!
- * SelfSerializable objects can be serialized directly without necessity of having any {@link SerializationDebugger}, all you need to do is implement {@link SelfSerializable} interface and override {@link SelfSerializable#serialize()} method accordingly!
+ * {@link SelfSerializable} objects can be serialized directly without necessity of having any {@link org.ugp.serialx.devtools.SerializationDebugger}, all you need to do is implement {@link SelfSerializable} interface and override {@link SelfSerializable#serialize()} method accordingly!
  * 
  * @author PETO
  *

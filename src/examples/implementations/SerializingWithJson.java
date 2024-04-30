@@ -7,7 +7,7 @@ import java.util.List;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.json.JsonSerializer;
-import org.ugp.serialx.protocols.AutoProtocol;
+import org.ugp.serialx.juss.protocols.AutoProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol;
 
 import examples.Message;
