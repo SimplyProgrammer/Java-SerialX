@@ -55,43 +55,6 @@ public interface DataConverter extends DataParser
 	}
 	
 	/**
-	 * @deprecated Use {@link ParserRegistry#toString(Object, Object...)}!
-	 * 
-	 * @param registry | Registry to use!
-	 * @param obj | Object to convert into string!
-	 * @param args | Additional arguments that will be obtained in {@link DataParser#toString(String, Object...)}!
-	 * 
-	 * @return Object converted to string using {@link DataConverter} suitable converter picked from registry!
-	 * {@link DataConverter#toString(Object, Object...)} of all registered converters will be called however only suitable ones should return the result, others should return {@link DataParser#CONTINUE}!
-	 * 
-	 * @since 1.3.0
-	 */
-	@Deprecated
-	public static CharSequence objToString(Registry<DataParser> registry, Object obj, Object... args)
-	{
-		if (registry instanceof ParserRegistry)
-			return ((ParserRegistry) registry).toString(obj, args);
-		return objToString(new ParserRegistry(registry), obj, args);
-	}
-	
-	/**
-	 * @deprecated Use {@link ParserRegistry#getConverterFor(Object, Object...)}!
-	 * 
-	 * @param registry | Registry to use!
-	 * @param obj | Object to find converter for!
-	 * @param args | Additional arguments that will be obtained in {@link DataParser#toString(String, Object...)}!
-	 * 
-	 * @return Converter suitable for converting required obj to string, selected from registry!
-	 */
-	@Deprecated
-	public static DataConverter getConverterFor(Registry<DataParser> registry, Object obj, Object... args)
-	{
-		if (registry instanceof ParserRegistry)
-			return ((ParserRegistry) registry).getConverterFor(obj, args);
-		return getConverterFor(new ParserRegistry(registry), obj, args);
-	}
-	
-	/**
 	 * @return <code>"Object of " + objToDescribe.getClass().getName() + ": \""  + objToDescribe + "\" converted by " + DataParser.class.getName()</code>
 	 * 
 	 * @since 1.3.2

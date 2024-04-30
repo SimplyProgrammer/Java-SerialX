@@ -457,19 +457,6 @@ public class ArithmeticOperators implements DataParser
 	}
 	
 	/**
-	 * DEPRECATED: Use {@link String#valueOf(Object)} instead, this function is duplicate functionality rendering it unnecessary.
-	 * 
-	 * @return "null" if null and else obj.toString();
-	 * 
-	 * @since 1.3.0
-	 */
-	@Deprecated
-	public static String toString(Object obj)
-	{
-		return obj == null ? "null" : obj.toString();
-	}
-	
-	/**
 	 * Used internally by {@link ArithmeticOperators} to wrap result of evaluation!
 	 * Mainly used by String results!
 	 * 

@@ -48,20 +48,6 @@ import org.ugp.serialx.protocols.SerializationProtocol;
  */
 public class SerializableBase64Converter implements DataConverter 
 {
-	/**
-	 * @deprecated DO NOT USE, IT WILL TAKE NOTE EFFECT! USE {@link ObjectConverter#setUseBase64IfCan(boolean)}!
-	 * 
-	 * Set this on true to force program to use SerializationProtocol also on java.io.Serializable objects.
-	 * Doing this also might take less memory space then using classic java.io.Serializable.
-	 * In some cases, java Serialization can be more effective than protocols sometimes not! You should try which gives you the best result, then you can also deactivate certain protocols that are less effective than Java serialization.
-	 * For example for long strings, classic Java serialization is better than protocol, it will take less memory storage space, but performance is almost always far slower!<br>
-	 * Note: Whole concept of SerialX API is about avoiding classic Java serialization from many reasons so you most likely want this on true! Also protocol will be almost certainly faster classic serialization!
-	 * 
-	 * @since 1.0.0 (moved to {@link SerializableBase64Converter} since 1.3.0)
-	 */
-	@Deprecated
-	public static boolean useProtocolIfCan = true;
-	
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args) 
 	{

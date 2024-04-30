@@ -173,15 +173,13 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 	}
 	
 	/**
-	 * @deprecated DO NOT USE!
-	 * 
 	 * @param variableName | Name of variable!
 	 * 
-	 * @return PropertyDescriptor of variable with name or null if this protocols can't use it!
+	 * @return PropertyDescriptor of variable with name or null if this protocols can't serialize variable with given name!<br>
+	 * Note: I would recommend to tread this as read only and not set anything that you are not sure of. This will ensure correct functionality...
 	 * 
 	 * @since 1.3.2
 	 */
-	@Deprecated
 	public PropertyDescriptor getfieldDescriptorsDescriptor(String variableName)
 	{
 		for (PropertyDescriptor var : fieldDescriptors) 
@@ -214,25 +212,5 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 	public void setUseScope(boolean useScope) 
 	{
 		this.useScope = useScope;
-	}
-	
-	/**
-	 * DEPRECATED: DO NOT USE! USE {@link Scope#getPropertyDescriptorsOf(Class, String...)} instead!
-	 * 
-	 * @param cls | Class to inspect!
-	 * @param fieldNames | Names of fields to get descriptors for, if this array is empty or null, descriptors for all fields with public getters and setters will be obtained!
-	 * 
-	 * @return List of {@link PropertyDescriptor}s of cls representing access methods of required fields! Only descriptors of fields that have valid and public getter and setter will be returned! 
-	 * 
-	 * @throws IntrospectionException when there are no fields with valid and public getters and setters.
-	 * 
-	 * @see PropertyDescriptor
-	 * 
-	 * @since 1.3.2
-	 */
-	@Deprecated
-	public static List<PropertyDescriptor> getPropertyDescriptorsOf(Class<?> cls, String... fieldNames) throws IntrospectionException
-	{
-		return Scope.getPropertyDescriptorsOf(cls, fieldNames);
 	}
 }
