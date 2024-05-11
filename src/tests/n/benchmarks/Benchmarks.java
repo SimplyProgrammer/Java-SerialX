@@ -1,13 +1,9 @@
 package tests.n.benchmarks;
 
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
-import static org.ugp.serialx.Utils.*;
+import static org.ugp.serialx.Utils.fastReplace;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-
-import javax.sound.midi.SysexMessage;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -19,8 +15,6 @@ import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import org.openjdk.jmh.results.RunResult;
-import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 import org.ugp.serialx.LogProvider;

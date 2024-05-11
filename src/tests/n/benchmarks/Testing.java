@@ -1,15 +1,8 @@
 package tests.n.benchmarks;
 
-import java.awt.List;
-import java.io.File;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 
 import org.ugp.serialx.Utils;
-import org.ugp.serialx.juss.JussSerializer;
-import org.ugp.serialx.juss.converters.ObjectConverter;
 import org.ugp.serialx.juss.converters.VariableConverter;
 
 /**

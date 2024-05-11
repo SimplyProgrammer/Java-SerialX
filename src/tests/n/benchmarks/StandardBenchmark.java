@@ -1,4 +1,4 @@
-package tst.srlx.head;
+package tests.n.benchmarks;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -24,7 +24,7 @@ import examples.Foo;
  * 
  * @since 1.0.0
  */
-public class Main 
+public class StandardBenchmark 
 {
 	public static void main(String[] args) throws Exception
 	{

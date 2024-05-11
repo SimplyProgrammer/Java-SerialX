@@ -8,6 +8,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,8 +120,8 @@ public class GeneralExample
 		
 		JussSerializer serializer = new JussSerializer(vars); //Creating an instance of Serializer that will serialize objects using Juss! Serializer is instance of scope so it behaves like so!										   
 		//Adding independent values																		         																															Invokation of static members of this class (calling method "println" and obtaining "hello" field as argument! 
-		serializer.addAll(TEST_3, r, list, ints, someScope, serializer.Comment("Size of array"), serializer.Var("arrSize", list.size()), new Bar(serializer.Code("$parent")), 1, 2.2, 3, 'A', true, false, null, serializer.Code("$num"), serializer.StaticMember(GeneralExample.class, "println", serializer.StaticMember(GeneralExample.class, "hello")));
-											    			//This will insert an comment          Another way to add variable except put method			     				   									$ is used to obtain value from variable
+		serializer.addAll(TEST_3, r, list, ints, someScope, serializer.Comment("Size of array"), serializer.Var("arrSize", list.size()), new Bar(serializer.Code("$parent")), 1, 2.2, 3, 'A', true, false, null, serializer.Code("$num::new"), serializer.StaticMember(GeneralExample.class, "println", serializer.StaticMember(GeneralExample.class, "hello")));
+											    			//This will insert an comment          Another way to add variable except put method			     				   									$ is used to obtain value from variable, ::new will attempt to clone the value
 		serializer.setGenerateComments(true); //Enabling comment generation
 		
 		serializer.getParsers().resetCache(); //Enabling cache, this can improve performance when serializing a lot of data (not case of this example)!
@@ -159,15 +160,16 @@ public class GeneralExample
 
 		assertEquals(TEST_4, deserializer.getScope(4).getScope("neastedTest").getDouble("tst4"), 0);
 		assertEquals(deserializer.getScope(4).getScope(Utils.splitValues("test  neastedTest", ' ')).getParent(2), deserializer.getScope(4));
-		assertEquals(((Scope) deserializer.getScope(4).getSubScope(0).<List<?>>get(0).get(3)).getSubScope(0).totalSize(), TEST_5.totalSize());
+		assertEquals(((Scope) deserializer.getScope(4).getSubScope(0).<List<?>>get(0).get(3)).getSubScope(0).toObject(List.class).size(), TEST_5.into(Collection.class).size());
+		assertTrue(deserializer.clone() instanceof JussSerializer);
 		assertTrue(deserializer.filter(obj -> obj.equals(true)).get(0));
 		
 		assertEquals(TEST_3, deserializer.get(0));
 		assertEquals(list, deserializer.get(2));
 		assertEquals(new Bar(TEST_1), deserializer.<Object>get(5));
-		assertArrayEquals(ints, deserializer.get(3));
+		assertArrayEquals(ints, Scope.from(deserializer.get(3)).toValArray());
 		
-		assertEquals(TEST_6, deserializer.getString(-1));
+		assertEquals(TEST_6, new Scope(deserializer).getString(-1));
  	}
 	
 	//We can invoke static members in JUSS!

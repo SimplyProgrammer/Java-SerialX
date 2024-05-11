@@ -15,8 +15,10 @@ import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
+import org.ugp.serialx.Utils;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.json.JsonSerializer;
+import org.ugp.serialx.json.converters.JsonCharacterConverter;
 import org.ugp.serialx.juss.JussSerializer;
 import org.ugp.serialx.juss.converters.ObjectConverter;
 
@@ -134,17 +136,19 @@ public class SimpleQuerying
 		assertEquals(content.getScope("ppl").valuesCount(), ages.size());
 		assertEquals(filtered.getScope("serialx"), content.getScope("serialx"));
 		
-		assertTrue(residents.valuesCount() > 0); //Should not be 0
+		assertTrue(residents.toObject(List.class).size() > 0); //Should not be 0
 		assertTrue(remappedValues.size() > 0);
 		
-		assertEquals(residents.valuesCount(), realResidents.size());
+		JsonSerializer test = new JsonSerializer();
+		assertEquals(new Scope(residents).clone().clone(JussSerializer.class).into(test).valuesCount(), realResidents.size());
 		assertFalse(realResidents.contains(DataParser.VOID) || realResidents.contains(null));
+		assertEquals(residents, test);
 		
 		GenericScope<String, ?> sc = content.getScope("devDependencies", "ppl", "ludvig");
 		assertEquals(TEST_2, content.get(-1));
 		assertEquals(((Scope) sc).getString("residence"), "null");
 		assertEquals(TEST_3, ((Scope) sc).getLong("age"));
-		assertEquals(content.getScope("alienFruit").toObjectOf("variants", List.class), new GenericScope<>(1, 2, 3).values());
+		assertEquals(((Scope) content.transformToScope()).getScope("alienFruit").toObjectOf("variants", List.class), new GenericScope<>(1, 2, 3).values());
 		
 		assertNotEquals(TEST_2, (sc = content.getScope("devDependencies")).get("name"));
 		assertNull(sc.get(-1));
@@ -159,13 +163,15 @@ public class SimpleQuerying
 		
 		sc = content.getScope("jsonCrossover");
 		assertTrue(sc instanceof JsonSerializer);
-		assertEquals(TEST_JSON, sc.get("hello"));
+		assertTrue(Scope.from(sc).castTo(Scope.class) instanceof Scope);
+		assertEquals(TEST_JSON, sc.get("he" + Utils.multilpy("l", 2) + "o"));
 		assertFalse(sc.getGenericScope("jsonArray").isEmpty());
-		assertEquals(sc.getClass(), content.get("jsonArrayClass"));
+		assertEquals(sc.getClass(), content.get("jsonArrayCla" + Utils.multilpy('s', 2)));
 		
-		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Object>get(Arrays.asList(1, 2, 3)), "123");
-		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Scope>get(Arrays.asList(4, 5, 6)).<Object>get(0), 456d);
-		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Scope>get(Arrays.asList(7, 8, 9)).<Object>get("test"), 789l);
+		
+		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Object>get(Arrays.asList((Object[]) content.getParsers().parse("(1_0_0e-2 (0b10 ) 3d)"))), new JsonCharacterConverter(false).toString(null, '{') /* DO NOT DO IN PROD ("123") */);
+		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Scope>get(Arrays.asList(-+-+04, -+-5.000, 0x6)).<Object>get(0), 456d);
+		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Scope>get(Arrays.asList(.7, 8f, (byte) +-+-9)).<Object>get("test"), 789l);
 
 		assertNotNull(sc = content.getScope("arr"));
 		for (Object obj : content.getScope("superArr"))

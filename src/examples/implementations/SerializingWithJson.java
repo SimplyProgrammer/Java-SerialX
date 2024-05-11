@@ -24,12 +24,17 @@ public class SerializingWithJson {
 	public static void main(String[] args) throws Exception 
 	{
 		/*
-		 * Registering AutoProtocol for Mesasge class and setting it to serialize it as Scope!
+		 * Registering AutoProtocol for Message class and setting it to serialize it as Scope!
 		 * 
-		 * Note: You can see that we are getting "ProtocolRegistry: Protocol applicable for "examples.Message" is already registered!" this is because Message already implements SelfSerializable which means it can be already serialized via SelfSerializableProtocol.
 		 * Registering additional Serialization protocol is therefore not necessary, we are doing this only to enforce the Scope format.
 		 */
 		SerializationProtocol.REGISTRY.add(new AutoProtocol<>(Message.class, true));
+		
+		/*
+		 * Note that Message is also SelfSerializable which makes it eligible to be serialized with SelfSerializableProtocol as well!
+		 * You can try this by uncommenting this line and commenting line above, notice how data format will change slightly due to different serialization technique that SelfSerializable uses!
+		 */
+//		SerializationProtocol.REGISTRY.add(new SelfSerializableProtocol(Message.class));
 		
 		File medium = new File("src/examples/implementations/messages.json"); // Json file to use...
 		
@@ -54,12 +59,13 @@ public class SerializingWithJson {
 		
 		// Mapping deserialized Scopes, or "json objects" in this case, back into our original messages!
 		List<Message> deserializedMessages = deserializer.map(jsonObj -> {
-			try {
+			try 
+			{
 				return ((Scope) jsonObj).toObject(Message.class);
 			} 
-			catch (Exception e) {
-				e.printStackTrace();
-				return null;
+			catch (Exception e) 
+			{
+				throw new RuntimeException(e);
 			}
 		});
 		
