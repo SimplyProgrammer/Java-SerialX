@@ -259,12 +259,15 @@ public class NumberConverter implements DataConverter
 	}
 	
 	/**
+	 * @deprecated THIS IS NO LONGER NECESSARY BECAUSE BECAUSE {@link NumberConverter#numberOf(CharSequence, char, int, int, int)} CAN DO THE SAME THING MUCH FASTET!
+	 * 
 	 * @param num | Number string to format!
 	 * 
 	 * @return Original string with formated sign and deleted '_'!
 	 * 
 	 * @since 1.3.0
 	 */
+	@Deprecated
 	public static String normFormatNum(String num)
 	{
 		if (num.length() > 2)

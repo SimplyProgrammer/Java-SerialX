@@ -43,7 +43,7 @@ public class StringConverter implements DataConverter
 	 * 
 	 * @since 1.2.0 (moved to {@link StringConverter} since 1.3.0)
 	 */
-	public static boolean serializeStringNormally = true; //TODO
+	protected boolean serializeStringNormally = true;
 	
 	protected Map<String, String> parsingCache;
 	
@@ -127,6 +127,26 @@ public class StringConverter implements DataConverter
 		return parsingCache;
 	}
 	
+	/**
+	 * @return Will return value of {@link StringConverter#serializeStringNormally}!
+	 * 
+	 * @since 1.3.7 (it was static before = not good)
+	 */
+	public boolean isSerializeStringNormally() 
+	{
+		return serializeStringNormally;
+	}
+
+	/**
+	 * @param serializeStringNormally | Set value of {@link StringConverter#serializeStringNormally}!
+	 * 
+	 * @since 1.3.7 (it was static before = not good)
+	 */
+	public void setSerializeStringNormally(boolean serializeStringNormally) 
+	{
+		this.serializeStringNormally = serializeStringNormally;
+	}
+
 	/**
 	 * @param obj | Object to stringify directly.
 	 * 

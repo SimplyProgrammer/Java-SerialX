@@ -335,7 +335,7 @@ public class ArithmeticOperators implements DataParser
 			else if (cof instanceof Integer || cof2 instanceof Integer)
 				return (int) pow;
 		}
-		return null;	
+		return null;
 	}
 	
 	/**

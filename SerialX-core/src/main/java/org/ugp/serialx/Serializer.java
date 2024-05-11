@@ -534,7 +534,7 @@ public abstract class Serializer extends Scope
 				if (t instanceof Serializer)
 				{
 					GenericScope<String, ?> srl = ((Scope) t).transform(this);
-					return new GenericScope<>(srl.variables(), srl.values(), srl.getParent());
+					return new Scope(srl.variables(), srl.values(), srl.getParent());
 				}
 				return t;
 			}

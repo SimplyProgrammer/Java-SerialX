@@ -81,32 +81,40 @@ public class VariableConverter extends VariableParser implements DataConverter
 				eachVar: for (int i = 0; i < iVal; i++) // Support for assigning multiple vars to the same value... Yea this is not the prettiest code but it does the job and mainly it does it fast so shut up!
 				{
 					String var = vars[i];
-					if (!genericVar && contains(var, ' '))				
-						LogProvider.instance.logErr("Variable name \"" + var + "\" is invalid, blank characters are not allowed!", null);
-					else if ((op0Index = var.indexOf('.')) > -1)
+					if (!genericVar)
 					{
-						String[] path = splitValues(var, op0Index, 0, 0, new char[0],  '.');
-						int iLast = path.length-1, j = 0;
-						
-						backlook: do
+						if (contains(var, ' '))
 						{
-							Object sc;
-							if ((sc = getMemberOperator(scope, path[0])) != VOID) // Attempt to get only when exists...
-							{
-								for (j = 1; j < iLast; j++) // Subscope/forward lookup (inner path only)...
-									if ((sc = getMemberOperator(sc, path[j])) == null || sc == VOID)
-										break backlook;
-								
-								setMemberOperator(myHomeRegistry, sc, path[iLast], val, genericVar, args);
-								continue eachVar;
-							}
+							LogProvider.instance.logErr("Variable name \"" + var + "\" is invalid, blank characters are not allowed!", null);
+							continue;
 						}
-						while ((scope = scope.getParent()) != null);
 
-						LogProvider.instance.logErr("Path \"" + var + "\" cannot be set to \"" + val + "\" because \"" + path[j] + "\" is not a accessible or does not exist!", null);
+						if ((op0Index = var.indexOf('.')) > -1)
+						{
+							String[] path = splitValues(var, op0Index, 0, 0, new char[0],  '.');
+							int iLast = path.length-1, j = 0;
+							
+							backlook: do
+							{
+								Object sc;
+								if ((sc = getMemberOperator(scope, path[0])) != VOID) // Attempt to get only when exists...
+								{
+									for (j = 1; j < iLast; j++) // Subscope/forward lookup (inner path only)...
+										if ((sc = getMemberOperator(sc, path[j])) == null || sc == VOID)
+											break backlook;
+									
+									setMemberOperator(myHomeRegistry, sc, path[iLast], val, false, args);
+									continue eachVar;
+								}
+							}
+							while ((scope = scope.getParent()) != null);
+							
+							LogProvider.instance.logErr("Path \"" + var + "\" cannot be set to \"" + val + "\" because \"" + path[j] + "\" is not a accessible or does not exist!", null);
+							continue;
+						}
 					}
-					else
-						setMemberOperator(myHomeRegistry, scope, var, val, genericVar, args);
+					
+					setMemberOperator(myHomeRegistry, scope, var, val, genericVar, args);
 				}
 
 				return getValueModif ? val : VOID;

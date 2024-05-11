@@ -2,8 +2,15 @@ package org.ugp.serialx.json.converters;
 
 import org.ugp.serialx.converters.NumberConverter;
 
-public class JsonNumberConverter extends NumberConverter {
-	
+/**
+ * {@link NumberConverter} modified to match JSON more closely. It will not use Juss number suffixes since JSON does not support them...
+ * 
+ * @author PETO
+ * 
+ * @since 1.3.7
+ */
+public class JsonNumberConverter extends NumberConverter 
+{
 	@Override
 	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
 	{

@@ -223,14 +223,14 @@ public final class Utils {
 	
 	/**
 	 * @param obj | Object to clone.
-	 * @param 
+	 * @param parsersToUse | Parsers that will be used for cloning...
 	 * @param converterArgs | Argument for {@link DataConverter#objToString(Registry, Object, Object...)}!
 	 * @param parserArgs | Arguments for {@link DataParser#parseObj(Registry, String, boolean, Class[], Object...)}!
 	 * 
 	 * @return Cloned object using {@link DataParser}, {@link DataConverter} and {@link SerializationProtocol} or the same object as inserted one if cloning is not possible, for instance when protocol was not found and object is not instance of {@link Cloneable}.
 	 * This clone function will always prioritized the Protocol variation, regular cloning is used only when there is no protocol registered or exception occurs. <br>
 	 * Note: If there are protocols to serialize inserted object and all its sub-objects and variables then this clone will be absolute deep copy, meaning that making any changes to this cloned object or to its variables will not affect original one in any way! 
-	 * But keep in mind that this clone is absolute hoverer, based on protocols used, it does not need to be an 100% copy!
+	 * But keep in mind that this clone is absolute hoverer, based on protocols used, it does not need to be an 100% copy! Also note that certain objects such as primitive wrappers ({@link Integer}, {@link Float} etc...) will not be necessarily cloned since cloning them is not reasonable...
 	 * 
 	 * @since 1.3.2
 	 */
@@ -238,49 +238,47 @@ public final class Utils {
 	public static <T> T Clone(T obj, Registry<DataParser> parsersToUse, Object[] converterArgs, Object... parserArgs)
 	{
 		if (obj == null) 
-			return obj;
-		else if (obj.getClass() == Byte.class)
-			return (T) new Byte((byte) obj);
-		else if (obj.getClass() == Short.class)
-			return (T) new Short((short) obj);
-		else if (obj.getClass() == Integer.class)
-			return (T) new Integer((int) obj);
-		else if (obj.getClass() == Long.class)
-			return (T) new Long((long) obj);
-		else if (obj.getClass() == Float.class)
-			return (T) new Float((float) obj);
-		else if (obj.getClass() == Double.class)
-			return (T) new Double((double) obj);
-		else if (obj.getClass() == Character.class)
-			return (T) new Character((char) obj);
-		else if (obj.getClass() == Boolean.class)
-			return (T) new Boolean((boolean) obj);
-		else if (obj.getClass() == String.class)
+			return null;
+		if (obj.getClass() == Byte.class)
+			return (T) (Byte) ((byte) obj); // valueOf call...
+		if (obj.getClass() == Short.class)
+			return (T) (Short) ((short) obj);
+		if (obj.getClass() == Integer.class)
+			return (T) (Integer) ((int) obj);
+		if (obj.getClass() == Long.class)
+			return (T) (Long) ((long) obj);
+		if (obj.getClass() == Float.class)
+			return (T) (Float) ((float) obj);
+		if (obj.getClass() == Double.class)
+			return (T) (Double) ((double) obj);
+		if (obj.getClass() == Character.class)
+			return (T) (Character) ((char) obj);
+		if (obj.getClass() == Boolean.class)
+			return (T) (Boolean) ((boolean) obj);
+		if (obj.getClass() == String.class)
 			return (T) new String((String) obj);
-		else
+		
+		ParserRegistry parsers = parsersToUse instanceof ParserRegistry ? (ParserRegistry) parsersToUse : new ParserRegistry(parsersToUse);
+		
+		Object cln = parsers.parse(parsers.toString(obj, converterArgs).toString(), parserArgs);
+		if (cln != null && cln != VOID)
+			return (T) cln;
+		
+		if (obj instanceof Cloneable)
 		{
-			ParserRegistry parsers = parsersToUse instanceof ParserRegistry ? (ParserRegistry) parsersToUse : new ParserRegistry(parsersToUse);
-			
-			Object cln = parsers.parse(parsers.toString(obj, converterArgs).toString(), parserArgs);
-			if (cln != null && cln != VOID)
-				return (T) cln;
-			
-			if (obj instanceof Cloneable)
+			try 
 			{
-				try 
-				{
-					Method method = Object.class.getDeclaredMethod("clone");
-					method.setAccessible(true);
-					return (T) method.invoke(obj);
-				} 
-				catch (Exception e) 
-				{
-					throw new RuntimeException(e);
-				}
+				Method method = Object.class.getDeclaredMethod("clone");
+				method.setAccessible(true);
+				return (T) method.invoke(obj);
+			} 
+			catch (Exception e) 
+			{
+				throw new RuntimeException(e);
 			}
-			LogProvider.instance.logErr("Unable to clone " + obj.getClass() + ": " + obj, null);
-			return obj;
 		}
+		LogProvider.instance.logErr("Unable to clone " + obj.getClass() + ": " + obj, null);
+		return obj;
 	}
 	
 	/**

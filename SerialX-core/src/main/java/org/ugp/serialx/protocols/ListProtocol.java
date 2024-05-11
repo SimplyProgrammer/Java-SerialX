@@ -11,7 +11,7 @@ import java.util.Collection;
  *
  * @since 1.0.0 and applicable for {@link Collection} since 1.2.2
  */
-public class ListProtocol extends SerializationProtocol<Collection<?>> 
+public class ListProtocol extends SerializationProtocol<Collection<?>>
 {
 	@Override
 	public Object[] serialize(Collection<?> obj) 
@@ -24,7 +24,7 @@ public class ListProtocol extends SerializationProtocol<Collection<?>>
 	{
 		if (objectClass.isInterface())
 			return new ArrayList<>(Arrays.asList(args));
-			
+
 		try
 		{
 			return objectClass.getConstructor(Collection.class).newInstance(Arrays.asList(args));

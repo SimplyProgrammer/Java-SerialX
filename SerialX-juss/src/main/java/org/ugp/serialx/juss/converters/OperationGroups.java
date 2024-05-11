@@ -52,7 +52,7 @@ public class OperationGroups implements DataParser
 					args[2] = runtimeGroupStack;
 				}
 				String mark = GROUP_MARK_OP + runtimeGroupStack.size() + GROUP_MARK_CLS;
-				runtimeGroupStack.put(mark, str.substring(opIndex+1, clsIndex));
+				runtimeGroupStack.put(mark, str.substring(opIndex+1, clsIndex).trim());
 
 				StringBuilder sb = new StringBuilder(str).replace(opIndex, clsIndex+1, mark);
 				return myHomeRegistry.parse(sb.toString(), args);
