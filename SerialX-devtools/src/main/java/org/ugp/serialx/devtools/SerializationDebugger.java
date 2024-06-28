@@ -2,6 +2,7 @@ package org.ugp.serialx.devtools;
 
 import static org.ugp.serialx.Utils.multilpy;
 
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +11,14 @@ import java.util.Map.Entry;
 import org.ugp.serialx.Registry;
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.DataConverter;
-import org.ugp.serialx.devtools.converters.DebugParserRegistry;
+import org.ugp.serialx.converters.DataParser;
 
 /**	
  * Use this for debugging during parsing and converting by adding new instance of it into your parser {@link Registry} or in case of {@link Serializer} use !<br>
  * During parsing, type <code>__debug</code> or <code>__debug_yourObject</code> into your code!<br>
  * During converting/serializing, serialize your object using {@link DebugWrapper} with your object as argument!
+ * 
+ * @see SerializationDebugger#debug(Serializer)
  * 
  * @author PETO
  *
@@ -24,6 +27,14 @@ import org.ugp.serialx.devtools.converters.DebugParserRegistry;
 public class SerializationDebugger implements DataConverter
 {		
 	public static final String DEBUG_MARK = new String("__debug");
+	
+	/**
+	 * Output object that will be used for logging...
+	 * If null, it will be set automatically!
+	 * 
+	 * @since 1.3.7
+	 */
+	public static PrintWriter out;
 	
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args)
@@ -50,17 +61,20 @@ public class SerializationDebugger implements DataConverter
 	 */
 	public Object printDebugs(DebugParserRegistry myHomeRegistry, Object objToSerialize, String strToParse, Object... args)
 	{
+		if (out == null)
+			out = new PrintWriter(System.err);
+
 		String action = objToSerialize == null && strToParse != null ? "Parsing" : "Converting";
-		System.err.println("--------------------------------------------- " + action + " Debug ---------------------------------------------");
+		out.println("--------------------------------------------- " + action + " Debug ---------------------------------------------");
 		if (args == null)
-			System.err.println("------- Available args (args): none (args = null)!");
+			out.println("------- Available args (args): none (args = null)!");
 		else
-			print("------- Available args (args):", Arrays.asList(args), 0);
+			print(out, "------- Available args (args):", Arrays.asList(args), 0);
 		
 		if (myHomeRegistry == null)
-			System.err.println("\n------- Available parsers (myHomeRegistry: null): none!");
+			out.println("\n------- Available parsers (myHomeRegistry: null): none!");
 		else
-			print("\n------- Available parsers (myHomeRegistry: " + myHomeRegistry.getClass().getName() + "):", myHomeRegistry, 0);
+			print(out, "\n------- Available parsers (myHomeRegistry: " + myHomeRegistry.getClass().getName() + "):", myHomeRegistry, 0);
 
 		if (strToParse != null && (strToParse = strToParse.substring(DEBUG_MARK.length())).length() > 0 && (strToParse = strToParse.substring(1)).length() > 0)
 		{
@@ -79,14 +93,13 @@ public class SerializationDebugger implements DataConverter
 			objToSerialize = myHomeRegistry.parse(strToParse, args);
 			double t = System.nanoTime();
 			
-			if (myHomeRegistry.getParsingCache() == null)
-				System.err.println("\n------- Paring cache (after process): null (none)");
-			else
-				print("\n------- Paring cache (after process):", Arrays.asList(myHomeRegistry.getParsingCache()), 0);
-			print("\n------- Registry iterations (" + myHomeRegistry.getRegistryIterationStackTrace().size() + " in total, total time " + (t-t0)/1000000 + "ms):", myHomeRegistry.getRegistryIterationStackTrace(), 0);
-			System.err.println("\n--------------------------------------------- " + action + " Results ---------------------------------------------");
-			System.err.println("String \"" + strToParse + "\" was parsed into:\n\t" + toStringAndCls(objToSerialize));
-			System.err.println("\n");
+			printCacheInfo(out, myHomeRegistry.getParsingCache(), "parsing", " (after process)");
+			print(out, "\n------- Registry iterations (" + myHomeRegistry.getRegistryIterationStackTrace().size() + " in total, total time " + (t-t0)/1000000 + "ms):", myHomeRegistry.getRegistryIterationStackTrace(), 0);
+			out.println("\n--------------------------------------------- " + action + " Results ---------------------------------------------");
+			out.println("String \"" + strToParse + "\" was parsed into:\n\t" + toStringAndCls(objToSerialize));
+			out.println("\n");
+
+			out.flush();
 			return objToSerialize;
 		}
 		
@@ -107,29 +120,39 @@ public class SerializationDebugger implements DataConverter
 			strToParse = myHomeRegistry.toString(objToSerialize, args).toString();
 			double t = System.nanoTime();
 			
-			if (myHomeRegistry.getConverterCache() == null)
-				System.err.println("\n------- Converting cache (after process): null (none)");
-			else
-				print("\n------- Converting cache (after process):", Arrays.asList(myHomeRegistry.getConverterCache()), 0);
-			print("\n------- Registry iterations (" + myHomeRegistry.getRegistryIterationStackTrace().size() + " in total, total time " + (t-t0)/1000000 + "ms):", myHomeRegistry.getRegistryIterationStackTrace(), 0);
-			System.err.println("\n--------------------------------------------- " + action + " Results ---------------------------------------------");
-			System.err.println("Object " + toStringAndCls(objToSerialize) + " was converted to string:\n" + (strToParse.contains("\n") ? strToParse : "\t" + strToParse));
-			System.err.println("\n");
+			printCacheInfo(out, myHomeRegistry.getConverterCache(), "converting", " (after process)");
+			print(out, "\n------- Registry iterations (" + myHomeRegistry.getRegistryIterationStackTrace().size() + " in total, total time " + (t-t0)/1000000 + "ms):", myHomeRegistry.getRegistryIterationStackTrace(), 0);
+			out.println("\n--------------------------------------------- " + action + " Results ---------------------------------------------");
+			out.println("Object " + toStringAndCls(objToSerialize) + " was converted to string:\n" + (strToParse.contains("\n") ? strToParse : "\t" + strToParse));
+			out.println("\n");
+
+			out.flush();
 			return strToParse;
 		}
 		
-		if (myHomeRegistry.getParsingCache() == null)
-			System.err.println("\n------- Current parsing cache: null (none)");
-		else
-			print("\n------- Current parsing cache:", Arrays.asList(myHomeRegistry.getParsingCache()), 0);
-		
-		if (myHomeRegistry.getConverterCache() == null)
-			System.err.println("\n------- Current parsing cache: null (none)");
-		else
-			print("\n------- Current parsing cache:", Arrays.asList(myHomeRegistry.getConverterCache()), 0);
-		System.err.println("\n--------------------------------------------- No Results ---------------------------------------------");
-		System.err.println("\n");
+		printCacheInfo(out, myHomeRegistry.getParsingCache(), "parsing", "");
+		printCacheInfo(out, myHomeRegistry.getConverterCache(), "converting", "");
+
+		out.println("\n--------------------------------------------- No Results ---------------------------------------------");
+		if (myHomeRegistry.getParsingCache() != null && myHomeRegistry.getParsingCache().length > 0 || myHomeRegistry.getConverterCache() != null && myHomeRegistry.getConverterCache().length > 0)
+			out.println("If this is not the expected outcome you can try not using ParserRegistry caching or try to pre-cache some parsers!");
+		out.println("\n");
+
+		out.flush();
 		return VOID;
+	}
+	
+	/**
+	 * Helper method for printing contents of {@link ParserRegistry#getParsingCache()}.
+	 * 
+	 * @since 1.3.7
+	 */
+	public static void printCacheInfo(PrintWriter out, DataParser[] cache, String cacheType, String additional)
+	{
+		if (cache == null)
+			out.println("\n------- Current " + cacheType + " cache" + additional + ": null (none)");
+		else
+			print(out, "\n------- Current " + cacheType + " cache" + additional + ":", Arrays.asList(cache), 0);
 	}
 	
 	/**
@@ -190,19 +213,19 @@ public class SerializationDebugger implements DataConverter
 	 * 
 	 * @since 1.3.5
 	 */
-	public static void print(String text, List<?> objs, int tabs)
+	public static void print(PrintWriter out, String text, List<?> objs, int tabs)
 	{
-		System.err.println(text);
+		out.println(text);
 		for (int i = 0, i2 = 0; i < objs.size(); i++) 
 		{
 			Object o = objs.get(i);
 			String strTbs = multilpy('\t', tabs).toString();
 			if (o instanceof List)
-				print(strTbs + (i2++) + ":\t" + o.getClass().getName() + ":", (List<?>) o, tabs+1);
+				print(out, strTbs + (i2++) + ":\t" + o.getClass().getName() + ":", (List<?>) o, tabs+1);
 			else if (o instanceof Map)
-				print(strTbs + (i2++) + ":\t" + o.getClass().getName() + ":", (Map<?, ?>) o, tabs+1);
+				print(out, strTbs + (i2++) + ":\t" + o.getClass().getName() + ":", (Map<?, ?>) o, tabs+1);
 			else
-				System.err.println(multilpy('\t', tabs).toString() + (i2++) + ":\t" + String.valueOf(o));
+				out.println(multilpy('\t', tabs).toString() + (i2++) + ":\t" + String.valueOf(o));
 		}
 	}
 	
@@ -211,19 +234,19 @@ public class SerializationDebugger implements DataConverter
 	 * 
 	 * @since 1.3.5
 	 */
-	public static void print(String text, Map<?, ?> map, int tabs)
+	public static void print(PrintWriter out, String text, Map<?, ?> map, int tabs)
 	{
-		System.err.println(text);
+		out.println(text);
 		for (Entry<?, ?> entry : map.entrySet()) 
 		{
 			Object o = entry.getValue();
 			String strTbs = multilpy('\t', tabs).toString();
 			if (o instanceof List)
-				print(strTbs + (entry.getKey()) + ":\t" + o.getClass().getName() + ":", (List<?>) o, tabs+1);
+				print(out, strTbs + (entry.getKey()) + ":\t" + o.getClass().getName() + ":", (List<?>) o, tabs+1);
 			else if (o instanceof Map)
-				print(strTbs + (entry.getKey()) + ":\t" + o.getClass().getName() + ":", (Map<?, ?>) o, tabs+1);
+				print(out, strTbs + (entry.getKey()) + ":\t" + o.getClass().getName() + ":", (Map<?, ?>) o, tabs+1);
 			else 
-				System.err.println(strTbs + entry.getKey() + ":\t" + String.valueOf(o));
+				out.println(strTbs + entry.getKey() + ":\t" + String.valueOf(o));
 		}
 	}
 

@@ -13,7 +13,7 @@ import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.imports.ImportsProvider;
 
 /**
- * This parser provides comparison operators to compare 2 objects! For example <code>6 > 5</code> or <code>5 == 5</code> returns true!
+ * This parser provides comparison operators, <code>> < >= <= == === != !===</code> and <code>instanceof</code>, to compare 2 objects! For example <code>6 > 5</code>, <code>1 < 5</code> or <code>5 == 5</code> returns true!
  * 
  * @author PETO
  * 
@@ -24,42 +24,43 @@ public class ComparisonOperators implements DataParser
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args) 
 	{
-		int index = -1;
-		if (str.length() > 2 && (indexOfNotInObj(str, '>', '<', '!', '=') > -1 || (index = indexOfNotInObj(str, " instanceof ")) > -1))
+		int len;
+		if ((len = str.length()) < 3)
+			return CONTINUE;
+
+		int index, op;
+		if ((index = indexOfNotInObj(str, '<', '>', '=')) > -1)
 		{
-			if (index > -1)
+			if ((op = str.charAt(index)) != '=') // > <
 			{
-				try 
-				{
-					return ImportsProvider.forName(args.length > 0 ? args[0] : null, str.substring(index+12).trim()).isInstance(myHomeRegistry.parse(str.substring(0, index).trim(), args));
-				}
-				catch (Exception e)
-				{
-					LogProvider.instance.logErr("Unable to check if object " + str.substring(0, index).trim() + " is instance of class \"" + str.substring(index+12).trim() + "\" because there is no such a class!", e);
-					return null;
-				}
+				boolean orEqual = index+1 < len && str.charAt(index+1) == '=';
+				return comparisonOperator(myHomeRegistry.parse(str.substring(0, index).trim(), args), myHomeRegistry.parse(str.substring(index + (orEqual ? 2 : 1)).trim(), args), op == '>', orEqual);
 			}
-			else if ((index = str.indexOf("!=")) > -1) 
+			
+			if (/*op == '=' &&*/ str.charAt(index+1) == '=') // ==
 			{
-				boolean isTripple = str.charAt(index+2) == '=';
-				return !equalsOperator(myHomeRegistry.parse(str.substring(0, index).trim(), args), myHomeRegistry.parse(str.substring(index + (isTripple ? 3 : 2)).trim(), args), isTripple);
-			}
-			else if ((index = str.indexOf("==")) > -1)	
-			{
-				boolean isTripple = str.charAt(index+2) == '=';
+				boolean isTripple = index+2 < len && str.charAt(index+2) == '=';
 				return equalsOperator(myHomeRegistry.parse(str.substring(0, index).trim(), args), myHomeRegistry.parse(str.substring(index + (isTripple ? 3 : 2)).trim(), args), isTripple);
 			}
-			else if ((index = str.indexOf('<')) > -1) 
+			if (/*op == '=' &&*/ str.charAt(--index) == '!') // !=
 			{
-				boolean orEqual = str.charAt(index+1) == '=';
-				return comparisonOperator(myHomeRegistry.parse(str.substring(0, index).trim(), args), myHomeRegistry.parse(str.substring(index + (orEqual ? 2 : 1)).trim(), args), false, orEqual);
-			}
-			else if ((index = str.indexOf('>')) > -1) 
-			{
-				boolean orEqual = str.charAt(index+1) == '=';
-				return comparisonOperator(myHomeRegistry.parse(str.substring(0, index).trim(), args), myHomeRegistry.parse(str.substring(index + (orEqual ? 2 : 1)).trim(), args), true, orEqual);
+				boolean isTripple = index+2 < len && str.charAt(index+2) == '=';
+				return !equalsOperator(myHomeRegistry.parse(str.substring(0, index).trim(), args), myHomeRegistry.parse(str.substring(index + (isTripple ? 3 : 2)).trim(), args), isTripple);
 			}
 			//System.out.println(str);
+		}
+		
+		if ((index = indexOfNotInObj(str, " instanceof ")) > -1)
+		{
+			try 
+			{
+				return ImportsProvider.forName(args.length > 0 ? args[0] : null, str.substring(index+12).trim()).isInstance(myHomeRegistry.parse(str.substring(0, index).trim(), args));
+			}
+			catch (Exception e)
+			{
+				LogProvider.instance.logErr("Unable to check if object " + str.substring(0, index).trim() + " is instance of class \"" + str.substring(index+12).trim() + "\" because there is no such a class!", e);
+				return null;
+			}
 		}
 		//double t = System.nanoTime();
 		//System.out.println((t-t0)/1000000);

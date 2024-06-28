@@ -361,7 +361,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	protected Appendable appandVal(Appendable source, CharSequence serializedVal, Object value, int tabs, boolean isLast) throws IOException
 	{
 		source.append(multilpy('\t', tabs)).append(serializedVal);
-		if (isLast && value instanceof Scope || serializedVal != null && indexOfNotInObj(serializedVal, '/') != -1)
+		if (isLast && value instanceof Scope || serializedVal != null && indexOfNotInObj(serializedVal, "//") != -1)
 			return source;
 		return source.append(';');
 	}

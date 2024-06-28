@@ -17,22 +17,21 @@ public class ConditionalAssignmentOperators implements DataParser
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args) 
 	{
-		if (str.length() > 2 && indexOfNotInObj(str, '?') > -1)
+		int index, ternIfIndex;
+		if (str.length() > 2 && (index = indexOfNotInObj(str, '?')) > -1)
 		{
-			int index = indexOfOne(str, 0, '?');
-			if (index > -1)
+			if ((ternIfIndex = indexOfOne(str, index, '?')) > -1) //?:
 			{
 				try
 				{
-					String last = str.substring(index+1), first = str.substring(0, index);
+					String last = str.substring((index = ternIfIndex)+1), first = str.substring(0, index);
 					boolean condition = (boolean) LogicalOperators.toBool(myHomeRegistry.parse(first.trim(), args));
 					if ((index = indexOfTernaryElse(last, 1, '?', ':')) > -1)
 					{
 						first = last.substring(0, index);
 						return condition ? myHomeRegistry.parse(first.trim(), args) : (last = last.substring(index+1).trim()).isEmpty() ? VOID : myHomeRegistry.parse(last, args);
 					}
-					else
-						return condition ? myHomeRegistry.parse(last.trim(), args) : VOID;
+					return condition ? myHomeRegistry.parse(last.trim(), args) : VOID;
 				}
 				catch (ClassCastException ex)
 				{
@@ -41,10 +40,10 @@ public class ConditionalAssignmentOperators implements DataParser
 				}
 			}
 			
-			if ((index = str.indexOf("??")) > -1)
+			if (str.charAt(index+1) == '?') //??
 			{
-				Object obj = myHomeRegistry.parse(str.substring(0, index).trim(), args);
-				if (obj != null)
+				Object obj ;
+				if ((obj = myHomeRegistry.parse(str.substring(0, index).trim(), args)) != null)
 					return obj;
 				
 				String next = str.substring(index+2);
@@ -57,17 +56,17 @@ public class ConditionalAssignmentOperators implements DataParser
 	}
 	
 	/**
-	 * @param str
-	 * @param defaultCountOfConfitions
-	 * @param tenraryTokens
+	 * @param str | Source string to search.
+	 * @param defaultCountOfConfitions | How many condition operators (tenraryTokens[0]) are expected. Should be 1 in most cases.
+	 * @param tenraryTokens | Characters representing parts of ternary operator. Index 0 should be '?' and index 1 should be ':'.
 	 * 
-	 * @return
+	 * @return Return index of else branch in ternary operator expression or -1 if there is no else branch!
 	 * 
 	 * @since 1.3.5
 	 */
 	public static int indexOfTernaryElse(CharSequence str, int defaultCountOfConfitions, char... ternaryOperators)
 	{
-		for (int i = 0, len = str.length(), oldCh = -1, tokenCount = 0, quote = 0, brackets = 0; i < len; i++) 
+		for (int i = 0, len = str.length(), oldCh = -1, tokenCount = 0, quote = 0, brackets = 0; i < len; i++)
 		{
 			char ch = str.charAt(i);
 			if (ch == '\"')
@@ -94,11 +93,11 @@ public class ConditionalAssignmentOperators implements DataParser
 	}
 	
 	/**
-	 * @param str
-	 * @param from
-	 * @param oneChar
+	 * @param str | String to search.
+	 * @param from | Beginning index. Should be 0 in most cases.
+	 * @param oneChar | Single character that you want to find.
 	 * 
-	 * @return
+	 * @return Index of oneChar if there is only one in a row!
 	 * 
 	 * @since 1.3.5
 	 */

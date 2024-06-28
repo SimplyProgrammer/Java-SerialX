@@ -31,7 +31,7 @@ public interface DataConverter extends DataParser
 	 * @param objToDescribe | Object to generate description for!
 	 * @param argsUsedConvert | Array of arguments that were used for converting described object!
 	 * 
-	 * @return Description for object (should not contains endlines)!
+	 * @return Description for object (should not contain endlines)!
 	 * 
 	 * @since 1.3.0
 	 */

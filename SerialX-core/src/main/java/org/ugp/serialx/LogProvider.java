@@ -36,8 +36,8 @@ public class LogProvider
 	{
 		if (reThrowException)
 		{
-			if (ex == null)
-				throw new RuntimeException(obj.toString());
+			if (ex == null || ex.getMessage() == null || ex.getMessage().isEmpty())
+				throw new RuntimeException(String.valueOf(obj));
 			throw new RuntimeException(ex);
 		}
 		

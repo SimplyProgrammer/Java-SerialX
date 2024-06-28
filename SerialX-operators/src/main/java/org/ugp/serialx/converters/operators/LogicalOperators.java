@@ -1,11 +1,9 @@
 package org.ugp.serialx.converters.operators;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
-import static org.ugp.serialx.converters.operators.ArithmeticOperators.getTerms;
 
-import java.util.List;
-
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataParser;
 
 /**
@@ -20,80 +18,47 @@ public class LogicalOperators implements DataParser
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String s, Object... args) 
 	{
-		if (s.length() > 2 && indexOfNotInObj(s, '&', '|', '^') > -1)
-		{
-			List<Object>[] terms = getTerms(s, '&', '|', '^');
-			List<Object> cofs = terms[0];
-			if (cofs.size() <= 1)
-				return CONTINUE;
-			
-			List<Object> oprs = terms[1]; 
+		int len;
+		if ((len = s.length()) < 3)
+			return CONTINUE;
 
-			Object cof1 = null, cof2 = null, opr = null;
-			try 
+		Object result = CONTINUE;
+		int i = 0, index;
+		do
+		{
+			if ((index = indexOfNotInObj(s, i, len, true, '&', '|', '^')) == -1) 
+				return result;
+
+			int op;
+			if ((op = s.charAt(i = index)) != '^' && (++i >= len || s.charAt(i) != op)) // Ensure && and || and refuse & and |
+			    continue;
+			
+			if (result == CONTINUE) // Beginning
+				result = myHomeRegistry.parse(s.substring(0, index).trim(), args);
+			
+			int nextOpIndex;
+			if ((nextOpIndex = indexOfNotInObj(s, ++i, len, true, '&', '|', '^')) == -1)
+				nextOpIndex = len;
+			
+			if (op == '&')
 			{
-				for (int i = 0, index = 0, size = oprs.size(); i < size; index = 0, i++) 
-				{	
-					opr = oprs.remove(index);
-					if (opr.equals("&&"))
-					{
-						cof1 = cofs.get(index); 
-						if (cof1 instanceof String)
-							cof1 = myHomeRegistry.parse(cof1.toString().trim(), i > 0, new Class[] {getClass()}, args);
-						if (cof1.equals(false))
-						{
-							cofs.remove(index + 1);
-							cofs.set(index, false);
-						}
-						else
-						{
-							cof2 = cofs.remove(index + 1);
-							if (cof2 instanceof String)
-								cof2 = myHomeRegistry.parse(cof2.toString().trim(), i > 0, new Class[] {getClass()}, args);
-							cofs.set(index, andOperator(cof1, cof2));
-						}
-					}
-					else if (opr.equals("||"))
-					{
-						cof1 = cofs.get(index);
-						if (cof1 instanceof String)
-							cof1 = myHomeRegistry.parse(cof1.toString().trim(), i > 0, new Class[] {getClass()}, args);
-						if (cof1.equals(true))
-						{
-							return true;
-						}
-						else
-						{
-							cof2 = cofs.remove(index + 1);
-							if (cof2 instanceof String)
-								cof2 = myHomeRegistry.parse(cof2.toString().trim(), i > 0, new Class[] {getClass()}, args);
-							cofs.set(index, orOperator(cof1, cof2));
-						}
-					}
-					else if (opr.equals("^"))
-					{
-						cof1 = cofs.get(index); 
-						if (cof1 instanceof String)
-							cof1 = myHomeRegistry.parse(cof1.toString().trim(), i > 0, new Class[] {getClass()}, args);
-						
-						cof2 = cofs.remove(index + 1);
-						if (cof2 instanceof String)
-							cof2 = myHomeRegistry.parse(cof2.toString().trim(), i > 0, new Class[] {getClass()}, args);
-						cofs.set(index, xorOperator(cof1, cof2));
-					}
-				}
+				if (!FALSE.equals(result))
+					result = andOperator(result, myHomeRegistry.parse(s.substring(i, nextOpIndex).trim(), args));
 			}
-			catch (ClassCastException ex)
+			else if (op == '|')
 			{
-				LogProvider.instance.logErr("Logical operator " + opr + " is undefined between " + cof1.getClass().getName() + " and " + cof2.getClass().getName() + "!", ex);
+				if (TRUE.equals(result))
+					return TRUE;
+				result = orOperator(result, myHomeRegistry.parse(s.substring(i, nextOpIndex).trim(), args));
 			}
-			catch (IndexOutOfBoundsException e) 
-			{
-				LogProvider.instance.logErr("Missing coefficient in \"" + s + "\"!", e);
-			}
-			return cofs.get(0);
+			else
+				result = xorOperator(result, myHomeRegistry.parse(s.substring(i, nextOpIndex).trim(), args));
+			
+			i = nextOpIndex;
 		}
-		return CONTINUE;
+		while (i < len);
+
+		return result;
 	}
 	
 	/**
@@ -127,7 +92,7 @@ public class LogicalOperators implements DataParser
 	}
 	
 	/**
-	 * @return null -> false or if number > 0
+	 * @return null -> false or if number > 0. Otherwise obj.
 	 * 
 	 * @since 1.3.0
 	 */
@@ -135,17 +100,17 @@ public class LogicalOperators implements DataParser
 	{
 		if (obj == null)
 			return false;
-		else if (obj instanceof Number)
-			return ((Number) obj).doubleValue() > 0;
-		else if (obj instanceof Character)
-			return (char) obj > 0;
-		/*else if (obj instanceof Map)
+		if (obj instanceof Number)
+			return ((Number) obj).doubleValue() != 0;
+		if (obj instanceof Character)
+			return (char) obj != 0;
+		/*if (obj instanceof Map)
 			return !((Map<?, ?>) obj).isEmpty();
-		else if (obj instanceof Collection)
+		if (obj instanceof Collection)
 			return !((Collection<?>) obj).isEmpty();
-		else if (obj instanceof Scope)
+		if (obj instanceof Scope)
 			return !((Scope) obj).isEmpty();
-		else if (obj.getClass().isArray())
+		if (obj.getClass().isArray())
 			return Array.getLength(obj) > 0;*/
 		return obj;
 	}

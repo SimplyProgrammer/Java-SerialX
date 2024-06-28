@@ -1,4 +1,4 @@
-package org.ugp.serialx.devtools.converters;
+package org.ugp.serialx.devtools;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -7,7 +7,6 @@ import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.DataParser.ParserRegistry;
-import org.ugp.serialx.devtools.SerializationDebugger;
 
 /**
  * Special {@link ParserRegistry} that keeps track of its actions! Use only for debugging!
@@ -115,13 +114,21 @@ public class DebugParserRegistry extends ParserRegistry
 				DataParser parser = parsingCache[i];
 				if (parser != null)
 				{
-					double t0 = System.nanoTime();
-					obj = parser.parse(this, str, args);
-					double t = System.nanoTime();
-					if (obj != SerializationDebugger.CONTINUE)
+					try 
 					{
-						iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms (from cache)\n>>\t\"" + str + "\"\t -->\t" + SerializationDebugger.toStringAndCls(obj));
-						return obj; 
+						double t0 = System.nanoTime();
+						obj = parser.parse(this, str, args);
+						double t = System.nanoTime();
+						if (obj != SerializationDebugger.CONTINUE)
+						{
+							iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms (from cache)\n>>\t\"" + str + "\"\t -->\t" + SerializationDebugger.toStringAndCls(obj));
+							return obj; 
+						}
+					}
+					catch (Exception ex)
+					{
+						iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " (from cache)\n>>\t\"" + str + "\"\tthrew\t" + ex);
+						return null;
 					}
 				}
 			}
@@ -134,15 +141,23 @@ public class DebugParserRegistry extends ParserRegistry
 					if (cls == parser.getClass())
 						continue registryLoop;
 
-			double t0 = System.nanoTime();
-			obj = parser.parse(this, str, args);
-			double t = System.nanoTime();
-			if (obj != SerializationDebugger.CONTINUE)
+			try 
 			{
-				if (parsingCache != null && i < parsingCache.length)
-					parsingCache[i] = parser; 
-				iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms\n>>\t\"" + str + "\"\t -->\t" + SerializationDebugger.toStringAndCls(obj));
-				return obj;
+				double t0 = System.nanoTime();
+				obj = parser.parse(this, str, args);
+				double t = System.nanoTime();
+				if (obj != SerializationDebugger.CONTINUE)
+				{
+					if (parsingCache != null && i < parsingCache.length)
+						parsingCache[i] = parser;
+					iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms\n>>\t\"" + str + "\"\t -->\t" + SerializationDebugger.toStringAndCls(obj));
+					return obj;
+				}
+			}
+			catch (Exception ex)
+			{
+				iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + "\n>>\t\"" + str + "\"\tthrew\t" + ex);
+				return null;
 			}
 		}
 

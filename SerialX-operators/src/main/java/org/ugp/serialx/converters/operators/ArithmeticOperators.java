@@ -47,7 +47,7 @@ public class ArithmeticOperators implements DataParser
 		List<Object> cofs = terms[0];
 		if (cofs.size() <= 1)
 			return CONTINUE;
-		List<Object> oprs = terms[1]; 
+		List<Object> oprs = terms[1];
 
 		Object cof1 = null, cof2 = null;
 		String opr = null;
@@ -67,11 +67,11 @@ public class ArithmeticOperators implements DataParser
 					cof1 = registryForParsers.parse(cof1.toString().trim(), i > 0, new Class[] {getClass()}, argsForParsers);
 				cof1 = cof1 instanceof ResultWrapper ? ((ResultWrapper) cof1).obj : cof1;
 	
-			    cof2 = cofs.remove(index + 1);
-			    if (cof2 instanceof String)
-			    	cof2 = registryForParsers.parse(cof2.toString().trim(), i > 0, new Class[] {getClass()}, argsForParsers);
-			    cof2 = cof2 instanceof ResultWrapper ? ((ResultWrapper) cof2).obj : cof2;
-			    
+				cof2 = cofs.remove(index + 1);
+				if (cof2 instanceof String)
+					cof2 = registryForParsers.parse(cof2.toString().trim(), i > 0, new Class[] {getClass()}, argsForParsers);
+				cof2 = cof2 instanceof ResultWrapper ? ((ResultWrapper) cof2).obj : cof2;
+
 				opr = oprs.remove(index).toString();
 				if (opr.charAt(0) == '+')
 					cofs.set(index, new ResultWrapper(addOperator(cof1, cof2)));
@@ -93,7 +93,7 @@ public class ArithmeticOperators implements DataParser
 		}
 		catch (IndexOutOfBoundsException ex)
 		{
-			LogProvider.instance.logErr("Missing coefficient in \"" + expr + "\"!", ex);
+			LogProvider.instance.logErr("Missing coefficient in \"" + expr + "\"!", null);
 		}
 		catch (ArithmeticException ex)
 		{
@@ -123,7 +123,7 @@ public class ArithmeticOperators implements DataParser
 		return sub(toNum(cof), toNum(cof2));
 	}
 	
-	/** 
+	/**
 	 * @return Multiplication of cof and cof2 multiplied by sign (cof * cof2 * sign) supposed to be returned! 
 	 * 
 	 * @since 1.3.2
@@ -133,7 +133,7 @@ public class ArithmeticOperators implements DataParser
 		return mult(toNum(cof), toNum(cof2), sign);
 	}
 	
-	/** 
+	/**
 	 * @return Division of cof and cof2 multiplied by sign (cof / cof2 * sign) supposed to be returned! 
 	 * 
 	 * @since 1.3.2
@@ -143,8 +143,8 @@ public class ArithmeticOperators implements DataParser
 		return div(toNum(cof), toNum(cof2), sign);
 	}
 	
-	/** 
-	 * @return Modulation of cod and cof2 (cof % cof2) supposed to be returned! 
+	/**
+	 * @return Modulation of cod and cof2 (cof % cof2) supposed to be returned!
 	 * 
 	 * @since 1.3.2
 	 */
@@ -154,7 +154,7 @@ public class ArithmeticOperators implements DataParser
 	}
 	
 	/** 
-	 * @return Cof powered by cof2 multiplied by sign (Math.pow(cof, cof2 * sign)) supposed to be returned! 
+	 * @return Cof powered by cof2 multiplied by sign (Math.pow(cof, cof2 * sign)) supposed to be returned!
 	 * 
 	 * @since 1.3.2
 	 */
@@ -235,7 +235,7 @@ public class ArithmeticOperators implements DataParser
 
 			return ((Number) cof).doubleValue() - ((Number) cof2).doubleValue();
 		}
-		
+
 		if (cof instanceof Collection)
 		{
 			if (cof2 instanceof Collection)
@@ -244,6 +244,17 @@ public class ArithmeticOperators implements DataParser
 				((Collection) cof).removeAll(Arrays.asList(Utils.fromAmbiguousArray(cof2)));
 			else 
 				((Collection) cof).remove(cof2);
+			return cof;
+		}
+		
+		if (cof instanceof Scope)
+		{
+			if (cof2 instanceof Collection)
+				((Scope) cof).values().removeAll((Collection) cof2);
+			else if (cof2.getClass().isArray())
+				((Scope) cof).values().removeAll(Arrays.asList(cof2));
+			else 
+				((Scope) cof).values().remove(cof2);
 			return cof;
 		}
 		
@@ -341,7 +352,6 @@ public class ArithmeticOperators implements DataParser
 	/**
 	 * 
 	 * @param str | String to split!
-	 * @param operatos | If true, list of spited operators will be returned otherwise terms split after each operator.
 	 * @param oprs | Operators to use as a splitters.
 	 * 
 	 * @return List of terms splitted according to inserted arguments! For example <code>getTerm("5 + 6", true, '+')</code> will return <code>[+]</code>, while <code>getTerm("5 + 6", false, '+')</code> will return <code>[5, 6]</code>! 
@@ -349,7 +359,7 @@ public class ArithmeticOperators implements DataParser
 	 * @since 1.3.0
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<Object>[] getTerms(String str, char... oprs)
+	public static List<Object>[] getTerms(CharSequence str, char... oprs)
 	{
 		List<Object>[] ret = new ArrayList[] {new ArrayList<>(), new ArrayList<>()}; //cofs, ops
 		
@@ -441,7 +451,7 @@ public class ArithmeticOperators implements DataParser
 	}
 	
 	/**
-	 * @return null -> 0, bool ? 1 : 0
+	 * @return null -> 0, bool ? 1 : 0. Otherwise obj.
 	 * 
 	 * @since 1.3.0
 	 */
@@ -449,9 +459,9 @@ public class ArithmeticOperators implements DataParser
 	{
 		if (obj == null)
 			return 0;
-		else if (obj instanceof Boolean)
+		if (obj instanceof Boolean)
 			return (boolean) obj ? 1 : 0;
-		else if (obj instanceof Character)
+		if (obj instanceof Character)
 			return (int) (char) obj;
 		return obj; 
 	}

@@ -46,7 +46,7 @@ public class CharacterConverter implements DataConverter
 			}
 			catch (Exception e) 
 			{
-				return str.charAt(0);
+				return str.charAt(1);
 			}
 		return CONTINUE;
 	}

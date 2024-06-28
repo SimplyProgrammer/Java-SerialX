@@ -259,7 +259,7 @@ public class NumberConverter implements DataConverter
 	}
 	
 	/**
-	 * @deprecated THIS IS NO LONGER NECESSARY BECAUSE BECAUSE {@link NumberConverter#numberOf(CharSequence, char, int, int, int)} CAN DO THE SAME THING MUCH FASTET!
+	 * @deprecated THIS IS OBSOLET, SLOW AND NO LONGER NECESSARY BECAUSE {@link NumberConverter#numberOf(CharSequence, char, int, int, int)} CAN DO THE SAME THING MUCH FASTET!
 	 * 
 	 * @param num | Number string to format!
 	 * 

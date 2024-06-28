@@ -44,13 +44,18 @@ import static org.ugp.serialx.Utils.equalsLowerCase;
  */
 public class BooleanConverter implements DataConverter
 {
-	public boolean shorten;
+	protected boolean shorten;
 	
 	public BooleanConverter() 
 	{
 		this(true);
 	}
 	
+	/**
+	 * @param shorten | If true, shortened format (T/F) will be serialized. If false, true/false will be serialized...
+	 * 
+	 * @since 1.3.5
+	 */
 	public BooleanConverter(boolean shorten) 
 	{
 		setShorten(shorten);
@@ -84,11 +89,21 @@ public class BooleanConverter implements DataConverter
 		return new StringBuilder().append("Primitive data type: \"").append(obj).append("\" the ").append(obj.getClass().getSimpleName().toLowerCase()).append(" value!");
 	}
 
+	/**
+	 * @return If true, shortened format (T/F) will be serialized. If false, true/false will be serialized...
+	 * 
+	 * @since 1.3.5
+	 */
 	public boolean isShorten() 
 	{
 		return shorten;
 	}
 
+	/**
+	 * @param shorten | If true, shortened format (T/F) will be serialized. If false, true/false will be serialized...
+	 * 
+	 * @since 1.3.5
+	 */
 	public void setShorten(boolean shorten) 
 	{
 		this.shorten = shorten;

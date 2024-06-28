@@ -4,7 +4,8 @@ import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataParser;
 
 /**
- * This parser provides ability to negate stuff! For example <code>!true</code> returns false!
+ * This parser provides ability to negate stuff! For example <code>!true</code> returns false!<br>
+ * This include classic numeric negation <code>-</code> and logical negation <code>!</code> operators.
  * 
  * @author PETO
  * 
@@ -16,11 +17,11 @@ public class NegationOperator implements DataParser
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args) 
 	{
 		int ch, len = str.length();
-		if (len > 0 && ((ch = str.charAt(0)) == '-' || ch == '!'))
+		if (len > 0 && ((ch = str.charAt(0)) == '!' || ch == '-'))
 		{
 			int negCount = 1;
 			for (int i = negCount; i < len; i++) 
-				if ((ch = str.charAt(i)) == '-' || ch == '!')
+				if ((ch = str.charAt(i)) == '!' || ch == '-')
 					negCount++;
 				else
 					break;
@@ -28,7 +29,7 @@ public class NegationOperator implements DataParser
 			Object obj = myHomeRegistry.parse(str.substring(negCount), args); 
 			if (negCount % 2 == 0)
 				return obj;
-			Object neg = notOperator(obj);
+			Object neg = ch == '!' ? logicalNotOperator(obj) : notOperator(obj);
 			if (obj == neg && !(obj instanceof Number && ((Number) obj).intValue() == 0))
 				LogProvider.instance.logErr("Unable to nagete \"" + obj + "\" because object of \"" + obj.getClass().getName() + "\" cant be negated!", null);
 			return neg;
@@ -38,13 +39,26 @@ public class NegationOperator implements DataParser
 	
 	
 	/**
-	 * @param obj | Object to negate!
+	 * @param obj | Object to negate! Numeric in nature or an object!
 	 * 
 	 * @return Negated object supposed to be returned or same object as argument if object can't be negated! Only numbers and booleans can be negated!
 	 * 
 	 * @since 1.3.2
 	 */
 	public Object notOperator(Object obj)
+	{
+		return negate(obj);
+	}
+	
+	/**
+	 * @param obj | Object to negate! Should be boolean!
+	 * 
+	 * @return Negated object supposed to be returned or same object as argument if object can't be negated! Should, but do not strictly has to be boolean!<br>
+	 * Node: By default it has same behavior as {@link NegationOperator#notOperator(Object)} but it can be overridden!
+	 * 
+	 * @since 1.3.7
+	 */
+	public Object logicalNotOperator(Object obj)
 	{
 		return negate(obj);
 	}

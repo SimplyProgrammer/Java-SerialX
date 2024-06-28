@@ -247,7 +247,9 @@ public interface DataParser
 		/**
 		 * @param classOfParserToPrecache | Class of parser to precache!
 		 * 
-		 * @return Int array of 2 signifying the index of where the parser was inserted in parsing cache and converting cache (index 0 = parsing cache index, index 1 = converting cache index)
+		 * @return Int array of 2 signifying the index of where the parser was inserted in parsing cache and converting cache (index 0 = parsing cache index, index 1 = converting cache index). These 2 values should be the same.
+		 * 
+		 * @since 1.3.5
 		 */
 		public int[] preCache(Class<? extends DataParser> classOfParserToPrecache)
 		{
@@ -303,8 +305,8 @@ public interface DataParser
 		/**
 		 * You can use this to manually set caching arrays. Doing this might give you a solid performance boost when parsing or converting large amount of objects with this registry! But sometimes, this might cause some unexpected behavior especially when you have multiple parsers that are dependent on each other!
 		 * 
-		 * @param parsingCache | Array of specific parsing cache to use (it can contains some preached parsers to use preferably). This array is supposed to be as long as this registry!
-		 * @param convertingCache | Array of specific converter cache to use (it can contains some preached converters to use preferably). This array is supposed to be as long as this registry!
+		 * @param parsingCache | Array of specific parsing cache to use (it can contains some preached parsers to use preferably). This array is supposed to be as long as this registry and instances and their indexes (order) in cache should be same as in this registry!
+		 * @param convertingCache | Array of specific converter cache to use (it can contains some preached converters to use preferably). This array is supposed to be as long as this registry and instances and their indexes (order) in cache should be same as in this registry!
 		 * 
 		 * @since 1.3.5
 		 */

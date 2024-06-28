@@ -590,30 +590,32 @@ public final class Utils {
 	 * @param s | CharSequence to search!
 	 * @param oneOf | Characters to find!
 	 * 
-	 * @return Index of first found character that is not in object meaning it is not in string nor between '{' or '[' and ']' or '}', otherwise -1!
+	 * @return Index of first character found that is not in object meaning it is not in string nor between '{' or '[' and ']' or '}', otherwise -1!
 	 * 
 	 * @since 1.3.0
 	 */
 	public static int indexOfNotInObj(CharSequence s, char... oneOf)
 	{
-		return indexOfNotInObj(s, true, oneOf);
+		return indexOfNotInObj(s, 0, s.length(), true, oneOf);
 	}
 	
 	/**
 	 * @param s | CharSequence to search!
+	 * @param from | The beginning index, where to start the search (should be 0 in most cases).
+	 * @param to | Ending index of search (exclusive, should be s.length()).
 	 * @param firstIndex | If true, first index will be returned, if false last index will be returned.
 	 * @param oneOf | Characters to find!
 	 * 
-	 * @return Index of first found character that is not in object meaning it is not in string nor between '{' or '[' and ']' or '}', otherwise -1!
+	 * @return Index of first character found that is not in object meaning it is not in string nor between '{' or '[' and ']' or '}', otherwise -1!
 	 * 
 	 * @since 1.3.5
 	 */
-	public static int indexOfNotInObj(CharSequence s, boolean firstIndex, char... oneOf)
+	public static int indexOfNotInObj(CharSequence s, int from, int to, boolean firstIndex, char... oneOf)
 	{
-		int found = -1;
-		for (int i = 0, brackets = 0, quote = 0, len = s.length(); i < len; i++)
+		int index = -1;
+		for (int brackets = 0, quote = 0; from < to; from++)
 		{
-			char ch = s.charAt(i);
+			char ch = s.charAt(from);
 			if (ch == '"')
 				quote++;
 	
@@ -621,9 +623,9 @@ public final class Utils {
 			{
 				if (brackets == 0 && /*oneOf.length == 0 ? ch == oneOf[0] :*/ isOneOf(ch, oneOf))
 				{
-					found = i;
 					if (firstIndex)
-						return found;
+						return from;
+					index = from;
 				}
 				else if ((ch | ' ') == '{')
 					brackets++;
@@ -636,7 +638,7 @@ public final class Utils {
 				}
 			}
 		}
-		return found;
+		return index;
 	}
 	
 	/**
@@ -663,8 +665,11 @@ public final class Utils {
 	 */
 	public static int indexOfNotInObj(CharSequence s, CharSequence sequenceToFind, boolean firstIndex)
 	{
+		int len = s.length(), lenToFind = sequenceToFind.length();
+		if (len < lenToFind)
+			return -1;
 		int found = -1;
-		for (int i = 0, brackets = 0, quote = 0, match = 0, len = s.length(), lenToFind = sequenceToFind.length(); i < len; i++)
+		for (int i = 0, brackets = 0, quote = 0, match = 0; i < len; i++)
 		{
 			char ch = s.charAt(i);
 			if (ch == '"')
@@ -885,7 +890,7 @@ public final class Utils {
         
         for (Object param : serializer) 
         {
-            if (postData.length() != 0) 
+            if (postData.length() != 0)
             	postData.append('&');
             postData.append(URLEncoder.encode(serializer.getParsers().toString(param).toString(), "UTF-8"));
         }

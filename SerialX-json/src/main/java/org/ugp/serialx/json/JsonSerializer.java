@@ -217,7 +217,7 @@ public class JsonSerializer extends JussSerializer
 	protected Appendable appandVal(Appendable source, CharSequence serializedVal, Object value, int tabs, boolean isLast) throws IOException
 	{
 		source.append(multilpy('\t', tabs)).append(serializedVal);
-		if (isLast || serializedVal != null && indexOfNotInObj(serializedVal, '/') != -1)
+		if (isLast || serializedVal != null && indexOfNotInObj(serializedVal, "//") != -1)
 			return source;
 		return source.append(',');
 	}
