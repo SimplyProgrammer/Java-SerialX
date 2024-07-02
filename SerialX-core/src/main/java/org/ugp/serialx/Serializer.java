@@ -35,7 +35,7 @@ import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 
 /**
- * {@link org.ugp.serialx.Serializer} is powerful utility class that allows you to serialize any object in Java using custom data format compiled by recursive descent parser consisting of {@link DataParser}s.
+ * {@link org.ugp.serialx.Serializer} is powerful abstract class that allows you to serialize any object in Java using custom data format compiled by recursive descent parser consisting of {@link DataParser}s.
  * This class itself is responsible for formating and managing input-output (IO) of content obtained from parsers and protocols as well as their management of their usage!
  * It is instance of {@link Scope} so we can say that this is scope that can serialize itself using system of already mentioned {@link DataParser} and {@link SerializationProtocol}!
  * 

@@ -98,7 +98,7 @@ public class DebugParserRegistry extends ParserRegistry
 	}
 	
 	@Override
-	public Object parse(String str, boolean returnAsStringIfNotFound, Class<?>[] ignore, Object... args) 
+	public Object parse(String str, boolean returnAsStringIfNotFound, Class<? extends DataParser> ignore, Object... args) 
 	{
 		int iterationIndex = 0;
 		if (args.length > 99 && args[99] instanceof Integer)
@@ -112,7 +112,7 @@ public class DebugParserRegistry extends ParserRegistry
 			for (int i = 0; i < parsingCache.length; i++)
 			{
 				DataParser parser = parsingCache[i];
-				if (parser != null)
+				if (parser != null && (ignore == null || ignore != parser.getClass()))
 				{
 					try 
 					{
@@ -133,13 +133,11 @@ public class DebugParserRegistry extends ParserRegistry
 				}
 			}
 	
-		registryLoop: for (int i = 0, size = size(); i < size; i++)
+		for (int i = 0, size = size(); i < size; i++)
 		{
 			DataParser parser = get(i);
-			if (ignore != null)
-				for (Class<?> cls : ignore) 
-					if (cls == parser.getClass())
-						continue registryLoop;
+			if (ignore != null && ignore == parser.getClass())
+				continue;
 
 			try 
 			{

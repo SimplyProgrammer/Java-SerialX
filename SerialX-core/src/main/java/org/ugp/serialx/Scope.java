@@ -22,7 +22,7 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 
 	
 /**
- * This is some kind of hybrid between {@link List} and {@link Map} which allow you to have both variables and independent values managed by one Object. <br>
+ * This collection is some sort of hybrid between {@link List} and {@link Map} which allow you to have both variables and independent values managed by one Object. <br>
  * Note: Variables are managed and accessed classically via {@link Map} methods such as <code>put(String key, Object)</code> and array of independent values is accessed by via {@link List} methods such as <code>add(Object)</code> and <code>get(int)</code><br>
  * Also this is java representation of JUSS Scope group such as:
  * <pre>
@@ -1082,7 +1082,7 @@ public class Scope extends GenericScope<String, Object>
 		if (objCls.isArray())
 		{
 			if (objCls.getComponentType() == Object.class)
-				return (T) fromScope.toValArray();
+				return (T) fromScope.toArray();
 			
 			return (T) into(Array.newInstance(objCls.getComponentType(), fromScope.valuesCount()), fromScope, fieldNamesToUse);
 		}

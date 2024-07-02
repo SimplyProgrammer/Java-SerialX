@@ -293,7 +293,8 @@ public abstract class SerializationProtocol<T>
 		@Override
 		public void add(int index, SerializationProtocol<?> element) 
 		{
-			if (GetProtocolFor(element.applicableFor()) != null && element.applicableFor() != Object.class)
+			SerializationProtocol<?> existing;
+			if ((existing = GetProtocolFor(element.applicableFor(), element.getMode())) != null && element.applicableFor() == existing.applicableFor())
 				LogProvider.instance.logErr("Protocol applicable for \"" + element.applicableFor().getName() + "\" is already registred!", null);
 			addDuplicatively(index, element);
 		}

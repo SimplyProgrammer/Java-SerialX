@@ -33,7 +33,7 @@ public class ScopeProtocol extends SerializationProtocol<GenericScope<?, ?>>
 		{
 			if (objectClass == args[0].getClass())
 				return (GenericScope<?, ?>) args[0];
-			return objectClass.getConstructor(Map.class, Object[].class).newInstance(((GenericScope<?, ?>) args[0]).toVarMap(), ((GenericScope<?, ?>) args[0]).toValArray());
+			return objectClass.getConstructor(Map.class, Object[].class).newInstance(((GenericScope<?, ?>) args[0]).toVarMap(), ((GenericScope<?, ?>) args[0]).toArray());
 		}
 		return objectClass.getConstructor(Map.class, Object[].class).newInstance(new HashMap<>(), args);
 	}

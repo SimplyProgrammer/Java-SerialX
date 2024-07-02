@@ -213,21 +213,19 @@ public interface DataParser
 		 * 
 		 * @since 1.3.5
 		 */
-		public Object parse(String str, boolean returnAsStringIfNotFound, Class<?>[] ignore, Object... args)
+		public Object parse(String str, boolean returnAsStringIfNotFound, Class<? extends DataParser> ignore, Object... args)
 		{
 			Object obj = null; 
 			if (parsingCache != null)
 				for (DataParser parser : parsingCache)
-					if (parser != null && (obj = parser.parse(this, str, args)) != CONTINUE)
+					if (parser != null && (ignore == null || ignore != parser.getClass()) && (obj = parser.parse(this, str, args)) != CONTINUE)
 						return obj; 
 			
-			registryLoop: for (int i = 0, size = size(); i < size; i++)
+			for (int i = 0, size = size(); i < size; i++)
 			{
 				DataParser parser = get(i);
-				if (ignore != null)
-					for (Class<?> cls : ignore) 
-						if (cls == parser.getClass())
-							continue registryLoop;
+				if (ignore != null && ignore == parser.getClass())
+					continue;
 
 				if ((obj = parser.parse(this, str, args)) != CONTINUE)
 				{

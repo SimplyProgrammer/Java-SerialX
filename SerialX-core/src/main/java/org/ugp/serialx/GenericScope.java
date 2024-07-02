@@ -22,7 +22,7 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 
 	
 /**
- * This is some kind of hybrid between {@link List} and {@link Map} which allow you to have both variables and independent values managed by one Object. <br>
+ * This collection is some sort of hybrid between {@link List} and {@link Map} which allow you to have both variables and independent values managed by one Object. <br>
  * Note: Variables are managed and accessed classically via {@link Map} methods such as <code>put(KeyT key, Object)</code> and array of independent values is accessed by via {@link List} methods such as <code>add(Object)</code> and <code>get(int)</code><br>
  * Also this is java representation of JUSS GenericScope group such as:
  * <pre>
@@ -35,12 +35,12 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
  * 
  * @author PETO
  * 
- * @since 1.2.0
+ * @since 1.3.5
  * 
  * @param <KeyT> generic type of variables key.
  * @param <ValT> generic type of variables value and independent value.
  */
-public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Serializable
+public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Serializable
 {
 	private static final long serialVersionUID = 5717775602991055386L;
 	
@@ -108,7 +108,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 		else if (obj instanceof Map)
 			return valuesCount() <= 0 && variables().equals(obj);
 		else if (obj != null && obj.getClass().isArray())
-			return variablesCount() <= 0 && Objects.deepEquals(toValArray(), Utils.fromAmbiguousArray(obj));
+			return variablesCount() <= 0 && Objects.deepEquals(toArray(), Utils.fromAmbiguousArray(obj));
 		return super.equals(obj);
 	}
 	
@@ -365,12 +365,28 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	}
 	
 	/**
-	 * @param value | Objecthe value.
+	 * @param value | Object the independent value.
+	 * 
+	 * @return True if independent value was found in this scope.
+	 * 
+	 * @since 1.3.7
+	 */
+	@Override
+	public boolean contains(Object value) 
+	{
+		return values().contains(value);
+	}
+	
+	/**
+	 * @deprecated USE {@link GenericScope#contains(Object)} instead!
+	 * 
+	 * @param value | Object the value.
 	 * 
 	 * @return True if independent value was found in this scope.
 	 * 
 	 * @since 1.2.0
 	 */
+	@Deprecated
 	public boolean containsIndependentValue(ValT value) 
 	{
 		return values().contains(value);
@@ -417,6 +433,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * 
 	 * @since 1.2.0
 	 */
+	@Override
 	public boolean add(ValT value)
 	{
 		boolean result = values().add(value);
@@ -432,11 +449,12 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * 
 	 * @since 1.2.0
 	 */
-	public boolean addAll(Collection<ValT> values)
+	@Override
+	public boolean addAll(Collection<? extends ValT> values)
 	{
 		if (values.isEmpty())
 			return false;
-		return values().addAll(values);
+		return values().addAll((Collection<? extends ValT>) values);
 	}
 	
 	/**
@@ -449,6 +467,45 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	public boolean addAll(@SuppressWarnings("unchecked") ValT... values)
 	{
 		return addAll(Arrays.asList(values));
+	}
+	
+	/**
+	 * @param values | Independent values to check.
+	 * 
+	 * @return True all provided values are contained in this scope as independent values!
+	 * 
+	 * @since 1.3.7
+	 */
+	@Override
+	public boolean containsAll(Collection<?> values) 
+	{
+		return values().containsAll(values);
+	}
+
+	/**
+	 * @param values | Independent values to check.
+	 * 
+	 * @return {@link Collection#removeAll(Collection)} for the independent values,,,
+	 * 
+	 * @since 1.3.7
+	 */
+	@Override
+	public boolean removeAll(Collection<?> values)
+	{
+		return values().removeAll(values);
+	}
+
+	/**
+	 * @param values | Independent values to check.
+	 * 
+	 * @return {@link Collection#retainAll(Collection)} for the independent values,,,
+	 * 
+	 * @since 1.3.7
+	 */
+	@Override
+	public boolean retainAll(Collection<?> values)
+	{
+		return values().retainAll(values);
 	}
 	
 	/**
@@ -521,7 +578,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 		SerializationProtocol<T> pro = protocolsToUse == null ? null : protocolsToUse.GetProtocolFor(objClass, SerializationProtocol.MODE_DESERIALIZE);
 		if (pro != null)
 		{
-			T obj = pro.unserialize(objClass, this.variablesCount() > 0 ? new Object[] {this} : this.toValArray());
+			T obj = pro.unserialize(objClass, this.variablesCount() > 0 ? new Object[] {this} : this.toArray());
 			if (obj != null)
 				return obj;
 		}
@@ -681,13 +738,26 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	}
 	
 	/**
+	 * @param independentValue | Independent value to remove!
+	 * 
+	 * @return Value of variable that was removed!
+	 * 
+	 * @since 1.3.7
+	 */
+	@Override
+	public boolean remove(Object independentValue)
+	{
+		return values().remove(independentValue);
+	}
+	
+	/**
 	 * @param variableKey | Name of variable to remove!
 	 * 
 	 * @return Value of variable that was removed!
 	 * 
-	 * @since 1.3.2
+	 * @since 1.3.7
 	 */
-	public ValT remove(KeyT variableKey)
+	public ValT removeVariable(KeyT variableKey)
 	{
 		return variables().remove(variableKey);
 	}
@@ -699,6 +769,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * 
 	 * @since 1.3.5
 	 */
+	@Override
 	public void clear()
 	{
 		variables().clear();
@@ -712,7 +783,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 */
 	@SuppressWarnings("unchecked")
 	public GenericScope<KeyT, ValT> inheritParent()
-	{ 
+	{
 		GenericScope<?, ?> parent = getParent();
 		if (parent != null)
 			variables().putAll((Map<? extends KeyT, ? extends ValT>) parent.variables());
@@ -765,8 +836,11 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	
 	/**
 	 * @return Total number of variables and independent values of this scope! (<code>vvaluesCount() + variablesCount()</code>)
+	 * 
+	 * @since 1.3.7 (before 1.3.7 known as totalSize)
 	 */
-	public int totalSize()
+	@Override
+	public int size()
 	{
 		return valuesCount() + variablesCount();
 	}
@@ -776,9 +850,10 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * 
 	 * @since 1.2.0
 	 */
+	@Override
 	public boolean isEmpty()
 	{
-		return totalSize() <= 0;
+		return size() <= 0;
 	}
 	
 	/**
@@ -838,22 +913,24 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	 * @return Primitive array with independent values of this {@link GenericScope}. These values have nothing to do with values of variables, they are independent!
 	 * Modifying this list will not affect this {@link GenericScope} object!
 	 * 
-	 * @since 1.2.0
+	 * @since 1.3.7 (before 1.3.7 known as toValArray)
 	 */
-	public Object[] toValArray()
+	@Override
+	public Object[] toArray() 
 	{
 		return values().toArray();
 	}
-	
+
 	/**
 	 * @param vals | Array to store independent values into!
 	 * 
 	 * @return Primitive array with independent values of this {@link GenericScope}. These values have nothing to do with values of variables, they are independent!
 	 * Modifying this list will not affect this {@link GenericScope} object!
 	 * 
-	 * @since 1.3.5
+	 * @since 1.3.7 (before 1.3.7 known as toValArray)
 	 */
-	public <V extends ValT> V[] toValArray(V[] vals)
+	@Override
+	public <T> T[] toArray(T[] vals) 
 	{
 		return values().toArray(vals);
 	}
@@ -874,7 +951,7 @@ public class GenericScope<KeyT, ValT> implements Iterable<ValT>, Cloneable, Seri
 	}
 	
 	/**
-	 * @return Values of this scope. These are not the values of keys these are values that have no key. You can access them via {@link GenericScope#get(int)}!
+	 * @return Independent values of this scope. These are not the values of keys these are values that have no key. You can access them via {@link GenericScope#get(int)}!
 	 * Note: Editing this List will affect this scope!
 	 * 
 	 * @since 1.2.0

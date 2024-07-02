@@ -1,17 +1,20 @@
 package org.ugp.serialx.converters.operators;
 
+import static java.util.Arrays.asList;
 import static org.ugp.serialx.Utils.fastReplace;
+import static org.ugp.serialx.Utils.fromAmbiguousArray;
 import static org.ugp.serialx.Utils.isOneOf;
+import static org.ugp.serialx.Utils.mergeArrays;
 import static org.ugp.serialx.Utils.multilpy;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
+import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.LogProvider;
-import org.ugp.serialx.Scope;
-import org.ugp.serialx.Utils;
 import org.ugp.serialx.converters.DataParser;
 
 /**
@@ -23,7 +26,7 @@ import org.ugp.serialx.converters.DataParser;
  */
 public class ArithmeticOperators implements DataParser
 {
-	protected String[] priority1Oprs = {"*", "*-", "/", "/-", "%"}, priority2Oprs = {"**", "**-"};
+//	protected String[] priority1Oprs = {"*", "*-", "/", "/-", "%"}, priority2Oprs = {"**", "**-"};
 	
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String s, Object... args) 
@@ -38,53 +41,62 @@ public class ArithmeticOperators implements DataParser
 	 * 
 	 * @since 1.3.0
 	 */
+	@SuppressWarnings("unchecked")
 	protected Object eval(ParserRegistry registryForParsers, String expr, Object... argsForParsers)
 	{
 		while (expr.contains("++") || expr.contains("--") || expr.contains("+-") || expr.contains("-+"))
 			expr = fastReplace(fastReplace(fastReplace(fastReplace(expr, "-+", "-"), "+-", "-"), "--", "+"), "++", "+");
 
-		List<Object>[] terms = getTerms(expr, '+', '-', '*', '/', '%');
-		List<Object> cofs = terms[0];
+		List<?>[] terms = getAndParseTerms(expr, registryForParsers, argsForParsers, getClass(), '+', '-', '*', '/', '%');
+		ArrayList<Object> cofs = (ArrayList<Object>) terms[0];
 		if (cofs.size() <= 1)
-			return CONTINUE;
-		List<Object> oprs = terms[1];
+			return cofs.get(0);
+		LinkedList<String> oprs = (LinkedList<String>) terms[1];
 
 		Object cof1 = null, cof2 = null;
 		String opr = null;
 		try 
 		{
-			for (int i = 0, index = -1, orderIndex = 0, size = oprs.size(); i < size; index = -1, i++) 
+			for (int i = 0, index = 0, oprsSize = oprs.size(), currentOpPrio = 2; i < oprsSize; index = 0, i++)
 			{
-				for (String adept : priority1Oprs)
-					if ((orderIndex = oprs.indexOf(adept)) > -1 && (index == -1 || orderIndex < index))
-						index = orderIndex;
-				for (String adept : priority2Oprs)
-					if ((orderIndex = oprs.indexOf(adept)) > -1)
-						index = orderIndex;
+				opPrioCheck: //Yes yes... this is quite a shenanigan but it is fast...
+				{
+					for (; currentOpPrio > 0; currentOpPrio--)
+					{
+						for (ListIterator<String> iter = oprs.listIterator(); iter.hasNext();) 
+						{
+							if (getOperatorPriority(opr = iter.next()) == currentOpPrio)
+							{
+								iter.remove();
+								index = iter.nextIndex();
+								break opPrioCheck;
+							}
+						}
+						opr = null;
+					}
+					opr = oprs.poll(); //opr = null;
+				}
 
-				cof1 = cofs.get(index = index < 0 ? 0 : index);
-				if (cof1 instanceof String)
-					cof1 = registryForParsers.parse(cof1.toString().trim(), i > 0, new Class[] {getClass()}, argsForParsers);
-				cof1 = cof1 instanceof ResultWrapper ? ((ResultWrapper) cof1).obj : cof1;
-	
+				cof1 = cofs.get(index);
 				cof2 = cofs.remove(index + 1);
-				if (cof2 instanceof String)
-					cof2 = registryForParsers.parse(cof2.toString().trim(), i > 0, new Class[] {getClass()}, argsForParsers);
-				cof2 = cof2 instanceof ResultWrapper ? ((ResultWrapper) cof2).obj : cof2;
 
-				opr = oprs.remove(index).toString();
-				if (opr.charAt(0) == '+')
-					cofs.set(index, new ResultWrapper(addOperator(cof1, cof2)));
-				else if (opr.charAt(0) == '-')
-					cofs.set(index, new ResultWrapper(subOperator(cof1, cof2)));
-				else if (opr.startsWith("**"))
-					cofs.set(index, new ResultWrapper(powOperator(cof1, cof2, opr.endsWith("-") ? -1 : 1)));
-				else if (opr.charAt(0) == '*')
-					cofs.set(index, new ResultWrapper(multOperator(cof1, cof2, opr.endsWith("-") ? -1 : 1)));
-				else if (opr.charAt(0) == '/')
-					cofs.set(index, new ResultWrapper(divOperator(cof1, cof2, opr.endsWith("-") ? -1 : 1)));
-				else if (opr.charAt(0) == '%')
-					cofs.set(index, new ResultWrapper(modOperator(cof1, cof2)));
+				switch (opr.charAt(0))
+				{
+					case '+':
+						cofs.set(index, addOperator(cof1, cof2)); break;
+					case '-':
+						cofs.set(index, subOperator(cof1, cof2)); break;
+					case '*':
+						if (opr.length() > 1 && opr.charAt(1) == '*')
+						{
+							cofs.set(index, powOperator(cof1, cof2, opr.endsWith("-") ? -1 : 1)); break;
+						}
+						cofs.set(index, multOperator(cof1, cof2, opr.endsWith("-") ? -1 : 1)); break;
+					case '/':
+						cofs.set(index, divOperator(cof1, cof2, opr.endsWith("-") ? -1 : 1)); break;
+					case '%':
+						cofs.set(index, modOperator(cof1, cof2)); break;
+				}
 			}
 		}
 		catch (ClassCastException ex)
@@ -100,7 +112,22 @@ public class ArithmeticOperators implements DataParser
 			LogProvider.instance.logErr(ex.getMessage(), ex);
 		}
 		
-		return (cof1 = cofs.get(0)) instanceof ResultWrapper ? ((ResultWrapper) cof1).obj : cof1;
+		return cofs.get(0);
+	}
+	
+	public int getOperatorPriority(String op)
+	{
+		switch (op.charAt(0))
+		{
+			case '+':
+			case '-':
+				return 0; // Low
+			case '*':
+				if (op.length() > 1 && op.charAt(1) == '*')
+					return 2; // High  **
+			default:
+				return 1; // Medium  * / %
+		}
 	}
 	
 	/** 
@@ -186,29 +213,29 @@ public class ArithmeticOperators implements DataParser
 		}
 		
 		if (cof.getClass().isArray())
-			return Utils.mergeArrays(cof, cof2);
+			return mergeArrays(cof, cof2);
 		
 		if (cof instanceof Collection)
 		{
 			if (cof2 instanceof Collection)
 				((Collection) cof).addAll(((Collection) cof2));
 			else if (cof2.getClass().isArray())
-				((Collection) cof).addAll(Arrays.asList(Utils.fromAmbiguousArray(cof2)));
+				((Collection) cof).addAll(asList(fromAmbiguousArray(cof2)));
 			else 
 				((Collection) cof).add(cof2);
 			return cof;
 		}
 		
-		if (cof instanceof Scope)
+		if (cof instanceof GenericScope)
 		{
-			if (cof2 instanceof Scope)
-				((Scope) cof).addAll(((Scope) cof2));
+			if (cof2 instanceof GenericScope)
+				((GenericScope) cof).addAll(((GenericScope) cof2));
 			else if (cof2 instanceof Collection)
-				((Scope) cof).addAll((Collection) cof2);
+				((GenericScope) cof).addAll((Collection) cof2);
 			else if (cof2.getClass().isArray())
-				((Scope) cof).addAll(Utils.fromAmbiguousArray(cof2));
+				((GenericScope) cof).addAll(fromAmbiguousArray(cof2));
 			else 
-				((Scope) cof).add(cof2);
+				((GenericScope) cof).add(cof2);
 			return cof;
 		}
 		return String.valueOf(cof) + String.valueOf(cof2);
@@ -241,20 +268,20 @@ public class ArithmeticOperators implements DataParser
 			if (cof2 instanceof Collection)
 				((Collection) cof).removeAll(((Collection) cof2));
 			else if (cof2.getClass().isArray())
-				((Collection) cof).removeAll(Arrays.asList(Utils.fromAmbiguousArray(cof2)));
+				((Collection) cof).removeAll(asList(fromAmbiguousArray(cof2)));
 			else 
 				((Collection) cof).remove(cof2);
 			return cof;
 		}
 		
-		if (cof instanceof Scope)
+		if (cof instanceof GenericScope)
 		{
 			if (cof2 instanceof Collection)
-				((Scope) cof).values().removeAll((Collection) cof2);
+				((GenericScope) cof).values().removeAll((Collection) cof2);
 			else if (cof2.getClass().isArray())
-				((Scope) cof).values().removeAll(Arrays.asList(cof2));
+				((GenericScope) cof).values().removeAll(asList(cof2));
 			else 
-				((Scope) cof).values().remove(cof2);
+				((GenericScope) cof).values().remove(cof2);
 			return cof;
 		}
 		
@@ -356,15 +383,15 @@ public class ArithmeticOperators implements DataParser
 	 * 
 	 * @return List of terms splitted according to inserted arguments! For example <code>getTerm("5 + 6", true, '+')</code> will return <code>[+]</code>, while <code>getTerm("5 + 6", false, '+')</code> will return <code>[5, 6]</code>! 
 	 *
-	 * @since 1.3.0
+	 * @since 1.3.7 (originally getTerms since 1.3.0)
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<Object>[] getTerms(CharSequence str, char... oprs)
+	public static List<?>[] getAndParseTerms(String str, ParserRegistry registryForParsers, Object[] argsForParsers, Class<? extends DataParser> classToIgnore, char... oprs)
 	{
-		List<Object>[] ret = new ArrayList[] {new ArrayList<>(), new ArrayList<>()}; //cofs, ops
+		List<Object>[] ret = new List[] {new ArrayList<Object>(), new LinkedList<String>()}; //cofs, ops
 		
-		StringBuilder[] sbs = {new StringBuilder(), new StringBuilder()}; //cofs, ops
-		
+		StringBuilder[] sbs = {new StringBuilder(), new StringBuilder()}; //cofs, ops TODO
+
 		int i = 0, type = 0, len = str.length();
 		for (; i < len; i++) //in case of start cof sign
 		{
@@ -391,7 +418,7 @@ public class ArithmeticOperators implements DataParser
 				{
 					String s = sbs[lastType].toString().trim();
 					if (!s.isEmpty())
-						ret[lastType].add(s);
+						ret[lastType].add(lastType == 0 ? registryForParsers.parse(s, false, classToIgnore, argsForParsers) : s);
 					sbs[lastType] = new StringBuilder();
 				}
 				else
@@ -405,7 +432,7 @@ public class ArithmeticOperators implements DataParser
 		{
 			String s = sbs[type].toString().trim();
 			if (!s.isEmpty())
-				ret[type].add(s);
+				ret[type].add(type == 0 ? registryForParsers.parse(s, false, classToIgnore, argsForParsers) : s);
 		}
 		return ret;
 	}
@@ -467,6 +494,8 @@ public class ArithmeticOperators implements DataParser
 	}
 	
 	/**
+	 * @deprecated THIS WAS QUIET A MESSY WORKAROUND, DO NOT USE!<br>
+	 * 
 	 * Used internally by {@link ArithmeticOperators} to wrap result of evaluation!
 	 * Mainly used by String results!
 	 * 
@@ -474,6 +503,7 @@ public class ArithmeticOperators implements DataParser
 	 *
 	 * @since 1.3.0
 	 */
+	@Deprecated
 	protected static class ResultWrapper
 	{
 		public final Object obj;

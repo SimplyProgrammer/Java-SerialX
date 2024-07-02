@@ -171,7 +171,7 @@ public class VariableConverter extends VariableParser implements DataConverter
 		if (source instanceof GenericScope)
 		{
 			if (val == VOID)
-				return ((GenericScope<Object,?>) source).remove(member);
+				return ((GenericScope<Object,?>) source).removeVariable(member);
 			return ((GenericScope<Object, Object>) source).put(genericVar ? myHomeRegistry.parse(member, true, null, args) : member, val);
 		}
 		return VOID;
