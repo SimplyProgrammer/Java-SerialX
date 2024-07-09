@@ -29,7 +29,7 @@ public class ComparisonOperators implements DataParser
 			return CONTINUE;
 
 		int index, op;
-		if ((index = indexOfNotInObj(str, '<', '>', '=')) > -1)
+		if ((index = indexOfNotInObj(str, 0, len, -1, true, '<', '>', '=')) > -1)
 		{
 			if ((op = str.charAt(index)) != '=') // > <
 			{

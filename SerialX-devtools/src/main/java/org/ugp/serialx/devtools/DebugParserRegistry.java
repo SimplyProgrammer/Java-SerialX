@@ -114,8 +114,8 @@ public class DebugParserRegistry extends ParserRegistry
 				DataParser parser = parsingCache[i];
 				if (parser != null && (ignore == null || ignore != parser.getClass()))
 				{
-					try 
-					{
+//					try 
+//					{
 						double t0 = System.nanoTime();
 						obj = parser.parse(this, str, args);
 						double t = System.nanoTime();
@@ -124,12 +124,12 @@ public class DebugParserRegistry extends ParserRegistry
 							iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms (from cache)\n>>\t\"" + str + "\"\t -->\t" + SerializationDebugger.toStringAndCls(obj));
 							return obj; 
 						}
-					}
-					catch (Exception ex)
-					{
-						iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " (from cache)\n>>\t\"" + str + "\"\tthrew\t" + ex);
-						return null;
-					}
+//					}
+//					catch (Exception ex)
+//					{
+//						iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " (from cache)\n>>\t\"" + str + "\"\tthrew\t" + ex);
+//						return null;
+//					}
 				}
 			}
 	
@@ -139,8 +139,8 @@ public class DebugParserRegistry extends ParserRegistry
 			if (ignore != null && ignore == parser.getClass())
 				continue;
 
-			try 
-			{
+//			try 
+//			{
 				double t0 = System.nanoTime();
 				obj = parser.parse(this, str, args);
 				double t = System.nanoTime();
@@ -151,12 +151,12 @@ public class DebugParserRegistry extends ParserRegistry
 					iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms\n>>\t\"" + str + "\"\t -->\t" + SerializationDebugger.toStringAndCls(obj));
 					return obj;
 				}
-			}
-			catch (Exception ex)
-			{
-				iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + "\n>>\t\"" + str + "\"\tthrew\t" + ex);
-				return null;
-			}
+//			}
+//			catch (Exception ex)
+//			{
+//				iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + "\n>>\t\"" + str + "\"\tthrew\t" + ex);
+//				return null;
+//			}
 		}
 
 		if (returnAsStringIfNotFound)

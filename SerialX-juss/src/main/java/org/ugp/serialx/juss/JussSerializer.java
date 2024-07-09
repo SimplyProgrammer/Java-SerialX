@@ -408,8 +408,8 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		if (args[3] == null)
 			args[3] = getProtocols();
 		
-		String str = readAndFormat(reader, formatRequired);
-		List<Object> objs = splitAndParse(str, 0, args);
+		StringBuilder str = readAndFormat(reader, formatRequired);
+		List<Object> objs = splitAndParse(str, args);
 		addAll(objs);
 		
 		//double t0 = System.nanoTime();
@@ -504,7 +504,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @since 1.3.2
 	 */
-	protected String readAndFormat(Reader reader, boolean format)
+	protected StringBuilder readAndFormat(Reader reader, boolean format)
 	{
 		int quote = 0, multLineCom = -1;
 		//int brackets = 0, lastIndex = 0, delChars = 0;
@@ -581,7 +581,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 			e.printStackTrace();
 		}
 
-		return sb.toString();
+		return sb;
 	}
 
 	/**
@@ -589,16 +589,16 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @since 1.3.2
 	 */
-	protected List<Object> splitAndParse(String formattedStr, int offset, Object... parserArgs)
+	protected List<Object> splitAndParse(StringBuilder formattedStr, Object... parserArgs)
 	{
 		List<Object> result = new ArrayList<>();
 
 		ParserRegistry reg = getParsers();
 
 		//DataParser[] parsers = new DataParser[DataParser.REGISTRY.size()];
-		int brackets = 0, quote = 0, lastIndex = 0;
+		int brackets = 0, quote = 0, lastIndex = 0, len = formattedStr.length();
 		//boolean isBracketSplit = false;
-		for (int i = 0, len = formattedStr.length(); i < len; i++)
+		for (int i = 0; i < len; i++)
 		{
 			char ch = formattedStr.charAt(i);
 			if (ch == '"')
@@ -611,8 +611,8 @@ public class JussSerializer extends Serializer implements ImportsProvider
 				isBracketSplit = false;*/
 				if (brackets == 0 && (ch == ';' || ch == ',')/* || (brackets == 1 && (isBracketSplit = ch == '}' || ch == ']'))*/)
 				{
-					String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, lastIndex = i /*+ (isBracketSplit ? 1 : 0)*/);
-					if (!(str = str.trim()).isEmpty())
+					String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, lastIndex = i /*+ (isBracketSplit ? 1 : 0)*/).trim();
+					if (!str.isEmpty())
 					{
 						Object obj = parseObject(reg, str, parserArgs);
 						if (obj != VOID)
@@ -638,8 +638,8 @@ public class JussSerializer extends Serializer implements ImportsProvider
 			throw new IllegalArgumentException("Unclosed brackets in: " + formattedStr); 
 		else 
 		{
-			String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, formattedStr.length());
-			if (!(str = str.trim()).isEmpty())
+			String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, len).trim();
+			if (!str.isEmpty())
 			{
 				Object obj = parseObject(reg, str, parserArgs);
 				if (obj != VOID)
@@ -704,7 +704,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 */
 	public <T> T cloneOf(String variableName, T defaultValue)
 	{
-		T obj = get(variableName , defaultValue);
+		T obj = get(variableName, defaultValue);
 		if (obj == defaultValue)
 			return defaultValue;
 		return Clone(obj, getParsers(), new Object[] {-99999, 0, this, getProtocols(), isGenerateComments()}, this, null, null, getProtocols());

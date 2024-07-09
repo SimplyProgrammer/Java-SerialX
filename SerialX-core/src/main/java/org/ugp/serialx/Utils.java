@@ -596,13 +596,14 @@ public final class Utils {
 	 */
 	public static int indexOfNotInObj(CharSequence s, char... oneOf)
 	{
-		return indexOfNotInObj(s, 0, s.length(), true, oneOf);
+		return indexOfNotInObj(s, 0, s.length(), -1, true, oneOf);
 	}
 	
 	/**
 	 * @param s | CharSequence to search!
 	 * @param from | The beginning index, where to start the search (should be 0 in most cases).
 	 * @param to | Ending index of search (exclusive, should be s.length()).
+	 * @param defaultReturn | Index to return by default (usually -1).
 	 * @param firstIndex | If true, first index will be returned, if false last index will be returned.
 	 * @param oneOf | Characters to find!
 	 * 
@@ -610,9 +611,8 @@ public final class Utils {
 	 * 
 	 * @since 1.3.5
 	 */
-	public static int indexOfNotInObj(CharSequence s, int from, int to, boolean firstIndex, char... oneOf)
+	public static int indexOfNotInObj(CharSequence s, int from, int to, int defaultReturn, boolean firstIndex, char... oneOf)
 	{
-		int index = -1;
 		for (int brackets = 0, quote = 0; from < to; from++)
 		{
 			char ch = s.charAt(from);
@@ -625,7 +625,7 @@ public final class Utils {
 				{
 					if (firstIndex)
 						return from;
-					index = from;
+					defaultReturn = from;
 				}
 				else if ((ch | ' ') == '{')
 					brackets++;
@@ -638,7 +638,7 @@ public final class Utils {
 				}
 			}
 		}
-		return index;
+		return defaultReturn;
 	}
 	
 	/**
@@ -714,23 +714,24 @@ public final class Utils {
 	 */
 	public static String fastReplace(String str, String target, CharSequence replacement) 
 	{
-	    int targetLength = target.length();
-	    if (targetLength == 0) 
-	        return str;
-
-	    int i1 = 0, i2 = str.indexOf(target);
-	    if (i2 < 0) 
-	        return str;
-
-	    StringBuilder sb = new StringBuilder(targetLength > replacement.length() ? str.length() : str.length() * 2);
-	    do 
-	    {
-	        sb.append(str, i1, i2).append(replacement);
-	        i1 = i2 + targetLength;
-	        i2 = str.indexOf(target, i1);
-	    } while (i2 > 0);
-	    
-	    return sb.append(str, i1, str.length()).toString();
+		int targetLength = target.length();
+		if (targetLength == 0) 
+		    return str;
+		
+		int i1 = 0, i2 = str.indexOf(target);
+		if (i2 < 0) 
+		    return str;
+		
+		int len = str.length();
+		StringBuilder sb = new StringBuilder(targetLength > replacement.length() ? len : len * 2);
+		do 
+		{
+		    sb.append(str, i1, i2).append(replacement);
+		    i1 = i2 + targetLength;
+		    i2 = str.indexOf(target, i1);
+		} while (i2 > 0);
+		
+		return sb.append(str, i1, len).toString();
 	}
 	
 	/**
@@ -797,14 +798,14 @@ public final class Utils {
 	 * @param str | String to display!
 	 * @param pos | Position to display!
 	 * 
-	 * @return String with displayed position!
+	 * @return String with displayed position by using »!
 	 * Use for debugging or error printing!
 	 * 
 	 * @since 1.3.2
 	 */
 	public static String showPosInString(CharSequence str, int pos)
 	{
-		return str + "\n" + multilpy(' ', pos) + "^";	
+		return str.subSequence(0, pos) + "»" + str.subSequence(pos, str.length());	
 	}
 	
 	/* Arrays */

@@ -165,7 +165,7 @@ public class NumberConverter implements DataConverter
 	/**
 	 * @param str | Source char sequence with number to parse.
 	 * @param ch0 | Should be <code>str.charAt(0)</code>. This is to ensure that string is not null or empty and also for possible optimizations.
-	 * @param end | Index of where to end with parsing. If whole string is meant to be parsed, then <code>str.length()-1</code>, should not be greater than that!
+	 * @param end | Index of where to end with parsing (inclusive). If whole string is meant to be parsed, then <code>str.length()-1</code>, should not be greater than that!
 	 * @param base | Base of the parsed number. Theoretically can be anything but usually should be 2, 8, 10 or 16... Note that base will be overridden by suffixes <code>#</code>. for 16, <code>0x</code> for 16, <code>0b</code> for 2 or <code>0</code> for 8 (only if not followed by <code>.</code>).
 	 * @param type | Preferred datatype of of the number represented by suffixes 'S' for {@link Short}, 'Y' for {@link Byte}, 'L' for {@link Long}, 'D' for {@link Double}, 'F' for {@link Float}. Other stands for {@link Integer}.<br> 
 	 * Note that floating point numberer will be treated as {@link Double} if no suffix is present by default. Also numbers in E-notation format with negative exponents can be converted to {@link Double}. Further more, integers will be auto-converted to {@link Long} if overflow should occur!<br>

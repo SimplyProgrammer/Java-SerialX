@@ -1,11 +1,7 @@
 package org.ugp.serialx.converters.operators;
 
 import static java.util.Arrays.asList;
-import static org.ugp.serialx.Utils.fastReplace;
-import static org.ugp.serialx.Utils.fromAmbiguousArray;
-import static org.ugp.serialx.Utils.isOneOf;
-import static org.ugp.serialx.Utils.mergeArrays;
-import static org.ugp.serialx.Utils.multilpy;
+import static org.ugp.serialx.Utils.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,96 +22,108 @@ import org.ugp.serialx.converters.DataParser;
  */
 public class ArithmeticOperators implements DataParser
 {
-//	protected String[] priority1Oprs = {"*", "*-", "/", "/-", "%"}, priority2Oprs = {"**", "**-"};
+	/**
+	 * @deprecated DO NOT USE! USE {@link ArithmeticOperators#evalOperator(Object, String, Object)} AND {@link ArithmeticOperators#getOperatorPriority(String)} INSTEAD!
+	 */
+	@Deprecated
+	protected String[] priority1Oprs = {"*", "*-", "/", "/-", "%"}, priority2Oprs = {"**", "**-"};
 	
+	/**
+	 * Operator characters recognized by {@link ArithmeticOperators}, operators can be any combination of provided characters. Exact behavior is handled by {@link ArithmeticOperators#operator(Object, String, Object)}.<br> Intended for override, should not be null or empty!
+	 * 
+	 * @since 1.3.7
+	 */
+	protected char[] operators = {'+', '-', '*', '/', '%'};
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object parse(ParserRegistry myHomeRegistry, String s, Object... args) 
+	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args) 
 	{
-		if (s.length() > 2 && isExpression(s, '+', '-', '*', '/', '%'))
-			return eval(myHomeRegistry, s, args);
+		int len;
+		if ((len = str.length()) > 2 && isExpression(str, len, operators))
+		{
+			for (int i; (i = indexOfNotInObj(str, 0, len, len, true, '+', '-')+1) < len && isOneOf(str.charAt(i), '+', '-'); ) // Handle duplicates of [+-]{2}
+				str = fastReplace(fastReplace(fastReplace(fastReplace(str, "-+", "-"), "+-", "-"), "--", "+"), "++", "+");
+
+			List<?>[] terms = getAndParseTerms(str, myHomeRegistry, args, getClass(), operators);
+			ArrayList<Object> cofs = (ArrayList<Object>) terms[0];
+			if (cofs.size() <= 1)
+				return cofs.get(0);
+			LinkedList<String> oprs = (LinkedList<String>) terms[1];
+
+			String op = null;
+			int index = 1;
+			try 
+			{
+				for (int opPrio = 2; opPrio > 0; opPrio--)
+					for (ListIterator<String> iter = oprs.listIterator(); iter.hasNext(); )
+					{
+						if (getOperatorPriority(op = iter.next()) == opPrio)
+						{
+							iter.remove();
+							cofs.set(index = iter.nextIndex(), operator(cofs.get(index), op, cofs.remove(index + 1)));
+						}
+					}
+				
+				for (index = 1; (op = oprs.poll()) != null; )
+					cofs.set(0, operator(cofs.get(0), op, cofs.get(index++)));
+			}
+			catch (ClassCastException ex)
+			{
+				LogProvider.instance.logErr("Arithmetic operator " + op + " is undefined between provided operands because " + ex.getMessage() + "!", ex);
+			}
+			catch (IndexOutOfBoundsException ex)
+			{
+				LogProvider.instance.logErr("Missing operand in \"" + str + "\"!", null);
+			}
+			catch (ArithmeticException ex)
+			{
+				LogProvider.instance.logErr(ex.getMessage(), ex);
+			}
+			
+			return cofs.get(0);
+		}
 		return CONTINUE;
 	}
 	
 	/**
-	 * @return Result of evaluated expression that was inserted! For instance 5 + 5, result 10!
+	 * @param opr1 | Operand 1
+	 * @param op | The operator/operation
+	 * @param opr2 | Operand 2
 	 * 
-	 * @since 1.3.0
+	 * @return Result of binary operation described by op between opr1 and opr2! If operator is not known, opr1 will be returned by default!
+	 * 
+	 * @since 1.3.7
 	 */
-	@SuppressWarnings("unchecked")
-	protected Object eval(ParserRegistry registryForParsers, String expr, Object... argsForParsers)
+	public Object operator(Object opr1, String op, Object opr2)
 	{
-		while (expr.contains("++") || expr.contains("--") || expr.contains("+-") || expr.contains("-+"))
-			expr = fastReplace(fastReplace(fastReplace(fastReplace(expr, "-+", "-"), "+-", "-"), "--", "+"), "++", "+");
-
-		List<?>[] terms = getAndParseTerms(expr, registryForParsers, argsForParsers, getClass(), '+', '-', '*', '/', '%');
-		ArrayList<Object> cofs = (ArrayList<Object>) terms[0];
-		if (cofs.size() <= 1)
-			return cofs.get(0);
-		LinkedList<String> oprs = (LinkedList<String>) terms[1];
-
-		Object cof1 = null, cof2 = null;
-		String opr = null;
-		try 
+//		System.err.println(opr1 + op + opr2);
+		switch (op.charAt(0))
 		{
-			for (int i = 0, index = 0, oprsSize = oprs.size(), currentOpPrio = 2; i < oprsSize; index = 0, i++)
-			{
-				opPrioCheck: //Yes yes... this is quite a shenanigan but it is fast...
-				{
-					for (; currentOpPrio > 0; currentOpPrio--)
-					{
-						for (ListIterator<String> iter = oprs.listIterator(); iter.hasNext();) 
-						{
-							if (getOperatorPriority(opr = iter.next()) == currentOpPrio)
-							{
-								iter.remove();
-								index = iter.nextIndex();
-								break opPrioCheck;
-							}
-						}
-						opr = null;
-					}
-					opr = oprs.poll(); //opr = null;
-				}
-
-				cof1 = cofs.get(index);
-				cof2 = cofs.remove(index + 1);
-
-				switch (opr.charAt(0))
-				{
-					case '+':
-						cofs.set(index, addOperator(cof1, cof2)); break;
-					case '-':
-						cofs.set(index, subOperator(cof1, cof2)); break;
-					case '*':
-						if (opr.length() > 1 && opr.charAt(1) == '*')
-						{
-							cofs.set(index, powOperator(cof1, cof2, opr.endsWith("-") ? -1 : 1)); break;
-						}
-						cofs.set(index, multOperator(cof1, cof2, opr.endsWith("-") ? -1 : 1)); break;
-					case '/':
-						cofs.set(index, divOperator(cof1, cof2, opr.endsWith("-") ? -1 : 1)); break;
-					case '%':
-						cofs.set(index, modOperator(cof1, cof2)); break;
-				}
-			}
+			case '+':
+				return addOperator(opr1, opr2);
+			case '-':
+				return subOperator(opr1, opr2);
+			case '*':
+				if (op.length() > 1 && op.charAt(1) == '*')
+					return powOperator(opr1, opr2, op.endsWith("-") ? -1 : 1);
+				return multOperator(opr1, opr2, op.endsWith("-") ? -1 : 1);
+			case '/':
+				return divOperator(opr1, opr2, op.endsWith("-") ? -1 : 1);
+			case '%':
+				return modOperator(opr1, opr2);
 		}
-		catch (ClassCastException ex)
-		{
-			LogProvider.instance.logErr("Arithmetic operator " + opr + " is undefined between " + cof1.getClass().getName() + " and " + cof2.getClass().getName() + "!", ex);
-		}
-		catch (IndexOutOfBoundsException ex)
-		{
-			LogProvider.instance.logErr("Missing coefficient in \"" + expr + "\"!", null);
-		}
-		catch (ArithmeticException ex)
-		{
-			LogProvider.instance.logErr(ex.getMessage(), ex);
-		}
-		
-		return cofs.get(0);
+		return opr1;
 	}
 	
-	public int getOperatorPriority(String op)
+	/**
+	 * @param op | The operator/operation
+	 * 
+	 * @return Priority of provided operator (higher number = higher priority, 2 = high, 1 = medium, 0 = low)
+	 * 
+	 * @since 1.3.7
+	 */
+	public byte getOperatorPriority(String op)
 	{
 		switch (op.charAt(0))
 		{
@@ -360,28 +368,27 @@ public class ArithmeticOperators implements DataParser
 	 */
 	public static Object pow(Object cof, Object cof2, int sign)
 	{
-		if (cof instanceof Number && cof2 instanceof Number)
-		{
-			double pow = Math.pow(((Number) cof).doubleValue(), ((Number) cof2).doubleValue() * sign);
-			if (pow > Long.MAX_VALUE || pow < Long.MIN_VALUE || cof instanceof Double || cof2 instanceof Double)
-				return pow;
-			else if (pow <= Float.MAX_VALUE && pow >= Float.MIN_VALUE && (cof instanceof Float || cof2 instanceof Float))
-				return (float) pow;
-			
-			if (pow > Integer.MAX_VALUE || pow < Integer.MIN_VALUE || cof instanceof Long || cof2 instanceof Long)
-				return (long) pow;
-			else if (cof instanceof Integer || cof2 instanceof Integer)
-				return (int) pow;
-		}
-		return null;
+		double pow = Math.pow(((Number) cof).doubleValue(), ((Number) cof2).doubleValue() * sign);
+		if (pow > Long.MAX_VALUE || pow < Long.MIN_VALUE || cof instanceof Double || cof2 instanceof Double)
+			return pow;
+		if (pow <= Float.MAX_VALUE && pow >= Float.MIN_VALUE && (cof instanceof Float || cof2 instanceof Float))
+			return (float) pow;
+		
+		if (pow > Integer.MAX_VALUE || pow < Integer.MIN_VALUE || cof instanceof Long || cof2 instanceof Long)
+			return (long) pow;
+		if (cof instanceof Integer || cof2 instanceof Integer)
+			return (int) pow;
+		return pow;
 	}
-	
+
 	/**
-	 * 
 	 * @param str | String to split!
-	 * @param oprs | Operators to use as a splitters.
+	 * @param registryForParsers | Registry to use for parsing operands!
+	 * @param argsForParsers | Arguments for the parse method!
+	 * @param classToIgnore | Parser to ignore (should be class of the caller if possible)!
+	 * @param oprs | Operators to use as a splitters. 1 or more of these in row will be used as delimiter!
 	 * 
-	 * @return List of terms splitted according to inserted arguments! For example <code>getTerm("5 + 6", true, '+')</code> will return <code>[+]</code>, while <code>getTerm("5 + 6", false, '+')</code> will return <code>[5, 6]</code>! 
+	 * @return Array with 2 lists. Index 0 is {@link ArrayList} containing parsed operands of the expression, index 1 is {@link LinkedList} containing operators of the expression!
 	 *
 	 * @since 1.3.7 (originally getTerms since 1.3.0)
 	 */
@@ -390,17 +397,8 @@ public class ArithmeticOperators implements DataParser
 	{
 		List<Object>[] ret = new List[] {new ArrayList<Object>(), new LinkedList<String>()}; //cofs, ops
 		
-		StringBuilder[] sbs = {new StringBuilder(), new StringBuilder()}; //cofs, ops TODO
-
-		int i = 0, type = 0, len = str.length();
-		for (; i < len; i++) //in case of start cof sign
-		{
-			char ch = str.charAt(i);
-			if (isOneOf(ch, oprs))
-				sbs[0].append(ch);
-			else
-				break;
-		}
+		int i = 0, startIndex = 0, type = 0, len = str.length();
+		for (; i < len && isOneOf(str.charAt(i), oprs); i++); //in case of start cof sign
 		
 		for (int quote = 0, brackets = 0, lastType = type; i < len; i++) 
 		{
@@ -416,39 +414,38 @@ public class ArithmeticOperators implements DataParser
 			{
 				if ((type = isOneOf(ch, oprs) ? 1 : 0) != lastType)
 				{
-					String s = sbs[lastType].toString().trim();
+					String s = str.substring(startIndex, i).trim();
 					if (!s.isEmpty())
 						ret[lastType].add(lastType == 0 ? registryForParsers.parse(s, false, classToIgnore, argsForParsers) : s);
-					sbs[lastType] = new StringBuilder();
+					startIndex = i;
 				}
 				else
 					type = lastType;
 			}
+			
+			lastType = type;
+		}
 
-			sbs[lastType = type].append(ch);
-		}
-		
-		if (sbs[type].length() > 0)
-		{
-			String s = sbs[type].toString().trim();
-			if (!s.isEmpty())
-				ret[type].add(type == 0 ? registryForParsers.parse(s, false, classToIgnore, argsForParsers) : s);
-		}
+		String s = str.substring(startIndex, len).trim();
+		if (!s.isEmpty())
+			ret[type].add(type == 0 ? registryForParsers.parse(s, false, classToIgnore, argsForParsers) : s);
+//		System.err.println(ret[0] + "\n" + ret[1] + "\n");
 		return ret;
 	}
 	
 	/**
 	 * @param str | String that might be an expression!
+	 * @param to | Ending index of checking, exclusive (should be str.length())!
 	 * @param operators | Operators that str must have!
 	 * 
 	 * @return True if inserted string is expression with any coefficients splitted by operators!
 	 * 
 	 * @since 1.3.2
 	 */
-	public static boolean isExpression(CharSequence str, char... operators)
+	public static boolean isExpression(CharSequence str, int to, char... operators)
 	{
 		int hasOpr = -1;
-		for (int i = 0, len = str.length(), oldCh = 0, isCof = 0, quote = 0, brackets = 0; i < len; i++)
+		for (int i = 0, oldCh = 0, isCof = 0, quote = 0, brackets = 0; i < to; i++)
 		{
 			char ch = str.charAt(i);
 			if (ch > 32)
