@@ -1,15 +1,15 @@
-//Date created: 05-11-2024 at 23:32:02 CEST 
+//Date created: 07-12-2024 at 21:57:29 CEST 
 
 //Scope serialization summary:
 //2 variables!
-//17 values!
+//18 values!
 
 num = 6; //Primitive data type: "6" the integer value! Stored by "num" variable!
 yourMom = "has an event horizon... //lol"; //Object of java.lang.String: "has an event horizon... //lol"! Stored by "yourMom" variable!
 "some string"; //Object of java.lang.String: "some string"!
-java.util.Random 68284896517770L; //Object of java.util.Random: "java.util.Random@791f145a" serialized using examples.implementations.GeneralExample$1[java.util.Random]!
+java.util.Random 68284896517770L; //Object of java.util.Random: "java.util.Random@52b1beb6" serialized using examples.implementations.GeneralExample$1[java.util.Random]!
 ArrayList 0 0 T 1 3 0 5 T 5 6 {java.util.LinkedList 0 0 T 1 3 0 5 T 5 6}; //Object of java.util.ArrayList: "[0, 0, true, 1, 3, 0, 5, true, 5, 6, [0, 0, true, 1, 3, 0, 5, true, 5, 6]]" serialized using org.ugp.serialx.protocols.ListProtocol[java.util.Collection]!
-(1 2 3) (4 5 4) (3 2 1); //Primitive array [[I@38cee291 converted by org.ugp.serialx.juss.converters.ArrayConverter
+(1 2 3) (4 5 4) (3 2 1); //Primitive array [[I@273e7444 converted by org.ugp.serialx.juss.converters.ArrayConverter
 {
 	//Scope serialization summary:
 	//1 variables!
@@ -36,18 +36,18 @@ ArrayList 0 0 T 1 3 0 5 T 5 6 {java.util.LinkedList 0 0 T 1 3 0 5 T 5 6}; //Obje
 		//Scope serialization summary:
 		//1 values!
 
-		ArrayList "some" "elements" "..." {
+		ArrayList "some{" "}elements{" "..." {
 			//Scope serialization summary:
 			//2 values!
 
 			'99'; //Primitive data type: "c" the character value!
 			{} //Empty scope!
-		}; //Object of java.util.ArrayList: "[some, elements, ..., Scope[c, Scope[]]]" serialized using org.ugp.serialx.protocols.ListProtocol[java.util.Collection]!
+		}; //Object of java.util.ArrayList: "[some{, }elements{, ..., Scope[c, Scope[]]]" serialized using org.ugp.serialx.protocols.ListProtocol[java.util.Collection]!
 	}
 };
 //Size of array
 arrSize = 11; //Manually inserted code!
-examples.Bar 8 1 456 5.0 1453.3646F '108' "a" F {java.util.concurrent.CopyOnWriteArrayList 6 9 13 java.util.HashMap {ArrayList 4 5 6.0 ArrayList "hi"}} -114Y 515S $parent; //Object of examples.Bar: "Bar[8 1 456 5.0 1453.3646 l a false [6, 9, 13, {}, [4, 5, 6.0, [], hi]] -114 515 ${$parent}]" serialized using examples.Bar$BarProtocol[examples.Bar]!
+examples.Bar 8 1 456 5.0 1453.3646F '108' "a" F {java.util.concurrent.CopyOnWriteArrayList 6 9 13 java.util.HashMap {ArrayList 4 5 6.0 ArrayList {java.nio.file.AccessMode "READ"} "hi"}} -114Y 515S $parent; //Object of examples.Bar: "Bar[8 1 456 5.0 1453.3646 l a false [6, 9, 13, {}, [4, 5, 6.0, [], READ, hi]] -114 515 ${$parent}]" serialized using examples.Bar$BarProtocol[examples.Bar]!
 1; //Primitive data type: "1" the integer value!
 2.2; //Primitive data type: "2.2" the double value!
 3; //Primitive data type: "3" the integer value!
@@ -55,5 +55,6 @@ examples.Bar 8 1 456 5.0 1453.3646F '108' "a" F {java.util.concurrent.CopyOnWrit
 T; //Primitive data type: "true" the boolean value!
 F; //Primitive data type: "false" the boolean value!
 null; //Null, the nothing!
-$num::new; //Manually inserted code!
+-$num::new; //Manually inserted code!
+$undef??0 ?12 : 11??{} ? ($_boolTst1 = 1 2 <= {1, 2, 3} - 2 - 3 + 5)&& ($_boolTst2: !!T instanceof java.lang.Boolean) && !!!5.0 > 5 && ($_boolTst3 = T) || ($_boolTst4= 'i'- 5 == 'd' ^ 240/4*2 != 'x') ? (+1 --+-6l /- 2*(2l+--(T || F))%- 10**2 + 1 ) * "a"; //Manually inserted code!
 {examples.implementations.GeneralExample::println examples.implementations.GeneralExample::hello}; //Manually inserted code!

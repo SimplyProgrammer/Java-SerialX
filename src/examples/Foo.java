@@ -1,5 +1,6 @@
 package examples;
 
+import java.nio.file.AccessMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ public class Foo //Sample object to be serialized using its protocol!
 		l.add(9);
 		l.add(13);
 		l.add(new HashMap<>());
-		l.add(new ArrayList<>(Arrays.asList(4, 5, 6d, new ArrayList<>(), "hi")));
+		l.add(new ArrayList<>(Arrays.asList(4, 5, 6d, new ArrayList<>(), AccessMode.READ, "hi")));
 	}
 	
 	@Override

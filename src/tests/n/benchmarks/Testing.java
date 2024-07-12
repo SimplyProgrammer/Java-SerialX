@@ -20,7 +20,10 @@ public class Testing {
 		
 		String str = "srlxVer1 = srlxVer2 = $dependencies.something.dataStorage.serialx.version";
 		System.out.println(Arrays.asList(Utils.splitValues(str, VariableConverter.isVarAssignment(str), 0, 1, new char[0], '=')));
+		System.out.println(Utils.showPosInString("abc", 2));		
 		
+		
+		System.out.println(1 +-6 / -2*(2+1)%- 100 + 1);
 //		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true);
 //		
 //		File file = new File("src/examples/implementations/test.juss");
