@@ -164,6 +164,16 @@ public abstract class Serializer extends Scope
 		return toObject(objClass, getProtocols());
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <V> GenericScope<String, V> transform(Function<Object, V> trans, boolean includeSubScopes) 
+	{
+		Serializer transformed = (Serializer) super.transform(trans, includeSubScopes);
+		transformed.parsers = getParsers();
+		transformed.protocols = getProtocols();
+		return (GenericScope<String, V>) transformed;
+	}
+	
 	/**
 	 * @see Serializer#into(Object, Serializer, String...)
 	 */

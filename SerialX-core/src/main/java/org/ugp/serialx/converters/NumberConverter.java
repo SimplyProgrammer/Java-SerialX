@@ -112,8 +112,8 @@ public class NumberConverter implements DataConverter
 		int len;
 		if ((len = arg.length()) > 0)
 		{
-			char ch0 = arg.charAt(0);
-			if (ch0 == '+' || ch0 == '-' || ch0 == '.' || (ch0 >= '0' && ch0 <= '9'))
+			char ch0;
+			if ((ch0 = arg.charAt(0)) >= '0' && ch0 <= '9' || (ch0 == '+' || ch0 == '-' || ch0 == '.') && len > 1 && arg.charAt(1) > '*')
 			{
 				Number num;
 				if ((num = numberOf(arg, ch0, --len, 10, 0)) != null)

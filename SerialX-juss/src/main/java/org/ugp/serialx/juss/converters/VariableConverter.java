@@ -69,7 +69,7 @@ public class VariableConverter extends VariableParser implements DataConverter
 					op0Index--;
 				}
 				
-				String vars[] = splitValues(arg, op0Index, 0, 1, new char[] {'?'}, '=', ':'), valStr;
+				String vars[] = splitValues(arg, op0Index, 0, 1, new char[] {'?', '<', '>', '!'}, '=', ':'), valStr;
 
 				Object val = null;
 				int iVal = vars.length-1;

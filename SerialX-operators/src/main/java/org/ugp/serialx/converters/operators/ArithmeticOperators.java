@@ -42,10 +42,14 @@ public class ArithmeticOperators implements DataParser
 		int len;
 		if ((len = str.length()) > 2 && isExpression(str, len, operators))
 		{
-			for (int i; (i = indexOfNotInObj(str, 0, len, len, true, '+', '-')+1) < len && isOneOf(str.charAt(i), '+', '-'); ) // Handle duplicates of [+-]{2}
-				str = fastReplace(fastReplace(fastReplace(fastReplace(str, "-+", "-"), "+-", "-"), "--", "+"), "++", "+");
+			for (int i = 0; i < len; ) // Format duplicates of [+-]{2}
+				if (isOneOf(str.charAt(i++), '+', '-') && i < len && isOneOf(str.charAt(i), '+', '-'))
+				{
+					len = (str = fastReplace(fastReplace(fastReplace(fastReplace(str, "-+", "-"), "+-", "-"), "--", "+"), "++", "+")).length();
+					i--;
+				}
 
-			List<?>[] terms = getAndParseTerms(str, myHomeRegistry, args, getClass(), operators);
+			List<?>[] terms = getAndParseTerms(str, len, myHomeRegistry, args, getClass(), operators);
 			ArrayList<Object> cofs = (ArrayList<Object>) terms[0];
 			if (cofs.size() <= 1)
 				return cofs.get(0);
@@ -383,6 +387,7 @@ public class ArithmeticOperators implements DataParser
 
 	/**
 	 * @param str | String to split!
+	 * @param to | Ending index of parsing, exclusive. Everything from this index to the end will be ignored (should be str.length())!
 	 * @param registryForParsers | Registry to use for parsing operands!
 	 * @param argsForParsers | Arguments for the parse method!
 	 * @param classToIgnore | Parser to ignore (should be class of the caller if possible)!
@@ -393,14 +398,14 @@ public class ArithmeticOperators implements DataParser
 	 * @since 1.3.7 (originally getTerms since 1.3.0)
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<?>[] getAndParseTerms(String str, ParserRegistry registryForParsers, Object[] argsForParsers, Class<? extends DataParser> classToIgnore, char... oprs)
+	public static List<?>[] getAndParseTerms(String str, int to, ParserRegistry registryForParsers, Object[] argsForParsers, Class<? extends DataParser> classToIgnore, char... oprs)
 	{
 		List<Object>[] ret = new List[] {new ArrayList<Object>(), new LinkedList<String>()}; //cofs, ops
 		
-		int i = 0, startIndex = 0, type = 0, len = str.length();
-		for (; i < len && isOneOf(str.charAt(i), oprs); i++); //in case of start cof sign
+		int i = 0, startIndex = 0, type = 0;
+		for (; i < to && isOneOf(str.charAt(i), oprs); i++); //in case of start cof sign
 		
-		for (int quote = 0, brackets = 0, lastType = type; i < len; i++) 
+		for (int quote = 0, brackets = 0, lastType = type; i < to; i++) 
 		{
 			char ch = str.charAt(i);
 			if (ch == '\"')
@@ -426,7 +431,7 @@ public class ArithmeticOperators implements DataParser
 			lastType = type;
 		}
 
-		String s = str.substring(startIndex, len).trim();
+		String s = str.substring(startIndex, to).trim();
 		if (!s.isEmpty())
 			ret[type].add(type == 0 ? registryForParsers.parse(s, false, classToIgnore, argsForParsers) : s);
 //		System.err.println(ret[0] + "\n" + ret[1] + "\n");

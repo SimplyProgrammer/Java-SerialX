@@ -16,20 +16,19 @@ public class NegationOperator implements DataParser
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args) 
 	{
-		int ch, len = str.length();
-		if (len > 0 && ((ch = str.charAt(0)) == '!' || ch == '-'))
+		int len, type;
+		if ((len = str.length()) < 2)
+			return CONTINUE;
+		if ((type = str.charAt(0)) == '!' || type == '-')
 		{
 			int negCount = 1;
-			for (int i = negCount; i < len; i++) 
-				if ((ch = str.charAt(i)) == '!' || ch == '-')
-					negCount++;
-				else
-					break;
+			for (int ch; negCount < len && ((ch = str.charAt(negCount)) == '!' || ch == '-'); negCount++);
 			
-			Object obj = myHomeRegistry.parse(str.substring(negCount), args); 
+			Object obj = myHomeRegistry.parse(str.substring(negCount).trim(), false, getClass(), args); 
 			if (negCount % 2 == 0)
 				return obj;
-			Object neg = ch == '!' ? logicalNotOperator(obj) : notOperator(obj);
+
+			Object neg = type == '!' ? logicalNotOperator(obj) : notOperator(obj);
 			if (obj == neg && !(obj instanceof Number && ((Number) obj).intValue() == 0))
 				LogProvider.instance.logErr("Unable to nagete \"" + obj + "\" because object of \"" + obj.getClass().getName() + "\" cant be negated!", null);
 			return neg;

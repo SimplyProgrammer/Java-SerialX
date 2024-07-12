@@ -1024,7 +1024,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @since 1.3.5
 	 */
-	public static <K, V> GenericScope<K, V> intoBidirectional(GenericScope<K, V> scopeToMakeBidirectional, Map<K, V> variablesMap, List<V> values)
+	public static <K, V, S extends GenericScope<K, V>> S intoBidirectional(S scopeToMakeBidirectional, Map<K, V> variablesMap, List<V> values)
 	{
 		return intoBidirectional(scopeToMakeBidirectional, variablesMap, values, null);
 	}
@@ -1039,7 +1039,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @since 1.3.5
 	 */
-	public static <K, V> GenericScope<K, V> intoBidirectional(GenericScope<K, V> scopeToMakeBidirectional, Map<K, V> variablesMap, List<V> values, GenericScope<?, ?> parent)
+	public static <K, V, S extends GenericScope<K, V>> S intoBidirectional(S scopeToMakeBidirectional, Map<K, V> variablesMap, List<V> values, GenericScope<?, ?> parent)
 	{
 		scopeToMakeBidirectional.variables = variablesMap;
 		scopeToMakeBidirectional.values = values;

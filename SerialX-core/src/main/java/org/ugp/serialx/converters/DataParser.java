@@ -45,7 +45,7 @@ public interface DataParser
 	
 	/**
 	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link DataParser#parseObj(Registry, String, boolean, Class[], Object...)} otherwise it demands on implementation (it should not be null)!
-	 * @param str | Source string!
+	 * @param str | Source string, preferably trimed!
 	 * @param args | Some additional args. This can be anything and it demands on implementation of DataParser. Default SerialX API implementation will provide one optional argument with {@link Scope} that value was loaded from!
 	 * 
 	 * @return Object that was parsed from obtained string. Special return types are {@link DataParser#VOID} and {@link DataParser#CONTINUE}. Continue will ignore this parser and jump to another one in registry.
