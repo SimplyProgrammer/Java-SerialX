@@ -4,10 +4,13 @@ import static org.ugp.serialx.Utils.Instantiate;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.protocols.SerializationProtocol;
@@ -24,8 +27,9 @@ import org.ugp.serialx.protocols.SerializationProtocol;
  */
 public class AutoProtocol<T> extends SerializationProtocol<T> 
 {	
-	static {
-		UNIVERSAL_INTROSPECTION = new ArrayList<>();
+	static
+	{
+		UNIVERSAL_INTROSPECTION = Arrays.asList();
 	}
 	
 	/**
@@ -55,7 +59,7 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 	public static final List<PropertyDescriptor> UNIVERSAL_INTROSPECTION;
 	
 	protected final Class<T> applicableFor;
-	protected List<PropertyDescriptor> fieldDescriptors = new ArrayList<>();
+	protected List<PropertyDescriptor> fieldDescriptors;
 	protected HashMap<Class<?>, List<PropertyDescriptor>> cache = new HashMap<>();
 	protected boolean useScope;
 	
@@ -94,7 +98,7 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 	 */
 	public AutoProtocol(Class<T> applicableFor, boolean useScope, String... fieldsToSerialize) throws IntrospectionException
 	{
-		this(applicableFor, useScope, fieldsToSerialize.length == 0 ? UNIVERSAL_INTROSPECTION : Scope.getPropertyDescriptorsOf(applicableFor, fieldsToSerialize));
+		this(applicableFor, useScope, fieldsToSerialize == null || fieldsToSerialize.length == 0 ? UNIVERSAL_INTROSPECTION : Scope.getPropertyDescriptorsOf(applicableFor, fieldsToSerialize));
 	}
 	
 	/**
@@ -109,13 +113,13 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 		this.applicableFor = applicableFor;
 		setUseScope(useScope);
 		this.fieldDescriptors = fieldsToSerialize == null ? UNIVERSAL_INTROSPECTION : fieldsToSerialize;
-
+		
 		if (fieldDescriptors == UNIVERSAL_INTROSPECTION)
 			try 
 			{
 				Scope.getPropertyDescriptorsOf(applicableFor, cache);
 			} 
-			catch (IntrospectionException e) 
+			catch (IntrospectionException e)
 			{}
 	}
 	
@@ -136,28 +140,25 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 	@Override
 	public Object[] serialize(T object) throws Exception
 	{
-		List<PropertyDescriptor> fieldDescriptors = this.fieldDescriptors;
+		List<PropertyDescriptor> fieldDescriptors = getFieldDescriptors();
 		if (fieldDescriptors == UNIVERSAL_INTROSPECTION)
 			fieldDescriptors = Scope.getPropertyDescriptorsOf(object.getClass(), cache);
 
 		if (isUseScope())
-		{
 			return new Object[] {Scope.from(object, fieldDescriptors)};
-		}
-		else
-		{
-			int size = fieldDescriptors.size();
-			Object[] args = new Object[size];
-			for (int i = 0; i < size; i++) 
-				args[i] = fieldDescriptors.get(i).getReadMethod().invoke(object);
-			return args;
-		}
+
+		int size = fieldDescriptors.size();
+		Object[] args = new Object[size];
+		for (int i = 0; i < size; i++) 
+			args[i] = fieldDescriptors.get(i).getReadMethod().invoke(object);
+		return args;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T unserialize(Class<? extends T> objectClass, Object... args) throws Exception 
 	{
-		List<PropertyDescriptor> fieldDescriptors = this.fieldDescriptors;
+		List<PropertyDescriptor> fieldDescriptors = getFieldDescriptors();
 		if (fieldDescriptors == UNIVERSAL_INTROSPECTION)
 			fieldDescriptors = Scope.getPropertyDescriptorsOf(objectClass, cache);
 
@@ -167,25 +168,24 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 			return Scope.into(obj, (Scope) args[0], fieldDescriptors);
 		}
 		
-		for (int i = 0, size = fieldDescriptors.size(); i < size && i < args.length; i++) 
-			fieldDescriptors.get(i).getWriteMethod().invoke(obj, args[i]);
+		for (int i = 0, size = fieldDescriptors.size(); i < size && i < args.length; i++)
+		{
+			Method setter = fieldDescriptors.get(i).getWriteMethod();
+			Type expectedType = setter.getGenericParameterTypes()[0];
+			setter.invoke(obj, args[i] instanceof GenericScope && expectedType != args[i].getClass() ? ((GenericScope<String, ?>) args[i]).toObject(expectedType) : args[i]);
+		}
 		return obj;
 	}
 	
 	/**
-	 * @param variableName | Name of variable!
-	 * 
-	 * @return PropertyDescriptor of variable with name or null if this protocols can't serialize variable with given name!<br>
-	 * Note: I would recommend to tread this as read only and not set anything that you are not sure of. This will ensure correct functionality...
+	 * @return PropertyDescriptors of variables that are used by this protocol!<br>
+	 * Note: I would recommend to tread this as read only and not modify anything that you are not sure of. This will ensure correct functionality of this protocol...
 	 * 
 	 * @since 1.3.2
 	 */
-	public PropertyDescriptor getfieldDescriptorsDescriptor(String variableName)
+	public List<PropertyDescriptor> getFieldDescriptors()
 	{
-		for (PropertyDescriptor var : fieldDescriptors) 
-			if (var.getName().equals(variableName))
-				return var;
-		return null;
+		return this.fieldDescriptors;
 	}
 
 	@Override

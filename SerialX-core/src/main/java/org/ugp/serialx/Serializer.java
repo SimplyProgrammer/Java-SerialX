@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -158,8 +159,17 @@ public abstract class Serializer extends Scope
 		return toObjectOf(variableWithscope, objClass, defaultValue, getProtocols());
 	}
 	
+	/**
+	 * @param type | Class of object to create.
+	 * 
+	 * @return Object of type constructed from this scopes independent values using protocol for given class or null if there was no protocol found in this {@link Serializer#getProtocols()}! 
+	 * 
+	 * @throws Exception | Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!
+	 * 
+	 * @since 1.2.5
+	 */
 	@Override
-	public <T> T toObject(Class<T> objClass) throws Exception
+	public <T> T toObject(Type objClass) throws Exception
 	{
 		return toObject(objClass, getProtocols());
 	}

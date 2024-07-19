@@ -1,17 +1,22 @@
 package org.ugp.serialx;
 
 import static org.ugp.serialx.Utils.Instantiate;
+import static org.ugp.serialx.Utils.equalsLowerCase;
 import static org.ugp.serialx.converters.DataParser.VOID;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -111,25 +116,28 @@ public class Scope extends GenericScope<String, Object>
 	}
 	
 	/**
-	 * @param objClass | Object of class to create using protocols.
+	 * @param objClass | Class of object to create using protocols.
 	 * @param protocolsToUse | Registry of protocols to use.
 	 * 
-	 * @return Object of objClass constructed from this scopes independent values using protocol for objClass or null if there was no protocol found in {@link Serializer#PROTOCOL_REGISTRY}! 
+	 * @return Object of objClass constructed from this scopes independent values using protocol for objClass or null if there was no protocol found in protocolsToUse! 
 	 * If there were no suitable deserialization protocols found, {@link Scope#into(Class, String...)} will be used!
 	 * 
 	 * @throws Exception | Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!
 	 * 
 	 * @see Scope#into(Class, String...)
-	 * @see Scope#intoNew(Class, GenericScope, String...)
+	 * @see Scope#intoNew(Type, GenericScope, String...)
 	 * 
 	 * @since 1.3.5
 	 */
 	@Override
-	public <T> T toObject(Class<T> objClass, ProtocolRegistry protocolsToUse) throws Exception
+	public <T> T toObject(Type objClass, ProtocolRegistry protocolsToUse) throws Exception
 	{
-		T obj = super.toObject(objClass, protocolsToUse);
-		if (obj != null)
-			return obj;
+		if (objClass instanceof Class)
+		{
+			T obj;
+			if ((obj = super.toObject(objClass, protocolsToUse)) != null)
+				return obj;
+		}
 		
 		try
 		{
@@ -137,7 +145,7 @@ public class Scope extends GenericScope<String, Object>
 		}
 		catch (Exception e)
 		{
-			LogProvider.instance.logErr("Unable to create new instance of " + objClass.getName() + " because none of provided protocols were suitable and class introspection has failed as well!", e);
+			LogProvider.instance.logErr("Unable to create new instance of " + objClass + " because none of provided protocols were suitable and class introspection has failed as well!", e);
 			return null;
 		}
 	}
@@ -146,7 +154,9 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * 
 	 * @return Byte value of variable with name or 0 if there is no such a one!
-	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -160,7 +170,9 @@ public class Scope extends GenericScope<String, Object>
 	 * @param defaultValue | Default value to return.
 	 * 
 	 * @return Byte value of variable with name or defaultValue if there is no such a one or given key contains null!
-	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -173,7 +185,9 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * 
 	 * @return Byte value of variable with name or 0 if there is no such a one!
-	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -187,7 +201,9 @@ public class Scope extends GenericScope<String, Object>
 	 * @param defaultValue | Default value to return.
 	 * 
 	 * @return Byte value of variable with name or defaultValue if there is no such a one or given key contains null!
-	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -200,7 +216,9 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * 
 	 * @return Int value of variable with name or 0 if there is no such a one!
-	 * Int will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Int will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -214,7 +232,9 @@ public class Scope extends GenericScope<String, Object>
 	 * @param defaultValue | Default value to return.
 	 * 
 	 * @return Int value of variable with name or defaultValue if there is no such a one or given key contains null!
-	 * Int will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Int will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -227,13 +247,15 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * 
 	 * @return Long value of variable with name or 0 if there is no such a one!
-	 * Long will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Long will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
-	public int getLong(String variableName)
+	public long getLong(String variableName)
 	{
-		return getInt(variableName, 0);
+		return getLong(variableName, 0);
 	}
 	
 	/**
@@ -241,7 +263,9 @@ public class Scope extends GenericScope<String, Object>
 	 * @param defaultValue | Default value to return.
 	 * 
 	 * @return Long value of variable with name or defaultValue if there is no such a one or given key contains null!
-	 * Long will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Long will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -254,7 +278,9 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * 
 	 * @return Float value of variable with name or 0 if there is no such a one!
-	 * Float will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Float will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -268,7 +294,9 @@ public class Scope extends GenericScope<String, Object>
 	 * @param defaultValue | Default value to return.
 	 * 
 	 * @return Float value of variable with name or defaultValue if there is no such a one or given key contains null!
-	 * Float will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Float will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -281,7 +309,9 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * 
 	 * @return Double value of variable with name or 0 if there is no such a one!
-	 * Double will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Double will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -295,7 +325,9 @@ public class Scope extends GenericScope<String, Object>
 	 * @param defaultValue | Default value to return.
 	 * 
 	 * @return Double value of variable with name or defaultValue if there is no such a one or given key contains null!
-	 * Double will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Double will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -304,18 +336,16 @@ public class Scope extends GenericScope<String, Object>
 		Object obj = get(variableName, defaultValue);
 		if (obj instanceof Number)
 			return ((Number) obj).doubleValue();
-		else if (obj instanceof Character)
+		if (obj instanceof Character)
 			return (double) (char) obj;
-		else if (obj instanceof CharSequence)
-			return Double.parseDouble(obj.toString());
-		return (double) obj;
+		return Double.parseDouble(obj.toString());
 	}
 	
 	/**
 	 * @param variableName | Variables name.
 	 * 
 	 * @return String value of variable with name or null if there is no such a one!
-	 * String will be also parsed from any object using {@link Object#toString()}!
+	 * String will be also obtained from any object using {@link String#valueOf(Object)}!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -329,7 +359,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param defaultValue | Default value to return.
 	 * 
 	 * @return String value of variable with name or defaultValue if there is no such a one or given key contains null!
-	 * String will be also parsed from any object using {@link Object#toString()}!
+	 * String will be also obtained from any object using {@link String#valueOf(Object)}!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -342,13 +372,13 @@ public class Scope extends GenericScope<String, Object>
 	 * @param variableName | Variables name.
 	 * 
 	 * @return Char value of variable with name or {@code (char) 0} if there is no such a one!
-	 * Char will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Char will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
 	 * 
 	 * @since 1.2.5
 	 */
 	public char getChar(String variableName)
 	{
-		return getChar(variableName, (char) 0);
+		return getChar(variableName, '\0');
 	}
 	
 	/**
@@ -356,7 +386,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param defaultValue | Default value to return.
 	 * 
 	 * @return Char value of variable with name or defaultValue if there is no such a one or given key contains null!
-	 * Char will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Char will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -365,11 +395,9 @@ public class Scope extends GenericScope<String, Object>
 		Object obj = get(variableName, defaultValue);
 		if (obj instanceof Character)
 			return (char) obj;
-		else if (obj instanceof CharSequence)
-			return ((CharSequence) obj).charAt(0);
-		else if (obj instanceof Number)
+		if (obj instanceof Number)
 			return (char) ((Number) obj).intValue();
-		return (char) obj;
+		return obj.toString().charAt(0);
 	}
 
 	/**
@@ -390,7 +418,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @param defaultValue | Default value to return.
 	 * 
 	 * @return Boolean value of variable with name or defaultValue if there is no such a one or given key contains null!
-	 * Boolean will be also parsed from {@link Number}, or {@link CharSequence} if possible!
+	 * Boolean will be also parsed from {@link Number}, or {@link Object#toString()} if possible!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -399,17 +427,13 @@ public class Scope extends GenericScope<String, Object>
 		Object obj = get(variableName, defaultValue);
 		if (obj instanceof Boolean)
 			return (boolean) obj;
-		else if (obj instanceof Number)
-			return ((Number) obj).doubleValue() > 0;
-		else
-		{
-			String str = obj.toString();
-			if (str.equalsIgnoreCase("t"))
-				return true;
-			else if (str.equalsIgnoreCase("f"))
-				return false;
-			return Boolean.parseBoolean(obj.toString());
-		}
+		if (obj instanceof Number)
+			return ((Number) obj).doubleValue() != 0;
+
+		String str = obj.toString();
+		int len;
+		return (str.charAt(0) | ' ') == 't' && ((len = str.length()) == 1 || len == 4 && equalsLowerCase(str, "true", 1, 4));
+//		return Boolean.parseBoolean(str);
 	}
 	
 	/**
@@ -417,7 +441,9 @@ public class Scope extends GenericScope<String, Object>
 	 * {@link IndexOutOfBoundsException} will be thrown if index is too big!
 	 * 
 	 * @return Independent byte value with valueIndex.
-	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -431,7 +457,9 @@ public class Scope extends GenericScope<String, Object>
 	 * {@link IndexOutOfBoundsException} will be thrown if index is too big!
 	 * 
 	 * @return Independent short value with valueIndex.
-	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Byte will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -445,7 +473,9 @@ public class Scope extends GenericScope<String, Object>
 	 * {@link IndexOutOfBoundsException} will be thrown if index is too big!
 	 * 
 	 * @return Independent int value with valueIndex.
-	 * Int will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Int will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -459,7 +489,9 @@ public class Scope extends GenericScope<String, Object>
 	 * {@link IndexOutOfBoundsException} will be thrown if index is too big!
 	 * 
 	 * @return Independent long value with valueIndex.
-	 * Long will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Long will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -473,7 +505,9 @@ public class Scope extends GenericScope<String, Object>
 	 * {@link IndexOutOfBoundsException} will be thrown if index is too big!
 	 * 
 	 * @return Independent float value with valueIndex.
-	 * Float will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Float will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -487,7 +521,9 @@ public class Scope extends GenericScope<String, Object>
 	 * {@link IndexOutOfBoundsException} will be thrown if index is too big!
 	 * 
 	 * @return Independent double value with valueIndex.
-	 * Double will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Double will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
+	 * 
+	 * @throws NumberFormatException if string form of an object can't be parsed to a number!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -496,11 +532,9 @@ public class Scope extends GenericScope<String, Object>
 		Object obj = get(valueIndex);
 		if (obj instanceof Number)
 			return ((Number) obj).doubleValue();
-		else if (obj instanceof Character)
+		if (obj instanceof Character)
 			return (double) (char) obj;
-		else if (obj instanceof CharSequence)
-			return Double.parseDouble(obj.toString());
-		return (double) obj;
+		return obj == null ? 0 : Double.parseDouble(obj.toString());
 	}
 	
 	/**
@@ -522,7 +556,7 @@ public class Scope extends GenericScope<String, Object>
 	 * {@link IndexOutOfBoundsException} will be thrown if index is too big!
 	 * 
 	 * @return Independent char value with valueIndex.
-	 * Char will be also parsed from {@link Number}, {@link Character} or {@link CharSequence} if possible!
+	 * Char will be also parsed from {@link Number}, {@link Character} or {@link Object#toString()} if possible!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -531,11 +565,9 @@ public class Scope extends GenericScope<String, Object>
 		Object obj = get(valueIndex);
 		if (obj instanceof Character)
 			return (char) obj;
-		else if (obj instanceof CharSequence)
-			return ((CharSequence) obj).charAt(0);
-		else if (obj instanceof Number)
+		if (obj instanceof Number)
 			return (char) ((Number) obj).intValue();
-		return (char) obj;
+		return obj == null ? 0 : obj.toString().charAt(0);
 	}
 	
 	/**
@@ -543,7 +575,7 @@ public class Scope extends GenericScope<String, Object>
 	 * {@link IndexOutOfBoundsException} will be thrown if index is too big!
 	 * 
 	 * @return Independent boolean value with valueIndex.
-	 * Boolean will be also parsed from {@link Number}, or {@link CharSequence} if possible!
+	 * Boolean will be also parsed from {@link Number}, or {@link Object#toString()} if possible!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -552,17 +584,12 @@ public class Scope extends GenericScope<String, Object>
 		Object obj = get(valueIndex);
 		if (obj instanceof Boolean)
 			return (boolean) obj;
-		else if (obj instanceof Number)
-			return ((Number) obj).doubleValue() > 0;
-		else
-		{
-			String str = obj.toString();
-			if (str.equalsIgnoreCase("t"))
-				return true;
-			else if (str.equalsIgnoreCase("f"))
-				return false;
-			return Boolean.parseBoolean(obj.toString());
-		}
+		if (obj instanceof Number)
+			return ((Number) obj).doubleValue() != 0;
+
+		String str = String.valueOf(obj);
+		int len;
+		return (str.charAt(0) | ' ') == 't' && ((len = str.length()) == 1 || len == 4 && equalsLowerCase(str, "true", 1, 4));
 	}
 	
 	/**
@@ -876,21 +903,21 @@ public class Scope extends GenericScope<String, Object>
 	}
 	
 	/**
-	 * @param objCls | Class of object to instantiate!
+	 * @param objCls | Class of object to instantiate! Can also be {@link ParameterizedType}!
 	 * @param fieldNamesToUse | Array of objCls field names to map/populate instantiated object from scopes variables using setters (write method)! PropertyDescriptors of these fields will be obtained using Scope.getPropertyDescriptorsOf(Class, String)! This is used only as a last (default) option!
 	 * 
-	 * @return New instance of object according to {@link GenericScope#intoNew(Class, GenericScope, String...)} similarly to {@link GenericScope#toObject(Class)} except this one will not use any protocols!
+	 * @return New instance of object according to {@link GenericScope#intoNew(Type, GenericScope, String...)} similarly to {@link GenericScope#toObject(Class)} except this one will not use any protocols!
 	 * 
 	 * @throws Exception if calling of some {@link PropertyDescriptor}s write method fails (should not happen often)!
 	 * @throws IntrospectionException when there were no {@link PropertyDescriptor} found for obj class!
 	 * 
-	 * @see Scope#intoNew(Class, GenericScope, String...)
+	 * @see Scope#intoNew(Type, GenericScope, String...)
 	 * 
 	 * @since 1.3.5  
 	 */
-	public <T> T into(Class<T> objCls, String... fieldNamesToUse) throws IntrospectionException, Exception
+	public <T> T into(Type objCls, String... fieldNamesToUse) throws IntrospectionException, Exception
 	{
-		return (T) intoNew(objCls, this, fieldNamesToUse);
+		return intoNew(objCls, this, fieldNamesToUse);
 	}
 	
 	/**
@@ -902,7 +929,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @throws Exception if calling of some {@link PropertyDescriptor}s write method fails (should not happen often)!
 	 * @throws IntrospectionException when there were no {@link PropertyDescriptor} found for obj class!
 	 * 
-	 * @see Scope#intoNew(Class, GenericScope, String...)
+	 * @see Scope#intoNew(Type, GenericScope, String...)
 	 * 
 	 * @since 1.3.5  
 	 */
@@ -1026,7 +1053,7 @@ public class Scope extends GenericScope<String, Object>
 	}
 	
 	/**
-	 * @param objCls | Class of object to instantiate!
+	 * @param type | Class of object to instantiate! Can also be {@link ParameterizedType}!
 	 * @param fromScope | Source scope with data to instantiate from!
 	 * @param fieldNamesToUse | Array of objCls field names to map/populate instantiated object from scopes variables using setters (write method)! {@link PropertyDescriptor}s of these fields will be obtained using {@link Scope#getPropertyDescriptorsOf(Class, String...)}! This is used only as a last (default) option!
 	 * 
@@ -1074,17 +1101,20 @@ public class Scope extends GenericScope<String, Object>
 	 * @since 1.3.5
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T intoNew(Class<T> objCls, GenericScope<? super String, ?> fromScope, String... fieldNamesToUse) throws IntrospectionException, Exception
+	public static <T> T intoNew(Type type, GenericScope<? super String, ?> fromScope, String... fieldNamesToUse) throws IntrospectionException, Exception
 	{
-		if (objCls == null)
+		if (type == null)
 			return null;
 		
-		if (objCls.isArray())
+		boolean isGenricType;
+		Class<T> objCls = (Class<T>) ((isGenricType = type instanceof ParameterizedType) ? ((ParameterizedType) type).getRawType() : type);
+		Class<?> elmType;
+		if ((elmType = objCls.getComponentType()) != null)
 		{
-			if (objCls.getComponentType() == Object.class)
+			if (elmType == Object.class)
 				return (T) fromScope.toArray();
 			
-			return (T) into(Array.newInstance(objCls.getComponentType(), fromScope.valuesCount()), fromScope, fieldNamesToUse);
+			return (T) into(Array.newInstance(elmType, fromScope.valuesCount()), fromScope, fieldNamesToUse);
 		}
 		
 		if (GenericScope.class.isAssignableFrom(objCls))
@@ -1092,6 +1122,12 @@ public class Scope extends GenericScope<String, Object>
 			GenericScope<Object, Object> result = ((GenericScope<Object, Object>) fromScope).clone((Class<GenericScope<Object, Object>>)objCls);
 			if (fieldNamesToUse != null && fieldNamesToUse.length > 0)
 				result.variables().keySet().retainAll(Arrays.asList(fieldNamesToUse));
+
+			if (isGenricType)
+			{
+				intoGeneric(result.values(), (ParameterizedType) type);
+				intoGeneric(result.variables(), (ParameterizedType) type);
+			}
 			return (T) result;
 		}
 
@@ -1099,7 +1135,8 @@ public class Scope extends GenericScope<String, Object>
 		{
 			if (Collection.class.isAssignableFrom(objCls))
 			{
-				return (T) fromScope.toValList();
+				List<?> list = fromScope.toValList();
+				return (T) (isGenricType ? intoGeneric(list, (ParameterizedType) type) : list);
 			}
 			
 			if (Map.class.isAssignableFrom(objCls))
@@ -1107,11 +1144,25 @@ public class Scope extends GenericScope<String, Object>
 				Map<?, ?> map = fromScope.toVarMap();
 				if (fieldNamesToUse != null && fieldNamesToUse.length > 0)
 					map.keySet().retainAll(Arrays.asList(fieldNamesToUse));
-				return (T) map;
+				return (T) (isGenricType ? intoGeneric(map, (ParameterizedType) type) : map);
 			}
 		}
 		
-		return into(Instantiate(objCls), fromScope, fieldNamesToUse);
+		T newObj = into(Instantiate(objCls), fromScope, fieldNamesToUse);
+		if (isGenricType)
+		{
+			if (newObj instanceof List)
+				return (T) intoGeneric((List<?>) newObj, (ParameterizedType) type);
+			if (newObj instanceof Map)
+				return (T) intoGeneric((Map<?, ?>) newObj, (ParameterizedType) type);
+			if (newObj instanceof GenericScope)
+			{
+				intoGeneric(((GenericScope<?, ?>) newObj).values(), (ParameterizedType) type);
+				intoGeneric(((GenericScope<?, ?>) newObj).variables(), (ParameterizedType) type);
+			}
+		}
+		
+		return newObj;
 	}
 	
 	/**
@@ -1168,10 +1219,15 @@ public class Scope extends GenericScope<String, Object>
 	{
 		if (obj == null)
 			return null;
-		if (obj.getClass().isArray())
+
+		Class<?> elmType;
+		if ((elmType = obj.getClass().getComponentType()) != null)
 		{
 			for (int i = 0, arrLen = Array.getLength(obj), scSize = fromScope.valuesCount(); i < arrLen && i < scSize; i++)
-				Array.set(obj, i, fromScope.get(i));
+			{
+				Object elm = fromScope.get(i);
+				Array.set(obj, i, elm instanceof GenericScope && elmType != elm.getClass() ? ((GenericScope<String, ?>) elm).toObject(elmType) : elm);
+			}
 			return obj;
 		}
 		
@@ -1216,16 +1272,90 @@ public class Scope extends GenericScope<String, Object>
 	{
 		for (PropertyDescriptor var : fieldsToUse) 
 		{
-			Object varValue = ((GenericScope<Object, Object>) fromScope).get(var.getName(), VOID);
-			if (varValue != VOID)
-				var.getWriteMethod().invoke(obj, varValue);
+			Object varValue;
+			if ((varValue = ((GenericScope<Object, Object>) fromScope).variables().getOrDefault(var.getName(), VOID)) != VOID)
+			{
+				Method setter = var.getWriteMethod();
+				Type expectedType = setter.getGenericParameterTypes()[0];
+				setter.invoke(obj, varValue instanceof GenericScope && expectedType != varValue.getClass() ? ((GenericScope<String, ?>) varValue).toObject(expectedType) : varValue);
+			}
 		}
 		return obj;
 	}
 	
 	/**
+	 * @param listToGenerify | List to modify/map its elements into specified type.
+	 * @param genericType | Requested type of lists elements. 
+	 * 
+	 * @return The same list after its {@link GenericScope} elements were turned into elements of provided genericType. If generic type can't be inferred, the whole process will stop.
+	 * 
+	 * @throws Exception if Scope#intoNew(Type, GenericScope, String...) fails...
+	 * 
+	 * @since 1.3.7
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> intoGeneric(List<?> listToGenerify, ParameterizedType genericType) throws Exception
+	{
+		try
+		{
+			if (listToGenerify.isEmpty())
+				return (List<T>) listToGenerify;
+
+			ListIterator<?> iter = listToGenerify.listIterator(0);
+			Type elmType;
+			do
+			{
+				Object obj;
+				if ((obj = iter.next()) instanceof GenericScope)
+				{
+					iter.set(((GenericScope<Object, ?>) obj).toObject(elmType = ((ParameterizedType) genericType).getActualTypeArguments()[0]));
+					
+					while (iter.hasNext())
+						if ((obj = iter.next()) instanceof GenericScope)
+							iter.set(((GenericScope<Object, ?>) obj).toObject(elmType));
+					break;
+				}
+			}
+			while (iter.hasNext());
+		}
+		catch (ClassCastException | IndexOutOfBoundsException e)
+		{}
+		return (List<T>) listToGenerify;
+	}
+	
+	/*
+	* @param listToGenerify | Map whose values should be modify/map its elements into specified type.
+	* @param genericType | Requested type of lists elements. 
+	* 
+	* @return The same map after its {@link GenericScope} values were turned into values of provided genericType. If generic type can't be inferred, the whole process will stop.
+	* 
+	* @throws Exception if Scope#intoNew(Type, GenericScope, String...) fails...
+	* 
+	* @since 1.3.7
+	*/
+	@SuppressWarnings("unchecked")
+	public static <T> Map<?, T> intoGeneric(Map<?, ?> mapToGenerify, ParameterizedType genericType) throws Exception
+	{
+		try
+		{
+			if (mapToGenerify.size() < 1)
+				return (Map<?, T>) mapToGenerify;
+			Type elmType = ((ParameterizedType) genericType).getActualTypeArguments()[1]; //0 = key, 1 = val
+			for (Map.Entry<?, ?> entry : mapToGenerify.entrySet())
+			{
+				Object obj;
+				if ((obj = entry.getValue()) instanceof GenericScope)
+					entry.setValue(((GenericScope<Object, ?>) obj).toObject(elmType));
+			}
+		}
+		catch (ClassCastException | IndexOutOfBoundsException e)
+		{}
+		return (Map<?, T>) mapToGenerify;
+	}
+	
+	/**
 	 * @param cls | Class to inspect!
-	 * @param fieldNames | Names of fields to get descriptors for, if this array is empty or null, descriptors for all fields with public getters and setters will be obtained!
+	 * @param fieldNames | Names of fields to get descriptors for, if this array is empty or null, descriptors for all not-static and not-transient fields with public getters and setters that will be obtained!
 	 * 
 	 * @return List of {@link PropertyDescriptor}s of cls representing access methods of required fields! Only descriptors of fields that have valid and public getter and setter will be returned! 
 	 * 
@@ -1237,14 +1367,13 @@ public class Scope extends GenericScope<String, Object>
 	 */
 	public static List<PropertyDescriptor> getPropertyDescriptorsOf(Class<?> cls, String... fieldNames) throws IntrospectionException
 	{
-		return getPropertyDescriptorsOf(cls, null, fieldNames);    
+		return getPropertyDescriptorsOf(cls, null, fieldNames);
 	}
-	
 	
 	/**
 	 * @param cls | Class to inspect!
 	 * @param cache | Cache to store generated results into!
-	 * @param fieldNames | Names of fields to get descriptors for, if this array is empty or null, descriptors for all fields with public getters and setters will be obtained!
+	 * @param fieldNames | Names of fields to get descriptors for, if this array is empty or null, descriptors for all not-static and not-transient fields with public getters and setters that will be obtained!
 	 * 
 	 * @return List of {@link PropertyDescriptor}s of cls representing access methods of required fields! Only descriptors of fields that have valid and public getter and setter will be returned! 
 	 * 
@@ -1256,38 +1385,55 @@ public class Scope extends GenericScope<String, Object>
 	 */
 	public static List<PropertyDescriptor> getPropertyDescriptorsOf(Class<?> cls, Map<Class<?>, List<PropertyDescriptor>> cache, String... fieldNames) throws IntrospectionException
 	{
+		return getPropertyDescriptorsOf(cls, null, Modifier.STATIC | Modifier.TRANSIENT, fieldNames);
+	}
+	
+	/**
+	 * @param cls | Class to inspect!
+	 * @param cache | Cache to store generated results into!
+	 * @param modifiersToIgnore | If field has this {@link Modifier} it will not be included. Only works when fieldNames are null or empty and cache is not provided.
+	 * @param fieldNames | Names of fields to get descriptors for, if this array is empty or null, descriptors for all fields that do not have modifiersToIgnore and have public getters and setters that will be obtained!
+	 * 
+	 * @return List of {@link PropertyDescriptor}s of cls representing access methods of required fields! Only descriptors of fields that have valid and public getter and setter will be returned! 
+	 * 
+	 * @throws IntrospectionException when there are no suitable fields with valid and public getters and setters.
+	 * 
+	 * @see PropertyDescriptor
+	 * 
+	 * @since 1.3.7
+	 */
+	public static List<PropertyDescriptor> getPropertyDescriptorsOf(Class<?> cls, Map<Class<?>, List<PropertyDescriptor>> cache, int modifiersToIgnore, String... fieldNames) throws IntrospectionException
+	{
 		List<PropertyDescriptor> fieldDescriptors = new ArrayList<>(), cached = cache == null ? null : cache.get(cls);
-    	if (cached != null)
-    		return cached;
-    	
-        if (fieldNames == null || fieldNames.length <= 0)
+		if (cached != null)
+			return cached;
+		
+		if (fieldNames == null || fieldNames.length <= 0)
 		{
 			for (Class<?> c = cls; c != Object.class; c = c.getSuperclass())
 				for (Field field : c.getDeclaredFields())
-					if (!Modifier.isStatic(field.getModifiers()))
+					if ((field.getModifiers() & modifiersToIgnore) == 0)
 						try
 						{
 							fieldDescriptors.add(new PropertyDescriptor(field.getName(), cls));
 						}
 						catch (Exception e)
 						{}
-			
+
 			if (cache != null && !fieldDescriptors.isEmpty())
-			{
 				cache.put(cls, fieldDescriptors);
-			}
 		}
-        else
-        {
+		else
+		{
 			for (int i = 0; i < fieldNames.length; i++) 
 				try
-				{
+			{
 					fieldDescriptors.add(new PropertyDescriptor(fieldNames[i], cls));
-				}
-				catch (Exception e)
-				{}
-        }
-   	 
+			}
+			catch (Exception e)
+			{}
+		}
+		
 		if (fieldDescriptors.isEmpty())
 			throw new IntrospectionException("No suitable fields with valid and public getters and setters to use in " + cls.getSimpleName());
 		return fieldDescriptors;    

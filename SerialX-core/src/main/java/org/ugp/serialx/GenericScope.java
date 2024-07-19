@@ -3,6 +3,7 @@ package org.ugp.serialx;
 import static org.ugp.serialx.Utils.Instantiate;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -273,8 +274,8 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	@SuppressWarnings("unchecked")
 	public <V extends ValT> V get(KeyT variableKey, V defaultValue)
 	{
-		V obj = (V) variables().get(variableKey);
-		if (obj == null)
+		V obj;
+		if ((obj = (V) variables().get(variableKey)) == null)
 			return defaultValue;
 		return obj;
 	}
@@ -342,7 +343,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @since 1.3.7
 	 */
-	public <V extends ValT> V get(KeyT variableKey, Class<V> cls, V defaultValue) throws Exception
+	public <V extends ValT> V get(KeyT variableKey, Class<? extends V> cls, V defaultValue) throws Exception
 	{
 		V obj = get(variableKey, defaultValue);
 		if (obj != null && obj.getClass() == cls)
@@ -477,7 +478,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * @since 1.3.7
 	 */
 	@Override
-	public boolean containsAll(Collection<?> values) 
+	public boolean containsAll(Collection<?> values)
 	{
 		return values().containsAll(values);
 	}
@@ -550,36 +551,41 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	}
 	
 	/**
-	 * @param objClass | Object of class to create.
+	 * @param type | Class of object to create (may or may not support other implementations of {@link Type}).
 	 * 
-	 * @return Object of objClass constructed from this scopes independent values using protocol for objClass or null if there was no protocol found in {@link Serializer#PROTOCOL_REGISTRY}! 
+	 * @return Object of type constructed from this scopes independent values using protocol for given class or null if there was no protocol found in {@link Serializer#PROTOCOL_REGISTRY}! 
 	 * 
 	 * @throws Exception | Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!
 	 * 
 	 * @since 1.2.5
 	 */
-	public <T> T toObject(Class<T> objClass) throws Exception
+	public <T> T toObject(Type type) throws Exception
 	{
-		return toObject(objClass, SerializationProtocol.REGISTRY);
+		return toObject(type, SerializationProtocol.REGISTRY);
 	}
 	
 	/**
-	 * @param objClass | Object of class to create using protocols.
+	 * @param type | Class of object to create using protocols (may or may not support other implementations of {@link Type}).
 	 * @param protocolsToUse | Registry of protocols to use.
 	 * 
-	 * @return Object of objClass constructed from this scopes independent values using protocol for objClass or null if there was no protocol found in {@link Serializer#PROTOCOL_REGISTRY}! 
+	 * @return Object of class constructed from this scopes independent values using protocol for given class or null if there was no protocol found in protocolsToUse! 
 	 * 
 	 * @throws Exception | Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!
 	 * 
 	 * @since 1.3.2
 	 */
-	public <T> T toObject(Class<T> objClass, ProtocolRegistry protocolsToUse) throws Exception
+	@SuppressWarnings("unchecked")
+	public <T> T toObject(Type type, ProtocolRegistry protocolsToUse) throws Exception
 	{
-		SerializationProtocol<T> pro = protocolsToUse == null ? null : protocolsToUse.GetProtocolFor(objClass, SerializationProtocol.MODE_DESERIALIZE);
-		if (pro != null)
+		if (protocolsToUse == null)
+			return null;
+
+		Class<T> objClass;
+		SerializationProtocol<T> pro;
+		if ((pro = protocolsToUse.GetProtocolFor(objClass = (Class<T>) type, SerializationProtocol.MODE_DESERIALIZE)) != null)
 		{
-			T obj = pro.unserialize(objClass, this.variablesCount() > 0 ? new Object[] {this} : this.toArray());
-			if (obj != null)
+			T obj;
+			if ((obj = pro.unserialize(objClass, variablesCount() > 0 ? new Object[] {this} : toArray())) != null)
 				return obj;
 		}
 		return null;
@@ -588,7 +594,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	/**
 	 * @param predicate | Predicate object with filter condition in test method!
 	 * 
-	 * @return Original scope after filtration using inserted predicate! If some object can't be casted to {@link Predicate#test(Object)} argument, it will be treated as invalid and will be filtered away! Sub-scopes are not included!
+	 * @return Scope after filtration using inserted predicate! If some object can't be casted to {@link Predicate#test(Object)} argument, it will be treated as invalid and will be filtered away! Sub-scopes are not included!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -603,14 +609,14 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * If sub-scope is empty after filtration it will not be included in result!
 	 * Note: Remember that this will work only when this scope generically allows to store other scopes inside (when ValT is base class of {@link GenericScope})!
 	 * 
-	 * @return Original scope after filtration using inserted predicate! If some object can't be casted to {@link Predicate#test(Object)} argument, it will be treated as invalid and will be filtered away!
+	 * @return Scope after filtration using inserted predicate! If some object can't be casted to {@link Predicate#test(Object)} argument, it will be treated as invalid and will be filtered away!
 	 * 
 	 * @since 1.2.5
 	 */
 	@SuppressWarnings("unchecked")
 	public GenericScope<KeyT, ValT> filter(Predicate<ValT> predicate, boolean includeSubScopes)
 	{
-		return (GenericScope<KeyT, ValT>) transform(new Function<ValT, Object>() 
+		return (GenericScope<KeyT, ValT>) transform(new Function<ValT, Object>()
 		{
 			@Override
 			public Object apply(ValT t) 
@@ -623,7 +629,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	/**
 	 * @param trans | Function to transform objects of this scope!
 	 * 
-	 * @return Original scope after transformation using inserted function! If some object can't be casted to {@link Function#apply(Object)} argument, it will be treated as invalid and will be filtered away! Sub-scopes are not included!
+	 * @return Scope after transformation using inserted function! If some object can't be casted to {@link Function#apply(Object)} argument, it will be treated as invalid and will be filtered away! Sub-scopes are not included!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -638,7 +644,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * If sub-scope is empty after transformation it will not be included in result!
 	 * Note: Remember that this will work only when this scope generically allows to store other scopes inside (when ValT is base class of {@link GenericScope})!
 	 * 
-	 * @return Original scope after transformation using inserted function! If some object can't be casted to {@link Function#apply(Object)} argument, it will be treated as invalid and will be filtered away!
+	 * @return Scope after transformation using inserted function! If some object can't be casted to {@link Function#apply(Object)} argument, it will be treated as invalid and will be filtered away!
 	 * 
 	 * @since 1.2.5
 	 */
@@ -648,41 +654,40 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 		if (trans == null || isEmpty())
 			return (GenericScope<KeyT, V>) this;
 
-		List<V> fltVals = map(trans, includeSubScopes);
-		LinkedHashMap<KeyT, V> fltVars = new LinkedHashMap<>();
-		
+		LinkedHashMap<KeyT, V> mappedVars = new LinkedHashMap<>();
 		for (Entry<KeyT, ValT> ent : this.varEntrySet())
 			try
 			{
 				Object obj = ent.getValue();
-				if (obj instanceof GenericScope && includeSubScopes)
+				if (includeSubScopes && obj instanceof GenericScope)
 				{ 
 					GenericScope<?, V> sc = ((GenericScope<?, ValT>) obj).transform(trans, includeSubScopes);
 					if (!sc.isEmpty())
-						fltVars.put(ent.getKey(), (V) sc);
+						mappedVars.put(ent.getKey(), (V) sc);
 				}
 				else if ((obj = trans.apply((ValT) obj)) != DataParser.VOID)
-					fltVars.put(ent.getKey(), trans.apply((ValT) obj));
+					mappedVars.put(ent.getKey(), trans.apply((ValT) obj));
 			}
 			catch (ClassCastException e) 
 			{}
 		
-		try 
+		List<V> mappedVals = map(trans, includeSubScopes);
+		try
 		{ 
 			GenericScope<KeyT, V> clone = Instantiate(getClass());
-			clone.values = fltVals;
-			clone.variables = fltVars;
+			clone.values = mappedVals;
+			clone.variables = mappedVars;
 			clone.parent = getParent();
 			return clone;
 		} 
 		catch (Exception e) 
 		{
-			return new GenericScope<>(fltVars, fltVals, getParent());
+			return new GenericScope<>(mappedVars, mappedVals, getParent());
 		}
 	}
 	
 	/**
-	 * @param trans | Function to transform objects of this scope!
+	 * @param trans | Function to transform independent objects of this scope!
 	 * 
 	 * @return Original scope after transformation using inserted function! If some object can't be casted to {@link Function#apply(Object)} argument, it will be treated as invalid and will be filtered away!
 	 * 
@@ -694,7 +699,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	}
 	
 	/**
-	 * @param trans | Function to transform objects of this scope!
+	 * @param trans | Function to transform independent objects of this scope!
 	 * @param includeSubScopes | If true transformation will be also applied on sub-scopes, if false sub-scopes will be treated as other things (parsed in to {@link Function#apply(Object)}).
 	 * If sub-scope is empty after transformation it will not be included in result!
 	 * Note: Remember that this will work only when this scope generically allows to store other scopes inside (when ValT is base class of {@link GenericScope})!
@@ -706,23 +711,50 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	@SuppressWarnings("unchecked")
 	public <V> List<V> map(Function<ValT, V> trans, boolean includeSubScopes)
 	{
-		List<V> fltVals = new ArrayList<>();
-		for (Object obj : this)
+//		List<V> mapped = new ArrayList<>(size());
+//		for (Object obj : this)
+//			try
+//			{
+//				if (obj instanceof GenericScope && includeSubScopes)
+//				{ 
+//					GenericScope<?, V> sc = (GenericScope<?, V>) ((GenericScope<?, ValT>) obj).map(trans, includeSubScopes);
+//					if (!sc.isEmpty())
+//						mapped.add((V) sc);
+//				}
+//				else if ((obj = trans.apply((ValT) obj)) != DataParser.VOID)
+//					mapped.add((V) obj);
+//			}
+//			catch (ClassCastException e) 
+//			{}
+
+		List<V> mapped = (List<V>) toValList();
+		for (int i = valuesCount()-1; i >= 0; i--)
+		{
 			try
 			{
-				if (obj instanceof GenericScope && includeSubScopes)
+				Object obj = mapped.get(i);
+				if (includeSubScopes && obj instanceof GenericScope)
 				{ 
-					GenericScope<?, V> sc = ((GenericScope<?, ValT>) obj).transform(trans, includeSubScopes);
+					GenericScope<?, V> sc = (GenericScope<?, V>) ((GenericScope<?, ValT>) obj).map(trans, includeSubScopes);
 					if (!sc.isEmpty())
-						fltVals.add((V) sc);
+					{
+						mapped.set(i, (V) sc);
+						continue;
+					}
 				}
 				else if ((obj = trans.apply((ValT) obj)) != DataParser.VOID)
-					fltVals.add((V) obj);
+				{
+					mapped.set(i, (V) obj);
+					continue;
+				}
 			}
-			catch (ClassCastException e) 
+			catch (ClassCastException e)
 			{}
+
+			mapped.remove(i);
+		}
 		
-		return fltVals;
+		return mapped;
 	}
 	
 	/**
@@ -857,13 +889,14 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	}
 	
 	/**
-	 * @return The parent scope of this scope or null if this scope has no parent such as default one in file.
+	 * @return The parent scope of this scope or null if this scope has no parent such as default one in file.<br>
+	 * Note: This may or may not be always null based on the way this scope was instantiated...
 	 * 
 	 * @since 1.2.0
 	 */
 	public <T extends GenericScope<?, ?>> T getParent()
 	{
-		return getParent(1);	
+		return getParent(1);
 	}
 	
 	/**
@@ -871,7 +904,8 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * If you want to get the root parent (the one that has no parent), simply put a big number as depth. 99 should be enough!
 	 *
 	 * @return The parent scope based on depth or null if this scope has no parent which means its already root (default one in file).
-	 * If depth was bigger than 1, null will be never returned, last not null parent will be returned instead!<br>
+	 * If depth was bigger than 1, null will not be returned, last not null parent will be returned instead!<br>
+	 * Note: This may or may not be always null based on the way this scope was instantiated...
 	 * 
 	 * @since 1.3.2
 	 */
@@ -888,7 +922,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	}
 	
 	/**
-	 * @return New {@link LinkedHashMap} with variables of this a in defined order! Key is a KeyT of variable and value is its value! <br>
+	 * @return New {@link LinkedHashMap} with variables of this a in defined order! Key is a KeyT of variable and value is its value!<br>
 	 * Modifying this map will not affect this GenericScope object!
 	 * 
 	 * @since 1.2.0
@@ -900,7 +934,8 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	
 	/**
 	 * @return New {@link ArrayList} with independent values of this {@link GenericScope}. These values have nothing to do with values of variables, they are independent!
-	 * Modifying this list will not affect this GenericScope object!
+	 * Modifying this list will not affect this GenericScope object!<br>
+	 * Note: Returning other {@link List} implementations than {@link ArrayList} (or other collection that stores elements in "array-like fashion") may result in serious performance implications! Queues or LinkedLists are the prime examples to avoid!
 	 * 
 	 * @since 1.2.0
 	 */
@@ -1056,7 +1091,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * @since 1.3.7
 	 */
 	@SuppressWarnings("unchecked")
-	public static <K, V> Map<K, V> mapKvArray(Map<K, V> map, Object... kVkVkV)
+	public static <K, V, M extends Map<K, V>> M mapKvArray(M map, Object... kVkVkV)
 	{
 		for (int i = 1; i < kVkVkV.length; i+=2) 
 			map.put((K) kVkVkV[i-1], (V) kVkVkV[i]);

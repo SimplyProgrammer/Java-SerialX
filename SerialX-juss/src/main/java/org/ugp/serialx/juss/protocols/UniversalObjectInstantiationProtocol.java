@@ -1,8 +1,10 @@
 package org.ugp.serialx.juss.protocols;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 
+import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Utils;
 import org.ugp.serialx.protocols.SerializationProtocol;
@@ -42,19 +44,42 @@ public class UniversalObjectInstantiationProtocol<T> extends SerializationProtoc
 	@Override
 	public T unserialize(Class<? extends T> objectClass, Object... args) throws Exception 
 	{
-		try 
+		try
 		{
 			return objectClass.getConstructor(Utils.ToClasses(args)).newInstance(args);
 		}
 		catch (Exception e0) 
 		{
-			for (Constructor<?> cons : objectClass.getConstructors()) 
-				try
-				{
-					return (T) cons.newInstance(args);
-				}
-				catch (IllegalArgumentException e) 
-				{}
+			int argCount = args.length;
+			for (Constructor<?> cons : objectClass.getConstructors())
+				if (cons.getParameterCount() == argCount)
+					try
+					{
+						return (T) cons.newInstance(args);
+					}
+					catch (IllegalArgumentException e) 
+					{
+						try
+						{
+							for (int i = 0; i < argCount; i++)
+							{
+								Object arg;
+								if ((arg = args[i]) instanceof GenericScope)
+								{
+									Type[] paramTypes;
+									args = args.clone();
+									args[i] = ((GenericScope<String, ?>) arg).toObject((paramTypes = cons.getGenericParameterTypes())[i]);
+
+									for (i++; i < argCount; i++)
+										if ((arg = args[i]) instanceof GenericScope)
+											args[i] = ((GenericScope<String, ?>) arg).toObject(paramTypes[i]);
+									return (T) cons.newInstance(args);
+								}
+							}
+						}
+						catch (IllegalArgumentException e2)
+						{}
+					}
 		}
 		LogProvider.instance.logErr("Unable to create new instance of \"" + objectClass + "\" because inserted arguments " + Arrays.asList(args) + " cannot be applied on any public constructor in required class!", null);
 		return null;

@@ -166,6 +166,8 @@ public class JsonSerializer extends JussSerializer
 	{
 		Scope sc = super.LoadFrom(reader, formatArgs);
 
+		if (formatArgs.length > 0 && formatArgs[0] instanceof Serializer)
+			return (S) sc;
 		Object jsonScope;
 		if (sc.valuesCount() == 1 && (jsonScope = sc.get(0)) instanceof Scope)
 			return (S) jsonScope;

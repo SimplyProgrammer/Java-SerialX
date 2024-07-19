@@ -184,7 +184,7 @@ public interface DataParser
 				}
 			}
 
-			LogProvider.instance.logErr("Unable to convert \"" + obj == null ? "null" : obj.getClass().getName() + "\" to string because none of registered converters were aplicable for this object!", null);
+			LogProvider.instance.logErr("Unable to convert \"" + (obj == null ? "null" : obj.getClass().getName()) + "\" to string because none of registered converters were aplicable for this object!", null);
 			return null;
 		}
 		
