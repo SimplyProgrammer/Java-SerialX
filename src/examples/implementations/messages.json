@@ -1,14 +1,23 @@
 [
 	{
 		"str" : "Hi!",
-		"date" : 1
+		"date" : 1,
+		"mappedReplies" : null
 	},
 	{
 		"str" : "My name is Json.",
-		"date" : 2
+		"date" : 2,
+		"mappedReplies" : null
 	},
 	{
 		"str" : "And I am data format!",
-		"date" : 3
+		"date" : 3,
+		"mappedReplies" : {
+			"entry1" : {
+				"str" : "Hello to you as well from map!",
+				"date" : 12,
+				"mappedReplies" : null
+			}
+		}
 	}
 ]

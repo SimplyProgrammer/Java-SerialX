@@ -48,7 +48,7 @@ public class GeneralExample
 	public static final String TEST_3 = "some string";
 
 	public static final double TEST_4 = 5;
-	public static final int TEST_4A = 6;
+	public static final int TEST_4I = 6;
 	public static final Scope TEST_5 = new Scope();
 	public static final String TEST_6 = "HELLO_WORLD";
 	
@@ -107,7 +107,7 @@ public class GeneralExample
 
 		HashMap<String, Object> vars = new HashMap<>(); //Variables to serialize
 		vars.put("yourMom", TEST_2);
-		vars.put("num", TEST_4A);
+		vars.put("num", TEST_4I);
 		
 		int[][] ints = {{1, 2, 3}, {4, 5, 4}, {3, 2, 1}};
 		
@@ -169,7 +169,7 @@ public class GeneralExample
 
 		assertEquals(TEST_4, deserializer.getScope(4).getScope("neastedTest").getDouble("tst4"), 0);
 		assertEquals(deserializer.getScope(4).getScope(Utils.splitValues("test  neastedTest", ' ')).getParent(2), deserializer.getScope(4));
-		assertEquals(((Scope) deserializer.getScope(4).getSubScope(0).<List<?>>get(0).get(3)).getSubScope(0).toObject(List.class).size(), TEST_5.into(Collection.class).size());
+		assertEquals(((Scope) deserializer.getScope(4).getSubScope(0).<List<?>>get(0).get(3)).getSubScope(0).<List<?>>toObject(List.class).size(), TEST_5.<Collection<?>>into(Collection.class).size());
 		assertTrue(deserializer.clone() instanceof JussSerializer);
 		assertTrue(deserializer.filter(obj -> obj.equals(new Scope("true").getBool(0))).get(0));
 		
@@ -177,14 +177,12 @@ public class GeneralExample
 		assertEquals(list, deserializer.get(2));
 		assertEquals(new Bar(TEST_1), deserializer.<Object>get(5));
 		assertArrayEquals(ints, Scope.from(deserializer.get(3)).toArray());
-		assertEquals(-TEST_4A, deserializer.getByte(-3));
+		assertEquals(-TEST_4I, deserializer.getByte(-3));
 
 		assertTrue(deserializer.<Boolean>get("_boolTst1") && deserializer.<Boolean>cloneOf("_boolTst2") && deserializer.getBool("_boolTst4") && !deserializer.containsVariable("_boolTst3"));
 		assertEquals(Utils.multilpy(GenericScope.intoBidirectional(Scope.from(new Scope()) , null, Arrays.asList(97)).getChar(0), +1 +-6 / -2*(2+1)%- 100 + 1).toString(), deserializer.get(-2));
 		
 		assertEquals(TEST_6, new Scope(deserializer).getString(-1));
-		
-		// TODO Cover juss protocols
  	}
 	
 	//We can invoke static members in JUSS!

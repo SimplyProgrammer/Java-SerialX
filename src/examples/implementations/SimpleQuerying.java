@@ -136,7 +136,7 @@ public class SimpleQuerying
 		assertEquals(content.getScope("ppl").valuesCount(), ages.size());
 		assertEquals(filtered.getScope("serialx"), content.getScope("serialx"));
 		
-		assertTrue(residents.toObject(List.class).size() > 0); //Should not be 0
+		assertTrue(residents.<List<?>>toObject(List.class).size() > 0); //Should not be 0
 		assertTrue(remappedValues.size() > 0);
 		
 		JsonSerializer test = new JsonSerializer();
