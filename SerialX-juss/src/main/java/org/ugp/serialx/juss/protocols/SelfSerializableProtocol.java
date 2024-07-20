@@ -9,7 +9,7 @@ package org.ugp.serialx.juss.protocols;
  * 
  * @see UniversalObjectInstantiationProtocol
  */
-public class SelfSerializableProtocol extends UniversalObjectInstantiationProtocol<SelfSerializable> 
+public class SelfSerializableProtocol<T extends SelfSerializable> extends UniversalObjectInstantiationProtocol<T> 
 {
 	/**
 	 * @param applicableFor | Class implementing {@link SelfSerializable} that can be serialized using this protocol.<br>
@@ -17,13 +17,13 @@ public class SelfSerializableProtocol extends UniversalObjectInstantiationProtoc
 	 * 
 	 * @since 1.3.7
 	 */
-	public SelfSerializableProtocol(Class<? extends SelfSerializable> applicableFor) 
+	public SelfSerializableProtocol(Class<T> applicableFor) 
 	{
 		super(applicableFor);
 	}
 	
 	@Override
-	public Object[] serialize(SelfSerializable object)
+	public Object[] serialize(T object)
 	{
 		return object.serialize();
 	}
