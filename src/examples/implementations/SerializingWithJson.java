@@ -16,6 +16,7 @@ import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.json.JsonSerializer;
 import org.ugp.serialx.juss.protocols.AutoProtocol;
+import org.ugp.serialx.juss.protocols.SelfSerializable;
 import org.ugp.serialx.juss.protocols.SelfSerializableProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol;
 
@@ -72,13 +73,24 @@ public class SerializingWithJson
 			/*
 			 * Registering AutoProtocol for Message class and setting it to serialize it as Scope, but feel free to experiment (except when args are NO_SCOPE in case you are running this as test)!
 			 */
-			new AutoProtocol<>(Message.class, args != NO_SCOPE /*true*/, args) :
+			new AutoProtocol<Message>(Message.class, args != NO_SCOPE /*true*/, args) 
+			{
+				/*
+				 * This is not really necessary to do but in this case we are doing it to achieve a bit better efficiency/performance...
+				 */
+				public Message createBlankInstance(Class<? extends Message> objectClass) throws Exception 
+				{
+					if (objectClass == Message.class)
+						return new Message(null, 0, null); // Faster
+					return super.createBlankInstance(objectClass); // Slower...
+				}
+			} :
 				
 			/*
 			 * Note that Message is also SelfSerializable which makes it eligible to be serialized with SelfSerializableProtocol as well!
 			 * You can try this by changing the condition above, notice how data format will change slightly due to different serialization technique that SelfSerializable uses!
 			 */
-			new SelfSerializableProtocol(Message.class)
+			new SelfSerializableProtocol<>(Message.class)
 		);
 		
 		File medium = new File("src/examples/implementations/messages.json"); // Json file to use...
