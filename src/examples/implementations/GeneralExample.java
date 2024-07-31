@@ -121,7 +121,7 @@ public class GeneralExample
 
 		//------------------------------------------- Serializing -------------------------------------------
 
-		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true); //This is necessary since 1.3.7
+		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true); //This is necessary since 1.3.8
 		
 		JussSerializer serializer = new JussSerializer(vars); //Creating an instance of Serializer that will serialize objects using Juss! Serializer is instance of scope so it behaves like so!										   
 		//Adding independent values																		         																																									Invokation of static members of this class (calling method "println" and obtaining "hello" field as argument! 

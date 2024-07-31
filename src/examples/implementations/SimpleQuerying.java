@@ -46,7 +46,7 @@ public class SimpleQuerying
 	{
 		LogProvider.instance.setReThrowException(true); // This is for testing purposes, so no error are allowed in this case, comment temporary when necessary... 
 		
-		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true); //This is necessary since 1.3.7
+		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true); //This is necessary since 1.3.8
 		
 		//Preparing to load complex juss file "commentedExample.juss"!
 		

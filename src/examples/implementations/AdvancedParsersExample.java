@@ -27,7 +27,7 @@ public class AdvancedParsersExample
 {
 	public static void main(String[] args) throws Exception 
 	{
-		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true); //This is necessary since 1.3.7
+		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true); //This is necessary since 1.3.8
 		
 		//In this case JussSerializer acts as an interpreter for our custom scripting language.
 		JussSerializer interpreter = new JussSerializer();
