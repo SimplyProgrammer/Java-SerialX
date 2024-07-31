@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.ugp.serialx.LogProvider;
-import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.DataParser;
 
 /**
@@ -27,46 +26,59 @@ import org.ugp.serialx.converters.DataParser;
 public class OperationGroups implements DataParser 
 {
 	/**
+	 * @deprecated (since 1.3.7) DO NOT USE, USE {@link OperationGroups#groupMark} instead! <br>
+	 * 
 	 * Opening and closing of group mark!
 	 * 
 	 * @since 1.3.0
 	 */
-	public static final String GROUP_MARK_OP = new String(new char[] {127, 128, 129}), GROUP_MARK_CLS = new String(new char[] {129, 128, 127});
+	@Deprecated
+	public static final char[] GROUP_MARK_OP = new char[] {127, 128, 129}, GROUP_MARK_CLS = new char[] {129, 128, 127};
+	
+	/**
+	 * Character marking the opening of {@link OperationGroups} mark in processed string, closing should be marked as this character -1.<br>
+	 * This character is generated in sami-random fashion but it will never be an ASCII character.
+	 * 
+	 * @since 1.3.7
+	 */
+	protected final char groupMark = (char) (System.nanoTime() | 128);
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args) 
+	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args)
 	{
 		if (str.length() > 1)
 		{
-			int opIndex = indexOfOpening(str, 0, '('), clsIndex = -1;
+			int opIndex = indexOfOpening(str, 0, '('), clsIndex;
 			if (opIndex > -1 && (clsIndex = indexOfClosing(str, opIndex, new char[] {'('}, ')')) > -1)
 			{
-				Map<String, String> runtimeGroupStack = new HashMap<>();
+				Map<Integer, String> runtimeGroups;
 				if (args.length > 2 && args[2] instanceof Map)
-					runtimeGroupStack = (Map<String, String>) args[2];
+					runtimeGroups = (Map<Integer, String>) args[2];
 				else
 				{
 					if (args.length < 3)
 						args = Arrays.copyOf(args, 3);
-					args[2] = runtimeGroupStack;
+					args[2] = runtimeGroups = new HashMap<>();
 				}
-				String mark = GROUP_MARK_OP + runtimeGroupStack.size() + GROUP_MARK_CLS;
-				runtimeGroupStack.put(mark, str.substring(opIndex+1, clsIndex).trim());
 
-				StringBuilder sb = new StringBuilder(str).replace(opIndex, clsIndex+1, mark);
-				return myHomeRegistry.parse(sb.toString(), args);
+				int groupId;
+				runtimeGroups.put(groupId = runtimeGroups.size(), str.substring(opIndex+1, clsIndex).trim());
+				
+				StringBuilder newStr = new StringBuilder(str).replace(opIndex, clsIndex+1, new StringBuilder().append(groupMark).append(groupId).append((char) (groupMark-1)).toString());
+				return myHomeRegistry.parse(newStr.toString(), args);
 			}
 			
-			if (isGroupMark(str))
+			int groupId;
+			if ((groupId = isGroupMark(str, groupMark)) != -1)
 			{
 				if (args.length > 2 && args[2] instanceof Map)
 				{
-					Map<String, String> runtimeGroupStack = (Map<String, String>) args[2];
+					Map<Integer, String> runtimeGroups = (Map<Integer, String>) args[2];
 
 					Object[] newArgs = args.clone();
-					newArgs[2] = new HashMap<String, String>();
-					return myHomeRegistry.parse(runtimeGroupStack.get(str), newArgs);
+					newArgs[2] = new HashMap<Integer, String>();
+					return myHomeRegistry.parse(runtimeGroups.get(groupId), newArgs);
 				}
 				LogProvider.instance.logErr("Runtime group stack is trying to be accessed using " + str + " however it was not provided yet!", null);
 				return null;
@@ -78,30 +90,30 @@ public class OperationGroups implements DataParser
 	
 	/**
 	 * @param s | Char sequence to check!
+	 * @param groupMark | Opening character identifying this group mark, closing should be this character -1
 	 * 
-	 * @return Return true if inserted CharSequence match the runtime group mark wrapper!
+	 * @return Id of the group mark if inserted CharSequence matches the runtime group mark wrapper format! -1 otherwise.<br>
 	 * This is used for internal purposes of {@link OperationGroups}.
 	 * 
 	 * @since 1.3.0
 	 */
-	public static boolean isGroupMark(CharSequence s) 
+	public static int isGroupMark(CharSequence s, char groupMark) 
 	{
-		String op = GROUP_MARK_OP, cls = GROUP_MARK_CLS;
-		int lo = op.length(), lc = cls.length(), len = s.length();
-		if (len < lo + lc + 1)
-			return false;
-		for (int i = 0; i < lo; i++)
-			if (s.charAt(i) != op.charAt(i))
-				return false;
+		int i = s.length()-1;
+		if (i < 2 || s.charAt(0) != groupMark-- || s.charAt(i--) != groupMark)
+			return -1;
 
-		for (int i = lo, ch; i < len - lc; i++)
+		int groupId;
+		if ((groupId = s.charAt(i--) - '0') < 0 || groupId > 9)
+			return -1;
+		for (int ch, baseCof = 10; i >= 1; i--, baseCof *= 10)
+		{
 			if ((ch = s.charAt(i)) < '0' || ch > '9')
-				return false;
+				return -1;
+			groupId += (ch - '0') * baseCof;
+		}
 		
-		for (int i = 0; i < lc; i++)
-			if (s.charAt(len-i-1) != cls.charAt(lc-i-1))
-				return false;
-		return true;
+		return groupId;
 	}
 	
 	/**
@@ -109,7 +121,7 @@ public class OperationGroups implements DataParser
 	 * @param from | Beginning index of search!
 	 * @param openings | Openings to find!
 	 * 
-	 * @return Return index of first opening char found if is not in object or -1 if there is no opening found similar to {@link Serializer#indexOfNotInObj(CharSequence, char...)}!
+	 * @return Return index of first opening char found if is not in object or -1 if there is no opening found similar to {@link org.ugp.serialx.Utils#indexOfNotInObj(CharSequence, char...)}!
 	 * 
 	 * @since 1.3.0
 	 */
@@ -145,7 +157,7 @@ public class OperationGroups implements DataParser
 	 * @param openings | Openings to count with!
 	 * @param closing | Closings to find!
 	 * 
-	 * @return Return index of first closing char found if is not in object or -1 if no closing is found similar to {@link Serializer#indexOfNotInObj(CharSequence, char...)}! 
+	 * @return Return index of first closing char found if is not in object or -1 if no closing is found similar to {@link org.ugp.serialx.Utils#indexOfNotInObj(CharSequence, char...)}! 
 	 * 
 	 * @since 1.3.0
 	 */

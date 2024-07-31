@@ -820,8 +820,8 @@ public final class Utils {
 	 */
 	public static Object castArray(Object[] sourceArray, Class<?> toType)
 	{
-		int len = sourceArray.length;
-		Object arr = Array.newInstance(ToClasses(toType)[0], len);
+		int len;
+		Object arr = Array.newInstance(ToClasses(toType)[0], len = sourceArray.length);
 		for (int i = 0; i < len; i++) 
 			Array.set(arr, i, sourceArray[i]);
 		return arr;

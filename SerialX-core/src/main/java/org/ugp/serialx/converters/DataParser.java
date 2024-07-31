@@ -75,7 +75,7 @@ public interface DataParser
 	 *
 	 * @since 1.3.5
 	 */
-	public static class ParserRegistry extends Registry<DataParser>
+	public static class ParserRegistry extends Registry<DataParser> implements DataParser
 	{
 		private static final long serialVersionUID = -2598324826689380752L;
 		
@@ -167,11 +167,11 @@ public interface DataParser
 		 */
 		public CharSequence toString(Object obj, Object... args)
 		{
-			CharSequence str = null;
+			CharSequence str;
 			if (convertingCache != null)
 				for (DataParser parser : convertingCache)
 					if (parser != null && (str = ((DataConverter) parser).toString(this, obj, args)) != CONTINUE)
-						return str; 
+						return str;
 			
 			for (int i = 0, size = size(); i < size; i++) 
 			{
@@ -186,6 +186,28 @@ public interface DataParser
 
 			LogProvider.instance.logErr("Unable to convert \"" + (obj == null ? "null" : obj.getClass().getName()) + "\" to string because none of registered converters were aplicable for this object!", null);
 			return null;
+		}
+		
+		/**
+		 * @param parentRegistry | Registry provided by caller, but remember that {@link Registry} is also a {@link DataParser} and therefore this registry will be used instead of this argument.
+		 * @param str | Source string to parse using suitable parser from registry.
+		 * @param args | Additional arguments that will be obtained in {@link DataParser#parse(String, Object...)}!
+		 * 
+		 * @return Object that was parsed from obtained string using suitable parser. This method will iterate registry and try to parse string using each registered parser until suitable return is obtained by parse method of parser, first suitable result will be returned!
+		 * If no suitable parser/result was found, {@link DataParser#CONTINUE} will be returned, as it means that this {@link Registry} was not suitable as parser!<br>
+		 * Note: If this registry contains it self as parser (which should not happen) it will attempt to skip it self in order to not cause possible infinite recursion!
+		 * 
+		 * @see DataParser#parseObj(String, Object...)
+		 * 
+		 * @since 1.3.7
+		 */
+		@Override
+		public Object parse(ParserRegistry parentRegistry, String str, Object... args) 
+		{
+			Object result;
+			if ((result = parse(str, true, this == parentRegistry ? getClass() : null, args)) == str)
+				return CONTINUE;
+			return result;
 		}
 		
 		/**
@@ -204,7 +226,7 @@ public interface DataParser
 		
 		/**
 		 * @param str | Source string to parse using suitable parser from registry.
-		 * @param returnAsStringIfNotFound | If true, inserted string will be returned instead of null and error message!
+		 * @param returnAsStringIfNotFound | If true, inserted string will be returned instead of null and error message in case of suitable parser not found!
 		 * @param ignore | {@link DataParser} class to ignore!
 		 * @param args | Additional arguments that will be obtained in {@link DataParser#parse(String, Object...)}!
 		 * 
@@ -215,7 +237,7 @@ public interface DataParser
 		 */
 		public Object parse(String str, boolean returnAsStringIfNotFound, Class<? extends DataParser> ignore, Object... args)
 		{
-			Object obj = null; 
+			Object obj;
 			if (parsingCache != null)
 				for (DataParser parser : parsingCache)
 					if (parser != null && (ignore == null || ignore != parser.getClass()) && (obj = parser.parse(this, str, args)) != CONTINUE)
@@ -345,5 +367,6 @@ public interface DataParser
 		{
 			return convertingCache;
 		}
+
 	}
 }

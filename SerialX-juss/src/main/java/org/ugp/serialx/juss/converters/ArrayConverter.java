@@ -51,32 +51,35 @@ public class ArrayConverter implements DataConverter
 	{
 		if (indexOfNotInObj(str, ' ') > 0)
 		{
-			boolean findArrType = true;
-			if (args.length > 1 && args[1] instanceof Boolean)
-				findArrType = (boolean) args[1];
-			
 			String[] strObjs = tokenize(str);
-			int len = strObjs.length;
-			Object[] objs = new Object[len];
+			int len, i = 0;
+			Object[] objs = new Object[len = strObjs.length];
 			
-			Class<?> arrClass = null;
-			for (int i = 0; i < len; i++) 
+			if (args.length < 2 || !(args[1] instanceof Boolean) || (boolean) args[1])
 			{
-				Object obj = objs[i] = myHomeRegistry.parse(strObjs[i], args);
-				if (obj != null)
-					if (arrClass == null)
-						arrClass = obj.getClass();
-					else if (arrClass != obj.getClass())
-						arrClass = Object.class;	
+				Class<?> arrClass = null;
+				for (; i < len; i++) 
+				{
+					Object obj = objs[i] = myHomeRegistry.parse(strObjs[i], args);
+					if (obj != null)
+						if (arrClass == null)
+							arrClass = obj.getClass();
+						else if (arrClass != obj.getClass())
+							arrClass = Object.class;	
+				}
+				
+				if (arrClass != null && arrClass != Object.class)
+					try
+					{
+						return castArray(objs, arrClass);
+					}
+					catch (IllegalArgumentException e) 
+					{}
+				return objs;
 			}
 			
-			if (findArrType && arrClass != null && !arrClass.equals(Object.class))
-				try
-				{
-					return castArray(objs, arrClass);
-				}
-				catch (IllegalArgumentException e) 
-				{}
+			for (; i < len; i++) 
+				objs[i] = myHomeRegistry.parse(strObjs[i], args);
 			return objs;
 		}
 		return CONTINUE;
