@@ -3,6 +3,7 @@ package tests.n.benchmarks;
 import java.util.Arrays;
 
 import org.ugp.serialx.Utils;
+import org.ugp.serialx.juss.converters.OperationGroups;
 import org.ugp.serialx.juss.converters.VariableConverter;
 
 /**
@@ -24,6 +25,10 @@ public class Testing {
 		
 		
 		System.out.println(1 +-6 / -2*(2+1)%- 100 + 1);
+		
+		char mark = (char) new OperationGroups().hashCode();
+		System.out.println(OperationGroups.isGroupMark(new StringBuilder().append(mark--).append(21).append(mark), ++mark));
+
 //		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true);
 //		
 //		File file = new File("src/examples/implementations/test.juss");

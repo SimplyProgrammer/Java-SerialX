@@ -20,8 +20,7 @@ dependencies =
 	version = "2.3.4",
 	something = 
 	{
-		dataStorage = 
-		{
+		dataStorage {
 			//This is "dataStorage" (stored by variable "dataStorage") sub-scope aka nested skope of its parent scope "something" which is subscope of "dependencies",
 			xml = 
 			{
