@@ -67,7 +67,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	/**
 	 * {@link ParserRegistry} with all parsers required to parse JUSS with additional operators.
 	 * <br>
-	 * Since 1.3.7 this requires "org.ugp.serialx.converters.Operators" from SerialX "operators" modules to be present on the classpath!
+	 * Since 1.3.8 this requires "org.ugp.serialx.converters.Operators" from SerialX "operators" modules to be present on the classpath!
 	 * 
 	 * @since 1.3.2
 	 */

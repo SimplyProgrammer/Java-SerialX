@@ -30,7 +30,7 @@ import org.ugp.serialx.protocols.SerializationProtocol;
  * 
  * @author PETO
  * 
- * @since 1.3.7
+ * @since 1.3.8
  */
 public final class Utils {
 	private Utils() {}
@@ -522,7 +522,7 @@ public final class Utils {
 	 * 
 	 * @return String splitted after splitters according to arguments. Each resulting token will be {@link String#trim() trim}<code>med</code>!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public static String[] splitValues(String s, int i, int limit, int splittingStrategy, char[] splitBreaks, char... splitter)
 	{
@@ -784,7 +784,7 @@ public final class Utils {
 	 * Note that this function was designed for non-blank ASCII strings and may not work properly for others...<br>
 	 * Also sufficient length of both strings is not checked so adjust from and to accordingly.
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public static boolean equalsLowerCase(CharSequence str, CharSequence lowerCaseOther, int from, int to)
 	{
@@ -852,7 +852,7 @@ public final class Utils {
 	 * 
 	 * @throws IllegalArgumentException if the specified object is not an array!
 	 * 
-	 * @since 1.3.2 (since 1.3.7 moved from ArrayConverter)
+	 * @since 1.3.2 (since 1.3.8 moved from ArrayConverter)
 	 */
 	public static Object[] fromAmbiguousArray(Object array)
 	{
@@ -912,7 +912,7 @@ public final class Utils {
 	 *
 	 * @since 1.2.2
 	 * 
-	 * @deprecated (in 1.3.7) NO LONGER NEEDED, DO NOT USE THIS! You were never supposed to...
+	 * @deprecated (in 1.3.8) NO LONGER NEEDED, DO NOT USE THIS! You were never supposed to...
 	 */
 	public static final class NULL //TODO: REMOVE IN NEXT V!!!!
 	{

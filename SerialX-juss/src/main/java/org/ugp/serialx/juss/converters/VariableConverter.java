@@ -163,7 +163,7 @@ public class VariableConverter extends VariableParser implements DataConverter
 	 *
 	 * @return By default it returns the previous value of the member. If member with provided name/key is not present in the source or its value is not possible to set, {@link VOID} should be returned! 
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	@SuppressWarnings("unchecked")
 	public Object setMemberOperator(ParserRegistry myHomeRegistry, Object source, String member, Object val, boolean genericVar, Object... args)

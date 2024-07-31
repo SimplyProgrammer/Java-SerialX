@@ -209,7 +209,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @return Array of values previously at keys from kv array.
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	@SuppressWarnings("unchecked")
 	public ValT[] putAllKv(Object... kVkVkV)
@@ -303,7 +303,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * If there is no other variable called "value" in the scope tree then you can also simplify it to <code>scope.get("value")</code>, but make sure that there is no equally-named variable!<br>
 	 * Note: Make sure that you are not calling {@link GenericScope#get(Object, Object)} by accident when you are using inline vargas array (unspecified count of arguments)!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	@SuppressWarnings("unchecked")
 	public <V extends ValT> V get(KeyT... pathToValue)
@@ -341,7 +341,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @throws Exception | If converting to object of cls failed from some reason! This can differ from implementation to implementation! By default it uses {@link GenericScope#toObject(cls)}
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public <V extends ValT> V get(KeyT variableKey, Class<? extends V> cls, V defaultValue) throws Exception
 	{
@@ -370,7 +370,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @return True if independent value was found in this scope.
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	@Override
 	public boolean contains(Object value) 
@@ -415,7 +415,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @throws Exception | If converting to object of cls failed from some reason! This can differ from implementation to implementation!
      *
-     * @since 1.3.7
+     * @since 1.3.8
 	 */
 	public <V extends ValT> V get(int valueIndex, Class<V> cls) throws Exception
 	{
@@ -475,7 +475,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @return True all provided values are contained in this scope as independent values!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	@Override
 	public boolean containsAll(Collection<?> values)
@@ -488,7 +488,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @return {@link Collection#removeAll(Collection)} for the independent values,,,
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	@Override
 	public boolean removeAll(Collection<?> values)
@@ -501,7 +501,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @return {@link Collection#retainAll(Collection)} for the independent values,,,
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	@Override
 	public boolean retainAll(Collection<?> values)
@@ -774,7 +774,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @return Value of variable that was removed!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	@Override
 	public boolean remove(Object independentValue)
@@ -787,7 +787,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @return Value of variable that was removed!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public ValT removeVariable(KeyT variableKey)
 	{
@@ -869,7 +869,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	/**
 	 * @return Total number of variables and independent values of this scope! (<code>vvaluesCount() + variablesCount()</code>)
 	 * 
-	 * @since 1.3.7 (before 1.3.7 known as totalSize)
+	 * @since 1.3.8 (before 1.3.8 known as totalSize)
 	 */
 	@Override
 	public int size()
@@ -948,7 +948,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * @return Primitive array with independent values of this {@link GenericScope}. These values have nothing to do with values of variables, they are independent!
 	 * Modifying this list will not affect this {@link GenericScope} object!
 	 * 
-	 * @since 1.3.7 (before 1.3.7 known as toValArray)
+	 * @since 1.3.8 (before 1.3.8 known as toValArray)
 	 */
 	@Override
 	public Object[] toArray() 
@@ -962,7 +962,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * @return Primitive array with independent values of this {@link GenericScope}. These values have nothing to do with values of variables, they are independent!
 	 * Modifying this list will not affect this {@link GenericScope} object!
 	 * 
-	 * @since 1.3.7 (before 1.3.7 known as toValArray)
+	 * @since 1.3.8 (before 1.3.8 known as toValArray)
 	 */
 	@Override
 	public <T> T[] toArray(T[] vals) 
@@ -1088,7 +1088,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * 
 	 * @return Same map populated with kV array.
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V, M extends Map<K, V>> M mapKvArray(M map, Object... kVkVkV)

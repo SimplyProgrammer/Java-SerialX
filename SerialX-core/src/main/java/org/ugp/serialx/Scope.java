@@ -1291,7 +1291,7 @@ public class Scope extends GenericScope<String, Object>
 	 * 
 	 * @throws Exception if Scope#intoNew(Type, GenericScope, String...) fails...
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> List<T> intoGeneric(List<?> listToGenerify, ParameterizedType genericType) throws Exception
@@ -1331,7 +1331,7 @@ public class Scope extends GenericScope<String, Object>
 	* 
 	* @throws Exception if Scope#intoNew(Type, GenericScope, String...) fails...
 	* 
-	* @since 1.3.7
+	* @since 1.3.8
 	*/
 	@SuppressWarnings("unchecked")
 	public static <T> Map<?, T> intoGeneric(Map<?, ?> mapToGenerify, ParameterizedType genericType) throws Exception
@@ -1400,7 +1400,7 @@ public class Scope extends GenericScope<String, Object>
 	 * 
 	 * @see PropertyDescriptor
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public static List<PropertyDescriptor> getPropertyDescriptorsOf(Class<?> cls, Map<Class<?>, List<PropertyDescriptor>> cache, int modifiersToIgnore, String... fieldNames) throws IntrospectionException
 	{

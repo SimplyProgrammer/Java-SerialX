@@ -31,7 +31,7 @@ public class ArithmeticOperators implements DataParser
 	/**
 	 * Operator characters recognized by {@link ArithmeticOperators}, operators can be any combination of provided characters. Exact behavior is handled by {@link ArithmeticOperators#operator(Object, String, Object)}.<br> Intended for override, should not be null or empty!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	protected char[] operators = {'+', '-', '*', '/', '%'};
 	
@@ -97,7 +97,7 @@ public class ArithmeticOperators implements DataParser
 	 * 
 	 * @return Result of binary operation described by op between opr1 and opr2! If operator is not known, opr1 will be returned by default!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public Object operator(Object opr1, String op, Object opr2)
 	{
@@ -125,7 +125,7 @@ public class ArithmeticOperators implements DataParser
 	 * 
 	 * @return Priority of provided operator (higher number = higher priority, 2 = high, 1 = medium, 0 = low)
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public byte getOperatorPriority(String op)
 	{
@@ -395,7 +395,7 @@ public class ArithmeticOperators implements DataParser
 	 * 
 	 * @return Array with 2 lists. Index 0 is {@link ArrayList} containing parsed operands of the expression, index 1 is {@link LinkedList} containing operators of the expression!
 	 *
-	 * @since 1.3.7 (originally getTerms since 1.3.0)
+	 * @since 1.3.8 (originally getTerms since 1.3.0)
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<?>[] getAndParseTerms(String str, int to, ParserRegistry registryForParsers, Object[] argsForParsers, Class<? extends DataParser> classToIgnore, char... oprs)

@@ -605,7 +605,7 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @return Object that was parsed from string at given index, using parsers of this {@link Serializer}!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getParsed(int indexWithStringValue, Object... args)
@@ -619,7 +619,7 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @return Object that was parsed from value of given variable, using parsers of this {@link Serializer}!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getParsed(String variableWithStringValue, Object... args)

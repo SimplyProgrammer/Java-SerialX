@@ -26,7 +26,7 @@ import org.ugp.serialx.converters.DataParser;
 public class OperationGroups implements DataParser 
 {
 	/**
-	 * @deprecated (since 1.3.7) DO NOT USE, USE {@link OperationGroups#groupMark} instead! <br>
+	 * @deprecated (since 1.3.8) DO NOT USE, USE {@link OperationGroups#groupMark} instead! <br>
 	 * 
 	 * Opening and closing of group mark!
 	 * 
@@ -39,7 +39,7 @@ public class OperationGroups implements DataParser
 	 * Character marking the opening of {@link OperationGroups} mark in processed string, closing should be marked as this character -1.<br>
 	 * This character is generated in sami-random fashion but it will never be an ASCII character.
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	protected final char groupMark = (char) (System.nanoTime() | 128);
 	

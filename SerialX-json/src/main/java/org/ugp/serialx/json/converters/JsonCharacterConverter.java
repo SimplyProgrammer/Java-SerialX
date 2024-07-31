@@ -7,7 +7,7 @@ import org.ugp.serialx.converters.CharacterConverter;
  * 
  * @author PETO
  * 
- * @since 1.3.7
+ * @since 1.3.8
  */
 public class JsonCharacterConverter extends CharacterConverter 
 {
@@ -16,7 +16,7 @@ public class JsonCharacterConverter extends CharacterConverter
 	/**
 	 * @param formatAsString | If true, character will be serialized in a letter form. Otherwise it will be serialized as ASCII value (int).
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public JsonCharacterConverter(boolean formatAsString) 
 	{
@@ -34,7 +34,7 @@ public class JsonCharacterConverter extends CharacterConverter
 	/**
 	 * @return True if character is going to be serialized in a letter form. If false, it will be serialized as ASCII value (int).
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public boolean isFormatAsString()
 	{
@@ -44,7 +44,7 @@ public class JsonCharacterConverter extends CharacterConverter
 	/**
 	 * @param formatAsString | If true, character will be serialized in a letter form. Otherwise it will be serialized as ASCII value (int).
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public void setFormatAsString(boolean formatAsString) 
 	{

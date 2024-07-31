@@ -38,7 +38,7 @@ public class DebugParserRegistry extends ParserRegistry
 	 * 
 	 * @return Clone of this {@link DebugParserRegistry}
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public DebugParserRegistry clone(boolean copyStackTrace) 
 	{

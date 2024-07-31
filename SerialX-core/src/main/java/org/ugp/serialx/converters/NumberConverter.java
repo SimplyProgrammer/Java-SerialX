@@ -155,7 +155,7 @@ public class NumberConverter implements DataConverter
 	 * 
 	 * @return Number formated to string!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public String format(Number num) 
 	{
@@ -174,7 +174,7 @@ public class NumberConverter implements DataConverter
 	 * @return {@link Number} parsed from str with rules specified above. This function was designed to act as more optimized merger of {@link Byte#valueOf(String, int)}, {@link Short#valueOf(String, int)}, {@link Integer#valueOf(String, int)}, {@link Long#valueOf(String, int)} and {@link Float#valueOf(String)}, {@link Double#valueOf(String)} all encapsulated in 1 universal function.<br>
 	 * Note: This function will not check for incorrect number formats in order to save performance. Only incorrect format is when inserted string contains space, in this case it will return null!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public static Number numberOf(CharSequence str, char ch0, int end, int base, int type)
 	{

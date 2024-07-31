@@ -7,7 +7,7 @@ import org.ugp.serialx.converters.NumberConverter;
  * 
  * @author PETO
  * 
- * @since 1.3.7
+ * @since 1.3.8
  */
 public class JsonNumberConverter extends NumberConverter 
 {

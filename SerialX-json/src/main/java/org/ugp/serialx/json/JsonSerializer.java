@@ -257,7 +257,7 @@ public class JsonSerializer extends JussSerializer
 	 * 
 	 * @return JussSerializer created from JsonSerializer, all values and variables will remain intact!
 	 * 
-	 * @since 1.3.2 (since 1.3.7 moved from {@link JussSerializer} and renamed from "fromJsonSerializer" to "toJussSerializer")
+	 * @since 1.3.2 (since 1.3.8 moved from {@link JussSerializer} and renamed from "fromJsonSerializer" to "toJussSerializer")
 	 */
 	public static JussSerializer toJussSerializer(JsonSerializer jsonSerializer)
 	{

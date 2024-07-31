@@ -32,7 +32,7 @@ public class SerializationDebugger implements DataConverter
 	 * Output object that will be used for logging...
 	 * If null, it will be set automatically!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public static PrintWriter out;
 	
@@ -145,7 +145,7 @@ public class SerializationDebugger implements DataConverter
 	/**
 	 * Helper method for printing contents of {@link ParserRegistry#getParsingCache()}.
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public static void printCacheInfo(PrintWriter out, DataParser[] cache, String cacheType, String additional)
 	{

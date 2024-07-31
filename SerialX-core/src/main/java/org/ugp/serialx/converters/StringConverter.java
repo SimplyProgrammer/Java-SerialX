@@ -108,7 +108,7 @@ public class StringConverter implements DataConverter
 	 * Recommended: Enable this when parsing a lot of strings that are the same, otherwise this will not have a big impact.<br>
 	 * Rule of thumb, is that this cache should be modified only by this converter however adding some pre-cached entries is possible but should be performed with caution!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public void setParsingCache(Map<String, String> cache)
 	{
@@ -120,7 +120,7 @@ public class StringConverter implements DataConverter
 	 * Null will be returned if caching is disabled, which is by default...<br>
 	 * Note: Rule of thumb, is that this cache should be modified only by this converter however adding some pre-cached entries is possible but should be performed with caution!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public Map<String, String> getParsingCache()
 	{
@@ -130,7 +130,7 @@ public class StringConverter implements DataConverter
 	/**
 	 * @return Will return value of {@link StringConverter#serializeStringNormally}!
 	 * 
-	 * @since 1.3.7 (it was static before = not good)
+	 * @since 1.3.8 (it was static before = not good)
 	 */
 	public boolean isSerializeStringNormally() 
 	{
@@ -140,7 +140,7 @@ public class StringConverter implements DataConverter
 	/**
 	 * @param serializeStringNormally | Set value of {@link StringConverter#serializeStringNormally}!
 	 * 
-	 * @since 1.3.7 (it was static before = not good)
+	 * @since 1.3.8 (it was static before = not good)
 	 */
 	public void setSerializeStringNormally(boolean serializeStringNormally) 
 	{

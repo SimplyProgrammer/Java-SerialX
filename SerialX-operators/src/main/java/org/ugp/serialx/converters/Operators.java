@@ -14,7 +14,7 @@ import org.ugp.serialx.converters.operators.NegationOperator;
  * 
  * @see Operators#install(ParserRegistry)
  * 
- * @since 1.3.7
+ * @since 1.3.8
  * 
  * @author PETO
  */
@@ -28,7 +28,7 @@ public class Operators {
 	 * {@link ArithmeticOperators}<br>
 	 * In given order!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public static final DataParser[] BINARY = { new ConditionalAssignmentOperators(), new LogicalOperators(), new ComparisonOperators(), new ArithmeticOperators() };
 	
@@ -37,7 +37,7 @@ public class Operators {
 	 * {@link NegationOperator}<br>
 	 * In given order!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public static final DataParser[] UNARY = { new NegationOperator() };
 	
@@ -46,7 +46,7 @@ public class Operators {
 	 * 
 	 * @return The same registry with operators inserted!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public static ParserRegistry install(ParserRegistry registry) {
 		registry.addAllBefore(StringConverter.class, true, BINARY);
@@ -59,7 +59,7 @@ public class Operators {
 	 * 
 	 * @return The same registry with no more operators!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public static ParserRegistry uninstall(ParserRegistry registry) {
 		registry.removeAll(Arrays.asList(BINARY));

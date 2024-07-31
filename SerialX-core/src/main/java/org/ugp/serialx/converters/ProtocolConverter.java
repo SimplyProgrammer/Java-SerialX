@@ -54,7 +54,7 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
  *  
  * @author PETO
  * 
- * @since 1.3.0 (separated from ObjectConverter since 1.3.7)
+ * @since 1.3.0 (separated from ObjectConverter since 1.3.8)
  */
 public class ProtocolConverter implements DataConverter 
 {
@@ -96,7 +96,7 @@ public class ProtocolConverter implements DataConverter
 	 * 
 	 * @return Object od objClass parsed from str in accordance with compilerArgs!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	protected Object parse(ParserRegistry myHomeRegistry, Class<?> objClass, String str, Object... compilerArgs)
 	{
@@ -284,7 +284,7 @@ public class ProtocolConverter implements DataConverter
 	/**
 	 * @return True if invocation of static members (:: operator) is allowed (false by default)!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public boolean isAllowStaticMemberInvocation()
 	{
@@ -294,7 +294,7 @@ public class ProtocolConverter implements DataConverter
 	/**
 	 * @param allowStaticMemberInvocation | Enable/disable the invocation of static members (:: operator) (false by default)!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public void setAllowStaticMemberInvocation(boolean allowStaticMemberInvocation) 
 	{
@@ -407,7 +407,7 @@ public class ProtocolConverter implements DataConverter
 	 * @return {@link Utils#InvokeStaticFunc(Class, String, Object...)} or null if {@link InvocationTargetException} occurred. <br>
 	 * Note: If you are not sure what this does, preferably use {@link Utils#InvokeStaticFunc(Class, String, Object...)}!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public static Object InvokeStaticFunc(Class<?> cls, Class<?> oldCls, String name, Object[] args, Object... compilerArgs) {
 		try

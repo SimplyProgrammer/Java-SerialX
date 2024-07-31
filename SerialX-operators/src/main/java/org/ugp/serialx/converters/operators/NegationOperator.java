@@ -55,7 +55,7 @@ public class NegationOperator implements DataParser
 	 * @return Negated object supposed to be returned or same object as argument if object can't be negated! Should, but do not strictly has to be boolean!<br>
 	 * Node: By default it has same behavior as {@link NegationOperator#notOperator(Object)} but it can be overridden!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public Object logicalNotOperator(Object obj)
 	{

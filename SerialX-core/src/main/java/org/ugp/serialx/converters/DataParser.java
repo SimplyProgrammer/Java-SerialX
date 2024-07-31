@@ -199,7 +199,7 @@ public interface DataParser
 		 * 
 		 * @see DataParser#parseObj(String, Object...)
 		 * 
-		 * @since 1.3.7
+		 * @since 1.3.8
 		 */
 		@Override
 		public Object parse(ParserRegistry parentRegistry, String str, Object... args) 

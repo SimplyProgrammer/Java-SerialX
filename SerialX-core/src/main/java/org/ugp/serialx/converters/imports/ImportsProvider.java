@@ -22,7 +22,7 @@ public interface ImportsProvider
 	 * Cache of Classes to their respective names/aliases.<br>
 	 * Note: Treat as read only if possible!
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public static final Map<String, Class<?>> CLASS_CACHE = new HashMap<String, Class<?>>();
 	

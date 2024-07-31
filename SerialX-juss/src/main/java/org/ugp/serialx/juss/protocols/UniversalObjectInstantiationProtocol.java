@@ -27,7 +27,7 @@ public class UniversalObjectInstantiationProtocol<T> extends SerializationProtoc
 	 * @param applicableFor | Class that can be serialized using this protocol.
 	 * Note: Passing {@link Object#getClass()} will make this protocol universal and work for any {@link Object} instance, this can be considered unsafe in some cases...
 	 * 
-	 * @since 1.3.7
+	 * @since 1.3.8
 	 */
 	public UniversalObjectInstantiationProtocol(Class<? extends T> applicableFor)
 	{
