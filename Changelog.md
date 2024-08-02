@@ -208,3 +208,24 @@ What was added:
   * Some other small ones!
 * New examples were added!
 #
+
+# SerialX 1.3.8
+
+Release date: Near future...
+
+What was added:<br>
+**Maven:**
+* The whole library was modularized using Maven into the following modules:
+ * SerialX-core - Contains core features and utilities shared across the library. It also contains basic protocols and parsers that resemble the functionalities of pre-1.2.X SerialX.
+ * SerialX-juss - Now contains everything JUSS related, features that were added roughly in 1.2 and later... This includes things like JussSerializer, ArrayConverter, OperationGroups etc...
+ * SerialX-json - A relatively small extension of the JUSS module that is more narrowly focused on JSON. This is now where SerialX support for JSON is located.
+ * SerialX-operators - An extensional module, this is now where all operator parsers are located.
+ * SerialX-devtools - Small module containing tools for debugging the library, mainly Parser/Converter API. It is intended for DSL developers and people who want to add their own data formats.
+* From now on Maven will be used for dependency management and building of this library.
+* Distribution of this library will be conducted using Maven from now on.
+
+**Unit tests:**
+* Some examples are now used as unit tests, this should greatly simplify the testing process and reduce the chance of bug introduction in the future.
+* These are now located on the new "tests-and-experimental-features" branch. This branch will be used for demonstrations, benchmarking, testing and experimenting. Note that this branch is not part of the main API.
+
+  TODO...
