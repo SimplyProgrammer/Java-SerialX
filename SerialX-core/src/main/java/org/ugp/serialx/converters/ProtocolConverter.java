@@ -190,23 +190,18 @@ public class ProtocolConverter implements DataConverter
 		
 		if (preferedProtocol != null || (preferedProtocol = (SerializationProtocol<Object>) getProtocolFor(arg, SerializationProtocol.MODE_SERIALIZE, args)) != null)
 		{
-			Object[] objArgs;
 			Class<?> oldObjectClass = null;
 			try
 			{
-				int tabs = 0, index = 0;
-				if (args.length > 1 && args[1] instanceof Integer)
-					tabs = (int) args[1];
-				
-				if (args.length > 2 && args[2] instanceof Integer)
-					index = (int) args[2];
+				int tabs = args.length > 1 && args[1] instanceof Integer ? (int) args[1] : 0;
+				int	index = args.length > 2 && args[2] instanceof Integer ? (int) args[2] : 0;
 				
 				if (args.length < 5)
 					args = Arrays.copyOf(args, 5);
 				oldObjectClass = (Class<?>) args[4];
 				args[4] = arg.getClass();;
 
-				objArgs = preferedProtocol.serialize(arg);
+				Object[] objArgs = preferedProtocol.serialize(arg);
 				StringBuilder sb = new StringBuilder(ImportsProvider.getAliasFor(args.length > 0 ? args[0] : null, arg.getClass()) + (objArgs.length <= 0 ? "" : " "));
 				
 				args = args.clone();
@@ -231,7 +226,7 @@ public class ProtocolConverter implements DataConverter
 				args[4] = oldObjectClass;
 				return index > 0 && objArgs.length > 0 ? sb.insert(0, '{').append('}') : sb;
 			}
-			catch (Exception e) 
+			catch (Exception e)
 			{
 				LogProvider.instance.logErr("Exception while serializing instance of \"" + arg.getClass().getName() + "\":", e);
 				e.printStackTrace();

@@ -90,14 +90,11 @@ public class ArrayConverter implements DataConverter
 	{
 		if (obj != null && myHomeRegistry != null && obj.getClass().isArray())
 		{
-			int tabs = 0, index = 0;
-			if (args.length > 2 && args[2] instanceof Integer)
-				index = (int) args[2];
+			int index = args.length > 2 && args[2] instanceof Integer ? (int) args[2] : 0;
 			
 			if (index <= 0 || myHomeRegistry.indexOf(OperationGroups.class) > -1)
 			{
-				if (args.length > 1 && args[1] instanceof Integer)
-					tabs = (int) args[1];
+				int tabs = args.length > 1 && args[1] instanceof Integer ? (int) args[1] : 0;
 
 				if (args.length > 2)
 				{

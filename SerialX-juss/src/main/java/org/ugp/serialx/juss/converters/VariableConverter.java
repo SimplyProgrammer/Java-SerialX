@@ -132,11 +132,9 @@ public class VariableConverter extends VariableParser implements DataConverter
 		if (obj instanceof Entry)
 		{
 			Entry<?, ?> var = (Entry<?, ?>) obj;
-			int tabs = 0;
-			if (args.length > 1 && args[1] instanceof Integer)
-				tabs = (int) args[1];
+			int tabs = args.length > 1 && args[1] instanceof Integer ? (int) args[1] : 0;
 
-			boolean jsonStyle = isJsonStyle(), genericVar = false;                
+			boolean jsonStyle = isJsonStyle(), genericVar;
 			Object key = (genericVar = !((key = var.getKey()) instanceof String)) ? myHomeRegistry.toString(key, args) : key, val = var.getValue();
 			return new StringBuilder().append(jsonStyle && !genericVar ? "\""+key+"\"" : key)
 					.append(val instanceof GenericScope && !((GenericScope<?, ?>) val).isEmpty() ? (jsonStyle ? " : " : " =\n" + multilpy('\t', tabs)) : (jsonStyle ? " : " : " = "))

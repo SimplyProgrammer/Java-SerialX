@@ -11,5 +11,5 @@
   <version>1.3.7</version>
   
   <name>SerialX core</name>
-  <description>Core of SerialX</description>
+  <description>Core of SerialX. Contains core features and utilities shared across the library.</description>
 </project>

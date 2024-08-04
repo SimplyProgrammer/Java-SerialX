@@ -177,9 +177,7 @@ public class JsonSerializer extends JussSerializer
 	@Override
 	public <A extends Appendable> A SerializeTo(A source, Object... args) throws IOException 
 	{
-		int tabs = 0;
-		if (args.length > 1 && args[1] instanceof Integer)
-			tabs = (int) args[1];
+		int tabs = args.length > 1 && args[1] instanceof Integer ? (int) args[1] : 0;
 		
 		if (tabs == 0 && !(valuesCount() == 1 && variablesCount() <= 0 && get(0) instanceof Scope))
 		{
