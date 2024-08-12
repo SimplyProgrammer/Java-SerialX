@@ -1,4 +1,4 @@
-/* THIS EXAMPLE IS DEMONSTRATING CAPABILITIES OF SERIALX AS A DOMAIN SPECIFIC LANGUAGE TOOLKIT BY CREATING AN SIMPLE SCRIPT */
+/* THIS EXAMPLE IS DEMONSTRATING CAPABILITIES OF SERIALX AS A DOMAIN SPECIFIC LANGUAGE TOOLKIT BY CREATING A SIMPLE SCRIPT */
 /* In this case, we are writing a simple script that will print "Hello world!" and then analyze your age category from the age given! */
 
 System::out->println "Hello world!"; //Saying the famous "Hello world" in our custom script by calling java methods!
@@ -15,7 +15,7 @@ result = try { //Convenient usage of JUSS scope as a code block...
 }
 
 //Printing adequate error message...
-$result instanceof java.lang.RuntimeException ? (System::err->println "Age must be a number you dummy...");
+$result instanceof java.lang.RuntimeException ? System::err->println (Math::random > 0.5 ? "Age must be a number you dummy..." : "Age must be numeric, dum-dum...");
 
 //Voidification of used variables that are not needed! This is not really a necessity but it nice to know about it...
-//result = void; //Voidification will remove the variable from this scope releasing some memory!
+result = void; //Voidification will remove the variable from this scope releasing some memory!

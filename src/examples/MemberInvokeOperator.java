@@ -25,7 +25,7 @@ public class MemberInvokeOperator implements DataParser
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args)
 	{
 		int index;
-		if ((index = indexOfNotInObj(str, "->", false)) > 0)
+		if ((index = indexOfNotInObj(str, 0, str.length(), -1, false, "->")) > 0)
 		{
 			Object obj = myHomeRegistry.parse(str.substring(0, index).trim(), args);
 			String[] funcArgs = splitValues(str.substring(index+2).trim(), ' ');	

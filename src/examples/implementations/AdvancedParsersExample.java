@@ -3,9 +3,12 @@ package examples.implementations;
 import java.io.File;
 
 import org.ugp.serialx.LogProvider;
+import org.ugp.serialx.devtools.SerializationDebugger;
 import org.ugp.serialx.juss.JussSerializer;
 import org.ugp.serialx.juss.converters.ObjectConverter;
 import org.ugp.serialx.juss.converters.VariableConverter;
+import org.ugp.serialx.juss.protocols.UniversalObjectInstantiationProtocol;
+import org.ugp.serialx.protocols.SerializationProtocol;
 
 import examples.MemberInvokeOperator;
 import examples.TryParser;
@@ -27,13 +30,16 @@ public class AdvancedParsersExample
 {
 	public static void main(String[] args) throws Exception 
 	{
-		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true); //This is necessary since 1.3.8
+		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).getInvokableClasses().add(System.class); //This is necessary since 1.3.8
+		SerializationProtocol.REGISTRY.add(new UniversalObjectInstantiationProtocol<>(Object.class));
 		
 		//In this case JussSerializer acts as an interpreter for our custom scripting language.
 		JussSerializer interpreter = new JussSerializer();
 		
-		interpreter.setParsers(JussSerializer.JUSS_PARSERS_AND_OPERATORS); //Allowing usage of operators in our script!
+		interpreter.setParsers(JussSerializer.JUSS_PARSERS_AND_OPERATORS.clone()); //Allowing usage of operators in our script!
 		interpreter.getParsers().addAllAfter(VariableConverter.class, new TryParser(), new MemberInvokeOperator()); //Allowing method calls and try expressions in our script!
+		
+		interpreter = SerializationDebugger.debug(interpreter);
 
 		LogProvider.instance.setReThrowException(true); //This allows us to implement custom exception handling!
 		

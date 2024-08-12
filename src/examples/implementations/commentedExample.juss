@@ -122,8 +122,9 @@ devDependencies =
 //Setting variable of scope from outer world (possible since 1.3.2)
 devDependencies.something.ppl.ludvig = 
 {
+	String::valueOf "_SCOPE";
 	age = Math::max {int::valueOf "50"} {Math::pow {Double::valueOf {String::valueOf Math::PI}} 3.55};
-	residence = "russia";	
+	residence = String::valueOf "russia";	
 };
 
 //Since 1.2.5 Serializer fully supports Json and JavaScript object!

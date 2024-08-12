@@ -28,7 +28,7 @@ public class ReadingJsonFromInternet
 		JsonSerializer reader = JsonSerializer.from("https://jsonplaceholder.typicode.com/users"); //Getting and deserializing data from remote web address!
 		
 		String user = "Glenna Reichert"; //User we want to get (Glenna Reichert)!
-		String glennasCompany = reader.getScopesWith("name", user).getScope(0).getString("name"); //Obtaining first scope that contains variable with users name and getting name of his company as string from it!
+		String glennasCompany = reader.getScopesWith("name", user).getScope(0).getScope("company").getString("name"); //Obtaining first scope that contains variable with users name and getting name of his company as string from it!
 		System.out.println(user + " is working for " + glennasCompany); //Printing results!
 	}
 }

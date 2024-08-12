@@ -23,7 +23,7 @@ public class TryParser implements DataParser
 		{
 			try 
 			{
-				return myHomeRegistry.parse(str.substring(3).trim(), false, new Class<?>[] {getClass()}, args);
+				return myHomeRegistry.parse(str.substring(3).trim(), false, getClass(), args);
 			}
 			catch (Exception e) 
 			{
