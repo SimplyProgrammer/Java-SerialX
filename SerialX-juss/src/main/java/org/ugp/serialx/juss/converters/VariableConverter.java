@@ -204,24 +204,21 @@ public class VariableConverter extends VariableParser implements DataConverter
 	 */
 	public static int isVarAssignment(CharSequence s)
 	{
-		for (int i = 0, brackets = 0, quote = 0, len = s.length(), oldCh = -1, chNext; i < len; i++)
+		for (int i = 0, brackets = 0, len = s.length(), oldCh = -1, chNext; i < len; i++)
 		{
 			char ch = s.charAt(i);
 			if (ch == '"')
-				quote++;
-	
-			if (quote % 2 == 0)
-			{
-				if (ch == '?')
-					return -1;
-				else if (brackets == 0 && (ch == '=' || ch == ':') && !(oldCh == '=' || oldCh == ':' || oldCh == '!' || oldCh == '>'|| oldCh == '<') && (i >= len-1 || !((chNext = s.charAt(i+1)) == '=' || chNext == ':' || chNext ==  '!' || chNext == '>'|| chNext == '<')))
-					return i;	
-				else if ((ch | ' ') == '{')
-					brackets++;
-				else if ((ch | ' ') == '}')
-					if (brackets > 0)
-						brackets--;
-			}
+				while (++i < len && s.charAt(i) != '"');
+			else if (ch == '?')
+				return -1;
+			else if (brackets == 0 && (ch == '=' || ch == ':') && !(oldCh == '=' || oldCh == ':' || oldCh == '!' || oldCh == '>'|| oldCh == '<') && (i >= len-1 || !((chNext = s.charAt(i+1)) == '=' || chNext == ':' || chNext ==  '!' || chNext == '>'|| chNext == '<')))
+				return i;	
+			else if ((ch | ' ') == '{')
+				brackets++;
+			else if ((ch | ' ') == '}')
+				if (brackets > 0)
+					brackets--;
+
 			oldCh = ch;
 		}
 		return -1;

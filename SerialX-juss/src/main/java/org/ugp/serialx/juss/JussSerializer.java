@@ -569,7 +569,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 							sb.append(ch);
 						}
 					}
-					sb.append(lastNotBlank == '}' || lastNotBlank == ']' ? ';' : ' ');
+					sb.append((lastNotBlank | ' ') == '}' ? ';' : ' ');
 				}
 				else
 					sb.append(line).append('\n');
@@ -596,57 +596,49 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		ParserRegistry reg = getParsers();
 
 		//DataParser[] parsers = new DataParser[DataParser.REGISTRY.size()];
-		int brackets = 0, quote = 0, lastIndex = 0, len = formattedStr.length();
+		int brackets = 0, lastIndex = 0, len = formattedStr.length();
 		//boolean isBracketSplit = false;
 		for (int i = 0; i < len; i++)
 		{
 			char ch = formattedStr.charAt(i);
 			if (ch == '"')
-				quote++;
-			
-			if (quote % 2 == 0)
 			{
-				/*if (isBracketSplit)
-					add = 0;
-				isBracketSplit = false;*/
-				if (brackets == 0 && (ch == ';' || ch == ',')/* || (brackets == 1 && (isBracketSplit = ch == '}' || ch == ']'))*/)
-				{
-					String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, lastIndex = i /*+ (isBracketSplit ? 1 : 0)*/).trim();
-					if (!str.isEmpty())
-					{
-						Object obj = parseObject(reg, str, parserArgs);
-						if (obj != VOID)
-							result.add(obj);
-					}
-					//add = 1;
-				}
-				else if ((ch | ' ') == '{')
-					brackets++;
-				else if ((ch | ' ') == '}')
-				{
-					if (brackets > 0)
-						brackets--;
-					else
-						throw new IllegalArgumentException("Missing opening bracket in: " + formattedStr);
-				}
+				do if (++i >= len)
+					throw new IllegalArgumentException("Unclosed or missing quotes in: " + formattedStr);
+				while (formattedStr.charAt(i) != '"');
 			}
-		}
-		
-		if (quote % 2 != 0)
-			throw new IllegalArgumentException("Unclosed or missing quotes in: " + formattedStr);
-		else if (brackets > 0)
-			throw new IllegalArgumentException("Unclosed brackets in: " + formattedStr); 
-		else 
-		{
-			String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, len).trim();
-			if (!str.isEmpty())
+			else if (brackets == 0 && (ch == ';' || ch == ',')/* || (brackets == 1 && (isBracketSplit = ch == '}' || ch == ']'))*/)
 			{
-				Object obj = parseObject(reg, str, parserArgs);
-				if (obj != VOID)
-					result.add(obj);
+				String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, lastIndex = i /*+ (isBracketSplit ? 1 : 0)*/).trim();
+				if (!str.isEmpty())
+				{
+					Object obj = parseObject(reg, str, parserArgs);
+					if (obj != VOID)
+						result.add(obj);
+				}
+				//add = 1;
+			}
+			else if ((ch | ' ') == '{')
+				brackets++;
+			else if ((ch | ' ') == '}')
+			{
+				if (brackets > 0)
+					brackets--;
+				else
+					throw new IllegalArgumentException("Missing opening bracket in: " + formattedStr);
 			}
 		}
 
+		if (brackets > 0)
+			throw new IllegalArgumentException("Unclosed brackets in: " + formattedStr); 
+
+		String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, len).trim();
+		if (!str.isEmpty())
+		{
+			Object obj = parseObject(reg, str, parserArgs);
+			if (obj != VOID)
+				result.add(obj);
+		}
 		return result;
 	}
 	 

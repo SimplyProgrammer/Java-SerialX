@@ -1,7 +1,5 @@
 package org.ugp.serialx.converters;
 
-import org.ugp.serialx.Registry;
-
 /**
  * This is DataParser with extended functionality! {@link DataConverter} can also parse data like DataParser but is also capable of converting them back to string!
  * This to string convertation is performed by {@link DataConverter#toString(Object)} and result of this convertation supposed to be parsable by {@link DataConverter#parse(String, Object...)} meaning one converter supposed to be parsing and converting via the same string format!
@@ -15,7 +13,7 @@ import org.ugp.serialx.Registry;
 public interface DataConverter extends DataParser
 {
 	/**
-	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link DataParser#parseObj(Registry, String, boolean, Class[], Object...)} otherwise it demands on implementation (it should not be null)!
+	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link ParserRegistry#parse(String, boolean, Class, Object...)} otherwise it demands on implementation (it should not be null)!
 	 * @param obj | Object to convert into string!
 	 * @param args | Some additional args. This can be anything and it demands on implementation of DataConverter. Default SerialX API implementation will provide some flags about formating (2 ints)!
 	 * 

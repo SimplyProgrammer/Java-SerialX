@@ -23,7 +23,7 @@ import org.ugp.serialx.converters.DataParser;
  * 
  * @since 1.3.0
  */
-public class OperationGroups implements DataParser 
+public class OperationGroups implements DataParser
 {
 	/**
 	 * @deprecated (since 1.3.8) DO NOT USE, USE {@link OperationGroups#groupMark} instead! <br>
@@ -127,26 +127,22 @@ public class OperationGroups implements DataParser
 	 */
 	public static int indexOfOpening(CharSequence str, int from, char... openings)
 	{
-		for (int len = str.length(), quote = 0, brackets = 0; from < len; from++) 
+		for (int len = str.length(), brackets = 0; from < len; from++) 
 		{
 			char ch = str.charAt(from);
-			
-			if (ch == '\"')
-				quote++;
-			else if (quote % 2 == 0)
+			if (ch == '"')
+				while (++from < len && str.charAt(from) != '"');
+			else if ((ch | ' ') == '{')
+				brackets++;
+			else if ((ch | ' ') == '}')
 			{
-				if ((ch | ' ') == '{')
-					brackets++;
-				else if ((ch | ' ') == '}')
-				{
-					if (brackets > 0)
-						brackets--;
-					else
-						throw new IllegalArgumentException("Missing opening bracket in: " + str);
-				}
-				else if (brackets == 0 && isOneOf(ch, openings))
-					return from;	
+				if (brackets > 0)
+					brackets--;
+				else
+					throw new IllegalArgumentException("Missing opening bracket in: " + str);
 			}
+			else if (brackets == 0 && isOneOf(ch, openings))
+				return from;
 		}
 		return -1;
 	}
@@ -163,33 +159,29 @@ public class OperationGroups implements DataParser
 	 */
 	public static int indexOfClosing(CharSequence str, int from, char[] openings, char... closing) 
 	{
-		for (int len = str.length(), quote = 0, brackets = 0, ops = 0; from < len; from++) 
+		for (int len = str.length(), brackets = 0, ops = 0; from < len; from++) 
 		{
 			char ch = str.charAt(from);
-			
-			if (ch == '\"')
-				quote++;
-			else if (quote % 2 == 0)
+			if (ch == '"')
+				while (++from < len && str.charAt(from) != '"');
+			else if ((ch | ' ') == '{')
+				brackets++;
+			else if ((ch | ' ') == '}')
 			{
-				if ((ch | ' ') == '{')
-					brackets++;
-				else if ((ch | ' ') == '}')
+				if (brackets > 0)
+					brackets--;
+				else
+					throw new IllegalArgumentException("Missing opening bracket in: " + str);
+			}
+			else if (brackets == 0)
+			{
+				if (isOneOf(ch, openings))
+					ops++;
+				else if (isOneOf(ch, closing))
 				{
-					if (brackets > 0)
-						brackets--;
-					else
-						throw new IllegalArgumentException("Missing opening bracket in: " + str);
-				}
-				else if (brackets == 0)
-				{
-					if (isOneOf(ch, openings))
-						ops++;
-					else if (isOneOf(ch, closing))
-					{
-						if (ops == 1)
-							return from;
-						ops--;
-					}
+					if (ops == 1)
+						return from;
+					ops--;
 				}
 			}
 		}

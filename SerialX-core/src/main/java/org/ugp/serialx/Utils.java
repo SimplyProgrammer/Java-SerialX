@@ -181,8 +181,8 @@ public final class Utils {
 		try 
 		{
 			Method method = objCls.getMethod(name, argClasses);
-			Object resualt = method.invoke(obj, args);
-			return method.getReturnType().equals(void.class) ? VOID : resualt;
+			Object result = method.invoke(obj, args);
+			return method.getReturnType().equals(void.class) ? VOID : result;
 		}
 		catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException find) 
 		{
@@ -190,8 +190,8 @@ public final class Utils {
 				if (method.getName().equals(name))
 					try
 					{
-						Object resualt = method.invoke(obj, args);
-						return method.getReturnType().equals(void.class) ? VOID : resualt;
+						Object result = method.invoke(obj, args);
+						return method.getReturnType().equals(void.class) ? VOID : result;
 					}
 					catch (IllegalArgumentException e) 
 					{}
@@ -224,8 +224,8 @@ public final class Utils {
 	/**
 	 * @param obj | Object to clone.
 	 * @param parsersToUse | Parsers that will be used for cloning...
-	 * @param converterArgs | Argument for {@link DataConverter#objToString(Registry, Object, Object...)}!
-	 * @param parserArgs | Arguments for {@link DataParser#parseObj(Registry, String, boolean, Class[], Object...)}!
+	 * @param converterArgs | Argument for {@link DataConverter#objToString(Object, Object...)}!
+	 * @param parserArgs | Arguments for {@link ParserRegistry#parse(String, boolean, Class, Object...)}!
 	 * 
 	 * @return Cloned object using {@link DataParser}, {@link DataConverter} and {@link SerializationProtocol} or the same object as inserted one if cloning is not possible, for instance when protocol was not found and object is not instance of {@link Cloneable}.
 	 * This clone function will always prioritized the Protocol variation, regular cloning is used only when there is no protocol registered or exception occurs. <br>
@@ -534,18 +534,21 @@ public final class Utils {
 		
 		List<String> result = new ArrayList<>();
 		
-		int brackets = 0, quote = 0, lastIndex = 0, len = s.length();
+		int brackets = 0, lastIndex = 0, len = s.length();
 		for (int count = 1, oldCh = 0; i < len && (limit <= 0 || count < limit); i++)
 		{
 			char ch = s.charAt(i);
 			if (ch == '"')
-				quote++;
-			
-			if (quote % 2 == 0)
+			{
+				do if (++i >= len)
+					throw new IllegalArgumentException("Unclosed or missing quotes in: " + s);
+				while (s.charAt(i) != '"');
+			}
+			else
 			{
 				if (isOneOf(ch, splitBreaks))
 				{
-					brackets = quote = 0;
+					brackets = 0;
 					break;
 				}
 				
@@ -576,13 +579,8 @@ public final class Utils {
 		
 		if (brackets > 0)
 			throw new IllegalArgumentException("Unclosed brackets in: " + s);
-		else if (quote % 2 != 0)
-			throw new IllegalArgumentException("Unclosed or missing quotes in: " + s);
-		else
-		{
-			result.add(s.substring(lastIndex, len).trim());
-		}
-		
+
+		result.add(s.substring(lastIndex, len).trim());
 		return result.toArray(new String[0]);
 	}
 
@@ -609,33 +607,29 @@ public final class Utils {
 	 * 
 	 * @return Index of first character found that is not in object meaning it is not in string nor between '{' or '[' and ']' or '}', otherwise -1!
 	 * 
-	 * @since 1.3.5
+	 * @since 1.3.5 (expanded in 1.3.8)
 	 */
 	public static int indexOfNotInObj(CharSequence s, int from, int to, int defaultReturn, boolean firstIndex, char... oneOf)
 	{
-		for (int brackets = 0, quote = 0; from < to; from++)
+		for (int brackets = 0; from < to; from++)
 		{
 			char ch = s.charAt(from);
 			if (ch == '"')
-				quote++;
-	
-			if (quote % 2 == 0)
+				while (++from < to && s.charAt(from) != '"');
+			else if (brackets == 0 && /*oneOf.length == 0 ? ch == oneOf[0] :*/ isOneOf(ch, oneOf))
 			{
-				if (brackets == 0 && /*oneOf.length == 0 ? ch == oneOf[0] :*/ isOneOf(ch, oneOf))
-				{
-					if (firstIndex)
-						return from;
-					defaultReturn = from;
-				}
-				else if ((ch | ' ') == '{')
-					brackets++;
-				else if ((ch | ' ') == '}')
-				{
-					if (brackets > 0)
-						brackets--;
-					else
-						throw new IllegalArgumentException("Missing closing bracket in: " + s);
-				}
+				if (firstIndex)
+					return from;
+				defaultReturn = from;
+			}
+			else if ((ch | ' ') == '{')
+				brackets++;
+			else if ((ch | ' ') == '}')
+			{
+				if (brackets > 0)
+					brackets--;
+				else
+					throw new IllegalArgumentException("Missing closing bracket in: " + s);
 			}
 		}
 		return defaultReturn;
@@ -643,64 +637,71 @@ public final class Utils {
 	
 	/**
 	 * @param s | CharSequence to search!
-	 * @param sequenceToFind | CharSequence to find!
+	 * @param sequencesToFind | Character sequences to find, index of any of these will be returned accordingly, none of these should contain and object structure!
 	 * 
 	 * @return Index of first found CharSequence that is not in object meaning it is not in string nor between '{' or '[' and ']' or '}'!
 	 * 
 	 * @since 1.3.0
 	 */
-	public static int indexOfNotInObj(CharSequence s, CharSequence sequenceToFind)
+	public static int indexOfNotInObj(CharSequence s, CharSequence... sequencesToFind)
 	{
-		return indexOfNotInObj(s, sequenceToFind, true);
+		return indexOfNotInObj(s, 0, s.length(), -1, true, sequencesToFind);
 	}
 	
 	/**
 	 * @param s | CharSequence to search!
-	 * @param sequenceToFind | CharSequence to find!
+	 * @param from | The beginning index, where to start the search (should be 0 in most cases).
+	 * @param to | Ending index of search (exclusive, should be s.length()).
+	 * @param defaultReturn | Index to return by default (usually -1).
 	 * @param firstIndex | If true, first index will be returned, if false last index will be returned.
+	 * @param sequencesToFind | Character sequences to find, index of any of these will be returned accordingly, none of these should contain and object structure!
 	 * 
 	 * @return Index of first found CharSequence that is not in object meaning it is not in string nor between '{' or '[' and ']' or '}'!
 	 * 
-	 * @since 1.3.5
+	 * @since 1.3.5 (expanded in 1.3.8)
 	 */
-	public static int indexOfNotInObj(CharSequence s, CharSequence sequenceToFind, boolean firstIndex)
+	public static int indexOfNotInObj(CharSequence s, int from, int to, int defaultReturn, boolean firstIndex, CharSequence... sequencesToFind)
 	{
-		int len = s.length(), lenToFind = sequenceToFind.length();
-		if (len < lenToFind)
-			return -1;
-		int found = -1;
-		for (int i = 0, brackets = 0, quote = 0, match = 0; i < len; i++)
+		if (sequencesToFind.length < 1)
+			return defaultReturn;
+
+		for (int brackets = 0; from < to; from++)
 		{
-			char ch = s.charAt(i);
+			char ch = s.charAt(from);
 			if (ch == '"')
-				quote++;
-			
-			if (quote % 2 == 0)
+				while (++from < to && s.charAt(from) != '"');
+			else if ((ch | ' ') == '{')
+				brackets++;
+			else if ((ch | ' ') == '}')
 			{
-				if (brackets == 0 && ch == sequenceToFind.charAt(match++))
+				if (brackets > 0)
+					brackets--;
+				else
+					throw new IllegalArgumentException("Missing closing bracket in: " + s);
+			}
+			else if (brackets == 0)
+			{
+				findMatch: for (int cur = 0, seqsLen = sequencesToFind.length; cur < seqsLen; cur++) 
 				{
-					if (match == lenToFind)
+					CharSequence currentMatch;
+					if (ch == (currentMatch = sequencesToFind[cur]).charAt(0))
 					{
-						found = i - match + 1;
-						if (firstIndex)
-							return found;
-						match = 0;
+						int match = 1, lenToFind = currentMatch.length();
+						for (int i = from+1; i < to && match < lenToFind; i++, match++)
+							if (s.charAt(i) != currentMatch.charAt(match))
+								continue findMatch;
+						
+						if (match == lenToFind)
+						{
+							defaultReturn = from;
+							if (firstIndex)
+								return defaultReturn;
+						}
 					}
 				}
-				else if ((ch | ' ') == '{')
-					brackets++;
-				else if ((ch | ' ') == '}')
-				{
-					if (brackets > 0)
-						brackets--;
-					else
-						throw new IllegalArgumentException("Missing closing bracket in: " + s);
-				}
-				else
-					match = 0;
 			}
 		}
-		return found;
+		return defaultReturn;
 	}
 	
 	/**
@@ -798,14 +799,26 @@ public final class Utils {
 	 * @param str | String to display!
 	 * @param pos | Position to display!
 	 * 
-	 * @return String with displayed position by using »!
+	 * @return String with displayed position by using » or ^ under it!
 	 * Use for debugging or error printing!
 	 * 
 	 * @since 1.3.2
 	 */
 	public static String showPosInString(CharSequence str, int pos)
 	{
-		return str.subSequence(0, pos) + "»" + str.subSequence(pos, str.length());	
+		if (pos < 0)
+			return str.toString();
+
+		try
+		{
+			if (contains(str, '\n', '\r'))
+				return str.subSequence(0, pos) + "»" + str.subSequence(pos, str.length());
+			return multilpy(' ', pos).append('^').insert(0, '\n').insert(0, str).toString();
+		}
+		catch (IndexOutOfBoundsException e)
+		{
+			return str.toString();
+		}
 	}
 	
 	/* Arrays */

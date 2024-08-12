@@ -66,16 +66,16 @@ public class ConditionalAssignmentOperators implements DataParser
 	 */
 	public static int indexOfTernaryElse(CharSequence str, int defaultCountOfConfitions, char... ternaryOperators)
 	{
-		for (int i = 0, len = str.length(), oldCh = -1, tokenCount = 0, quote = 0, brackets = 0; i < len; i++)
+		for (int i = 0, len = str.length(), oldCh = -1, tokenCount = 0, brackets = 0; i < len; i++)
 		{
 			char ch = str.charAt(i);
 			if (ch == '\"')
-				quote++;
+				while (++i < len && str.charAt(i) != '"');
 			else if ((ch | ' ') == '{')
 				brackets++;
 			else if ((ch | ' ') == '}')
 				brackets--;
-			else if (quote % 2 == 0 && brackets == 0)
+			else if (brackets == 0)
 			{
 				for (char token : ternaryOperators)
 					if (ch == token && oldCh != token && (i >= len-1 || str.charAt(i+1) != token))
@@ -103,16 +103,16 @@ public class ConditionalAssignmentOperators implements DataParser
 	 */
 	public static int indexOfOne(CharSequence str, int from, char oneChar)
 	{
-		for (int len = str.length(), oldCh = -1, quote = 0, brackets = 0; from < len; from++) 
+		for (int len = str.length(), oldCh = -1, brackets = 0; from < len; from++) 
 		{
 			char ch = str.charAt(from);
 			if (ch == '\"')
-				quote++;
+				while (++from < len && str.charAt(from) != '"');
 			else if ((ch | ' ') == '{')
 				brackets++;
 			else if ((ch | ' ') == '}')
 				brackets--;
-			else if (quote % 2 == 0 && brackets == 0 && ch == oneChar && oldCh != oneChar && (from >= len-1 || str.charAt(from+1) != oneChar))
+			else if (brackets == 0 && ch == oneChar && oldCh != oneChar && (from >= len-1 || str.charAt(from+1) != oneChar))
 				return from;
 			oldCh = ch;
 		}

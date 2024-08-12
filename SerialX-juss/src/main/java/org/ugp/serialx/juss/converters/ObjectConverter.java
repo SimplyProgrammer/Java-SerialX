@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Base64;
 
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.Registry;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.DataParser;
@@ -79,16 +78,19 @@ public class ObjectConverter extends ProtocolConverter
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... compilerArgs) 
 	{
-		int len;	
+		int len;
 		if ((len = str.length()) > 0)
 		{
-			boolean hasOp, hasCls = false;
-			if ((hasOp = (str.charAt(0) | ' ') == '{') && (hasCls = (str.charAt(--len) | ' ') == '}')) // Unwrap if wrapped in {}
-				len = (str = str.substring(1, len).trim()).length(); 
+			boolean hasOp, hasCls;
+			if ((hasOp = (str.charAt(0) | ' ') == '{') && (hasCls = (str.charAt(len-1) | ' ') == '}')) // Unwrap if wrapped in {}
+				len = (str = str.substring(1, --len).trim()).length();
+			else
+				hasCls = false;
 			
 			Class<?> objClass;
 			int chI;
-			if (((chI = indexOfNotInObj(str, '=', ':', ';', ',')) < 0 || (++chI < len && str.charAt(chI) == ':')) && (objClass = getProtocolExprClass(str, compilerArgs)) != null) // Is protocol expr
+//			if (((chI = indexOfNotInObj(str, '=', ':', ';', ',')) == -1 || indexOfNotInObj(str, chI, len, -1, true, "==", "::") != -1) && (objClass = getProtocolExprClass(str, compilerArgs)) != null)
+			if (((chI = indexOfNotInObj(str, '=', ':', ';', ',')) == -1 || ++chI < len && str.charAt(chI) == ':' && indexOfNotInObj(str, ++chI, len, -1, true, ';', ',', '=') == -1) && (objClass = getProtocolExprClass(str, compilerArgs)) != null) // Is protocol expr in disguise (I know I know but come up with something better before judging...)
 				return parse(myHomeRegistry, objClass, str, compilerArgs);
 			
 			if (hasOp && hasCls) //Is scope
@@ -126,7 +128,7 @@ public class ObjectConverter extends ProtocolConverter
 	}
 	
 	/**
-	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link DataParser#parseObj(Registry, String, boolean, Class[], Object...)} otherwise it demands on implementation (it should not be null)!
+	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link ParserRegistry#parse(String, boolean, Class, Object...)} otherwise it demands on implementation (it should not be null)!
 	 * @param obj | Object to convert into string!
 	 * @param preferedProtocol | Protocol to use preferably.
 	 * @param args | Some additional args. This can be anything and it demands on implementation of DataConverter. Default SerialX API implementation will provide some flags about formating (2 ints)!

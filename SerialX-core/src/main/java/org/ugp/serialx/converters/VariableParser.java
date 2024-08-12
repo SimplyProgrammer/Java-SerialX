@@ -5,7 +5,6 @@ import static org.ugp.serialx.Utils.contains;
 import static org.ugp.serialx.Utils.splitValues;
 
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.Registry;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
 
@@ -51,7 +50,7 @@ public class VariableParser implements DataParser
 	}
 
 	/**
-	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link DataParser#parseObj(Registry, String, boolean, Class[], Object...)} otherwise it demands on implementation (it should not be null)!
+	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link ParserRegistry#parse(String, boolean, Class, Object...)} otherwise it demands on implementation (it should not be null)!
 	 * @param str | Source string, should not be null or empty (preferably with some variables to read)!
 	 * @param scope | Source scope to read from, can't be null!
 	 * @param args | Some additional args. This can be anything and it demands on implementation of DataParser.

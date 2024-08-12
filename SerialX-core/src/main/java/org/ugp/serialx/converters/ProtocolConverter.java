@@ -9,10 +9,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.LogProvider;
-import org.ugp.serialx.Registry;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.Utils;
@@ -70,17 +71,17 @@ public class ProtocolConverter implements DataConverter
 	 */
 	protected boolean useBase64IfCan = false;
 	
-	protected boolean allowStaticMemberInvocation = false;
+	protected Set<Class<?>> invokableClasses = new HashSet<>(Arrays.asList(Math.class, Scope.class, Double.class, Float.class, String.class));
 	
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... compilerArgs)
 	{	
-		int len;	
+		int len;
 		if ((len = str.length()) > 0)
 		{
 			if ((str.charAt(0) | ' ') == '{' && (str.charAt(--len) | ' ') == '}') // Unwrap if wrapped in {}
 				str = str.substring(1, len).trim();
-			
+
 			Class<?> objClass;
 			if ((objClass = getProtocolExprClass(str, compilerArgs)) != null) // Get class of protocol expr or continue if there is none
 				return parse(myHomeRegistry, objClass, str, compilerArgs);
@@ -117,9 +118,9 @@ public class ProtocolConverter implements DataConverter
 		if ((args[0].charAt(0) | ' ') != '{' && (nameIndex = args[0].indexOf("::")) > -1) //Is static member invocation
 		{
 			String memberName = args[0].substring(nameIndex + 2);
-			if (!isAllowStaticMemberInvocation())
+			if (!getInvokableClasses().contains(objClass))
 			{
-				LogProvider.instance.logErr("Invocation of static member \"" + memberName + "\" from class \"" + objClass.getName() + "\" was denied because this feature is disabled by default for security reasons!", null);
+				LogProvider.instance.logErr("Invocation of static member \"" + memberName + "\" from class \"" + objClass.getName() + "\" was denied because it was not enabled for this class for security reasons!", null);
 				return null;
 			}
 				
@@ -169,7 +170,7 @@ public class ProtocolConverter implements DataConverter
 	}
 	
 	/**
-	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link DataParser#parseObj(Registry, String, boolean, Class[], Object...)} otherwise it demands on implementation (it should not be null)!
+	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link ParserRegistry#parse(String, boolean, Class, Object...)} otherwise it demands on implementation (it should not be null)!
 	 * @param obj | Object to convert into string!
 	 * @param preferedProtocol | Protocol to use preferably.
 	 * @param args | Some additional args. This can be anything and it demands on implementation of DataConverter. Default SerialX API implementation will provide some flags about formating (2 ints)!
@@ -277,23 +278,14 @@ public class ProtocolConverter implements DataConverter
 	}
 
 	/**
-	 * @return True if invocation of static members (:: operator) is allowed (false by default)!
+	 * @return Classes that are eligible for public static member invocation (:: operator)!<br>
+	 * Note: {@link Math} {@link Scope} {@link Double}, {@link Float} and {@link String} are invokable by default! If you want to disable static member invocation completely, call {@link Set#clear()} on this method!
 	 * 
-	 * @since 1.3.8
+	 * @since 1.3.8 
 	 */
-	public boolean isAllowStaticMemberInvocation()
+	public Set<Class<?>> getInvokableClasses() 
 	{
-		return allowStaticMemberInvocation;
-	}
-
-	/**
-	 * @param allowStaticMemberInvocation | Enable/disable the invocation of static members (:: operator) (false by default)!
-	 * 
-	 * @since 1.3.8
-	 */
-	public void setAllowStaticMemberInvocation(boolean allowStaticMemberInvocation) 
-	{
-		this.allowStaticMemberInvocation = allowStaticMemberInvocation;
+		return invokableClasses;
 	}
 
 	/**
