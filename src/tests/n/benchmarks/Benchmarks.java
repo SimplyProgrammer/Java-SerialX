@@ -14,7 +14,7 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
@@ -50,6 +50,9 @@ public class Benchmarks {
 //	
 //	@Param({"true", "f", "TRue", "FaLse", "tru0", "asdasdzxc", "falsr"})
 //	String bvalue;
+	
+	@Param({"adsadas {adsa {asdasd adasdsa asdas} adasdsdas } adsad adas", "{a{b{c}}aaaaaa}"})
+	String objs;
 	
 	GenericScope<Object, Number> scope;
 	
@@ -118,10 +121,10 @@ public class Benchmarks {
 //		};
 //	};
 	
-	@Setup()
-	public void setup() {
-		scope = new GenericScope<Object, Number>(null, nums(1000_000));
-	}
+//	@Setup()
+//	public void setup() {
+//		scope = new GenericScope<Object, Number>(null, nums(1000_000));
+//	}
 	
 //	@Benchmark
 //	public void bench(Blackhole hole)

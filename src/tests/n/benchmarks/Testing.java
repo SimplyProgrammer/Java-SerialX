@@ -28,7 +28,7 @@ public class Testing {
 		char mark = (char) new OperationGroups().hashCode();
 		System.out.println(OperationGroups.isGroupMark(new StringBuilder().append(mark--).append(21).append(mark), ++mark));
 		
-		str = "jjiij {ha -> asd } \"hchaha\"\" a->b\" aaa bbb ha";
+		str = "jjiij {ha -> asd } \"hchaha\" a->b\" aaa bbb ha {}";
 		System.err.println(Utils.showPosInString(str, Utils.indexOfNotInObj(str, 0, str.length(), -1, true, "->")));
 
 //		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true);

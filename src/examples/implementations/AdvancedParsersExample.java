@@ -47,6 +47,5 @@ public class AdvancedParsersExample
 		
 		//Printing the results of our script...
 		System.out.println(interpreter); //This is not necessary in this case!
-		
 	}
 }
