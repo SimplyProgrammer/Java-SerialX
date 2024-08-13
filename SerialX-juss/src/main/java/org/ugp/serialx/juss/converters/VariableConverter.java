@@ -204,20 +204,29 @@ public class VariableConverter extends VariableParser implements DataConverter
 	 */
 	public static int isVarAssignment(CharSequence s)
 	{
-		for (int i = 0, brackets = 0, len = s.length(), oldCh = -1, chNext; i < len; i++)
+		for (int i = 0, len = s.length(), oldCh = -1, chNext; i < len; i++)
 		{
-			char ch = s.charAt(i);
+			int ch = s.charAt(i);
 			if (ch == '"')
 				while (++i < len && s.charAt(i) != '"');
 			else if (ch == '?')
 				return -1;
-			else if (brackets == 0 && (ch == '=' || ch == ':') && !(oldCh == '=' || oldCh == ':' || oldCh == '!' || oldCh == '>'|| oldCh == '<') && (i >= len-1 || !((chNext = s.charAt(i+1)) == '=' || chNext == ':' || chNext ==  '!' || chNext == '>'|| chNext == '<')))
-				return i;	
 			else if ((ch | ' ') == '{')
-				brackets++;
-			else if ((ch | ' ') == '}')
-				if (brackets > 0)
-					brackets--;
+			{
+				for (int brackets = 1; brackets != 0; )
+				{
+					if (++i >= len)
+						throw new IllegalArgumentException("Missing ("+ brackets + ") closing bracket in: " + s);
+					if ((ch = (s.charAt(i) | ' ')) == '{')
+						brackets++;
+					else if (ch == '}')
+						brackets--;
+					else if (ch == '"')
+						while (++i < len && s.charAt(i) != '"');
+				}
+			}
+			else if ((ch == '=' || ch == ':') && !(oldCh == '=' || oldCh == ':' || oldCh == '!' || oldCh == '>'|| oldCh == '<') && (i >= len-1 || !((chNext = s.charAt(i+1)) == '=' || chNext == ':' || chNext ==  '!' || chNext == '>'|| chNext == '<')))
+				return i;	
 
 			oldCh = ch;
 		}

@@ -414,8 +414,7 @@ public class ArithmeticOperators implements DataParser
 				brackets++;
 			else if ((ch | ' ') == '}')
 				brackets--;
-			
-			if (type == 1 || quote % 2 == 0 && brackets == 0)
+			else if (type == 1 || quote % 2 == 0 && brackets == 0)
 			{
 				if ((type = isOneOf(ch, oprs) ? 1 : 0) != lastType)
 				{
@@ -450,28 +449,35 @@ public class ArithmeticOperators implements DataParser
 	public static boolean isExpression(CharSequence str, int to, char... operators)
 	{
 		int hasOpr = -1;
-		for (int i = 0, oldCh = 0, isCof = 0, quote = 0, brackets = 0; i < to; i++)
+		for (int i = 0, oldCh = 0, isCof = 0; i < to; i++)
 		{
-			char ch = str.charAt(i);
+			int ch = str.charAt(i);
 			if (ch > 32)
 			{
-				if (ch == '\"')
-					quote++;
-				else if (quote % 2 == 0)
+				if (ch == '"')
+					while (++i < to && str.charAt(i) != '"');
+				else if ((ch | ' ') == '{')
 				{
-					if ((ch | ' ') == '{')
-						brackets++;
-					else if ((ch | ' ') == '}')
-						brackets--;
-					else if (brackets == 0)
+					for (int brackets = 1; brackets != 0; )
 					{
-						if (isOneOf(ch, operators))
-							hasOpr = isCof = 0;
-						else if (oldCh <= 32 && isCof == 1)
-							return false;
-						else
-							isCof = 1;
+						if (++i >= to)
+							throw new IllegalArgumentException("Missing ("+ brackets + ") closing bracket in: " + str);
+						if ((ch = (str.charAt(i) | ' ')) == '{')
+							brackets++;
+						else if (ch == '}')
+							brackets--;
+						else if (ch == '"')
+							while (++i < to && str.charAt(i) != '"');
 					}
+				}
+				else
+				{
+					if (isOneOf(ch, operators))
+						hasOpr = isCof = 0;
+					else if (oldCh <= 32 && isCof == 1)
+						return false;
+					else
+						isCof = 1;
 				}
 			}
 			oldCh = ch;

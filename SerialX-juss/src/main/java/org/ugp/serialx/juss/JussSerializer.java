@@ -596,18 +596,32 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		ParserRegistry reg = getParsers();
 
 		//DataParser[] parsers = new DataParser[DataParser.REGISTRY.size()];
-		int brackets = 0, lastIndex = 0, len = formattedStr.length();
+		int lastIndex = 0, len = formattedStr.length();
 		//boolean isBracketSplit = false;
 		for (int i = 0; i < len; i++)
 		{
-			char ch = formattedStr.charAt(i);
+			int ch = formattedStr.charAt(i);
 			if (ch == '"')
 			{
 				do if (++i >= len)
 					throw new IllegalArgumentException("Unclosed or missing quotes in: " + formattedStr);
 				while (formattedStr.charAt(i) != '"');
 			}
-			else if (brackets == 0 && (ch == ';' || ch == ',')/* || (brackets == 1 && (isBracketSplit = ch == '}' || ch == ']'))*/)
+			else if ((ch | ' ') == '{')
+			{
+				for (int brackets = 1; brackets != 0; )
+				{
+					if (++i >= len)
+						throw new IllegalArgumentException("Missing ("+ brackets + ") closing bracket in: " + formattedStr);
+					if ((ch = (formattedStr.charAt(i) | ' ')) == '{')
+						brackets++;
+					else if (ch == '}')
+						brackets--;
+					else if (ch == '"')
+						while (++i < len && formattedStr.charAt(i) != '"');
+				}
+			}
+			else if ((ch == ';' || ch == ',')/* || (brackets == 1 && (isBracketSplit = ch == '}' || ch == ']'))*/)
 			{
 				String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, lastIndex = i /*+ (isBracketSplit ? 1 : 0)*/).trim();
 				if (!str.isEmpty())
@@ -618,19 +632,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 				}
 				//add = 1;
 			}
-			else if ((ch | ' ') == '{')
-				brackets++;
-			else if ((ch | ' ') == '}')
-			{
-				if (brackets > 0)
-					brackets--;
-				else
-					throw new IllegalArgumentException("Missing opening bracket in: " + formattedStr);
-			}
 		}
-
-		if (brackets > 0)
-			throw new IllegalArgumentException("Unclosed brackets in: " + formattedStr); 
 
 		String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, len).trim();
 		if (!str.isEmpty())

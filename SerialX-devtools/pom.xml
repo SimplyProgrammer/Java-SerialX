@@ -8,7 +8,7 @@
   
   <groupId>org.ugp.serialx</groupId>
   <artifactId>devtools</artifactId>
-  <version>1.3.7</version>
+  <version>1.3.8</version>
   
   <name>SerialX devtools</name>
   <description>Tools for debugging, mainly for Parser/Converter API. It is intended for DSL developers and people who want to add their own data formats.</description>

@@ -66,16 +66,26 @@ public class ConditionalAssignmentOperators implements DataParser
 	 */
 	public static int indexOfTernaryElse(CharSequence str, int defaultCountOfConfitions, char... ternaryOperators)
 	{
-		for (int i = 0, len = str.length(), oldCh = -1, tokenCount = 0, brackets = 0; i < len; i++)
+		for (int i = 0, len = str.length(), oldCh = -1, tokenCount = 0; i < len; i++)
 		{
-			char ch = str.charAt(i);
+			int ch = str.charAt(i);
 			if (ch == '\"')
 				while (++i < len && str.charAt(i) != '"');
 			else if ((ch | ' ') == '{')
-				brackets++;
-			else if ((ch | ' ') == '}')
-				brackets--;
-			else if (brackets == 0)
+			{
+				for (int brackets = 1; brackets != 0; )
+				{
+					if (++i >= len)
+						throw new IllegalArgumentException("Missing ("+ brackets + ") closing bracket in: " + str);
+					if ((ch = (str.charAt(i) | ' ')) == '{')
+						brackets++;
+					else if (ch == '}')
+						brackets--;
+					else if (ch == '"')
+						while (++i < len && str.charAt(i) != '"');
+				}
+			}
+			else
 			{
 				for (char token : ternaryOperators)
 					if (ch == token && oldCh != token && (i >= len-1 || str.charAt(i+1) != token))
@@ -103,16 +113,26 @@ public class ConditionalAssignmentOperators implements DataParser
 	 */
 	public static int indexOfOne(CharSequence str, int from, char oneChar)
 	{
-		for (int len = str.length(), oldCh = -1, brackets = 0; from < len; from++) 
+		for (int len = str.length(), oldCh = -1; from < len; from++) 
 		{
-			char ch = str.charAt(from);
+			int ch = str.charAt(from);
 			if (ch == '\"')
 				while (++from < len && str.charAt(from) != '"');
 			else if ((ch | ' ') == '{')
-				brackets++;
-			else if ((ch | ' ') == '}')
-				brackets--;
-			else if (brackets == 0 && ch == oneChar && oldCh != oneChar && (from >= len-1 || str.charAt(from+1) != oneChar))
+			{
+				for (int brackets = 1; brackets != 0; )
+				{
+					if (++from >= len)
+						throw new IllegalArgumentException("Missing ("+ brackets + ") closing bracket in: " + str);
+					if ((ch = (str.charAt(from) | ' ')) == '{')
+						brackets++;
+					else if (ch == '}')
+						brackets--;
+					else if (ch == '"')
+						while (++from < len && str.charAt(from) != '"');
+				}
+			}
+			else if (ch == oneChar && oldCh != oneChar && (from >= len-1 || str.charAt(from+1) != oneChar))
 				return from;
 			oldCh = ch;
 		}

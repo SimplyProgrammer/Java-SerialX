@@ -127,21 +127,26 @@ public class OperationGroups implements DataParser
 	 */
 	public static int indexOfOpening(CharSequence str, int from, char... openings)
 	{
-		for (int len = str.length(), brackets = 0; from < len; from++) 
+		for (int len = str.length(); from < len; from++) 
 		{
-			char ch = str.charAt(from);
+			int ch = str.charAt(from);
 			if (ch == '"')
 				while (++from < len && str.charAt(from) != '"');
 			else if ((ch | ' ') == '{')
-				brackets++;
-			else if ((ch | ' ') == '}')
 			{
-				if (brackets > 0)
-					brackets--;
-				else
-					throw new IllegalArgumentException("Missing opening bracket in: " + str);
+				for (int brackets = 1; brackets != 0; )
+				{
+					if (++from >= len)
+						throw new IllegalArgumentException("Missing ("+ brackets + ") closing bracket in: " + str);
+					if ((ch = (str.charAt(from) | ' ')) == '{')
+						brackets++;
+					else if (ch == '}')
+						brackets--;
+					else if (ch == '"')
+						while (++from < len && str.charAt(from) != '"');
+				}
 			}
-			else if (brackets == 0 && isOneOf(ch, openings))
+			else if (isOneOf(ch, openings))
 				return from;
 		}
 		return -1;
@@ -159,21 +164,26 @@ public class OperationGroups implements DataParser
 	 */
 	public static int indexOfClosing(CharSequence str, int from, char[] openings, char... closing) 
 	{
-		for (int len = str.length(), brackets = 0, ops = 0; from < len; from++) 
+		for (int len = str.length(), ops = 0; from < len; from++) 
 		{
-			char ch = str.charAt(from);
+			int ch = str.charAt(from);
 			if (ch == '"')
 				while (++from < len && str.charAt(from) != '"');
 			else if ((ch | ' ') == '{')
-				brackets++;
-			else if ((ch | ' ') == '}')
 			{
-				if (brackets > 0)
-					brackets--;
-				else
-					throw new IllegalArgumentException("Missing opening bracket in: " + str);
+				for (int brackets = 1; brackets != 0; )
+				{
+					if (++from >= len)
+						throw new IllegalArgumentException("Missing ("+ brackets + ") closing bracket in: " + str);
+					if ((ch = (str.charAt(from) | ' ')) == '{')
+						brackets++;
+					else if (ch == '}')
+						brackets--;
+					else if (ch == '"')
+						while (++from < len && str.charAt(from) != '"');
+				}
 			}
-			else if (brackets == 0)
+			else
 			{
 				if (isOneOf(ch, openings))
 					ops++;

@@ -466,7 +466,8 @@ public final class Utils {
 	 * @param s | String to split and check some syntax.
 	 * @param splitter | Chars where string will be split!
 	 * 
-	 * @return String splitted after splitters. More than one splitter in row will be take as 1. Each resulting token will be {@link String#trim() trim}<code>med</code>!
+	 * @return String splitted after splitters. More than one splitter in row will be take as 1. Each resulting token will be {@link String#trim() trim}<code>med</code>!<br>
+	 * Note: Splitting will only occur if splitter is not in object meaning it is not in string nor between '{' or '[' and ']' or '}
 	 * 
 	 * @since 1.0.0
 	 */
@@ -483,7 +484,8 @@ public final class Utils {
 	 * 	<b>If 2</b>, splitting will occur after any number of splitters, n number of splitters in row will be treated as 1!
 	 * @param splitter | Chars where string will be split!
 	 * 
-	 * @return String splitted after splitters according to arguments. Each resulting token will be {@link String#trim() trim}<code>med</code>!
+	 * @return String splitted after splitters according to arguments. Each resulting token will be {@link String#trim() trim}<code>med</code>!<br>
+	 * Note: Splitting will only occur if splitter is not in object meaning it is not in string nor between '{' or '[' and ']' or '}'
 	 * 
 	 * @since 1.3.0
 	 */
@@ -501,7 +503,8 @@ public final class Utils {
 	 * @param splitBreaks | When some of these characters is encountered, splitting is terminated for the rest of the string! 
 	 * @param splitter | Chars where string will be split!
 	 * 
-	 * @return String splitted after splitters according to arguments. Each resulting token will be {@link String#trim() trim}<code>med</code>!
+	 * @return String splitted after splitters according to arguments. Each resulting token will be {@link String#trim() trim}<code>med</code>!<br>
+	 * Note: Splitting will only occur if splitter is not in object meaning it is not in string nor between '{' or '[' and ']' or '}'
 	 * 
 	 * @since 1.3.5
 	 */
@@ -517,10 +520,11 @@ public final class Utils {
 	 * @param splittingStrategy | <b>If 0</b>, splitting will occur after each splitter! 
 	 * 	<b>If 1</b>, string will be splitted after only one splitter, more than one splitters in row will be ignored! 
 	 * 	<b>If 2</b>, splitting will occur after any number of splitters, n number of splitters in row will be treated as 1!
-	 * @param splitBreaks | When some of these characters is encountered, splitting is terminated for the rest of the string! 
+	 * @param splitBreaks | When some of these characters is encountered (not in object), splitting is terminated for the rest of the string! 
 	 * @param splitter | Chars where string will be split!
 	 * 
-	 * @return String splitted after splitters according to arguments. Each resulting token will be {@link String#trim() trim}<code>med</code>!
+	 * @return String splitted after splitters according to arguments. Each resulting token will be {@link String#trim() trim}<code>med</code>!<br>
+	 * Note: Splitting will only occur if splitter is not in object meaning it is not in string nor between '{' or '[' and ']' or '}'
 	 * 
 	 * @since 1.3.8
 	 */
@@ -534,51 +538,47 @@ public final class Utils {
 		
 		List<String> result = new ArrayList<>();
 		
-		int brackets = 0, lastIndex = 0, len = s.length();
+		int lastIndex = 0, len = s.length();
 		for (int count = 1, oldCh = 0; i < len && (limit <= 0 || count < limit); i++)
 		{
-			char ch = s.charAt(i);
+			int ch = s.charAt(i);
 			if (ch == '"')
 			{
 				do if (++i >= len)
 					throw new IllegalArgumentException("Unclosed or missing quotes in: " + s);
 				while (s.charAt(i) != '"');
 			}
-			else
+			else if ((ch | ' ') == '{')
 			{
-				if (isOneOf(ch, splitBreaks))
+				for (int brackets = 1; brackets != 0; )
 				{
-					brackets = 0;
-					break;
-				}
-				
-				if (brackets == 0 && isOneOf(ch, splitter) &&
-					(splittingStrategy != 1 || ch != oldCh && (i >= len-1 || !isOneOf(s.charAt(i+1), splitter))))
-				{	
-					String tok = s.substring(lastIndex, i).trim();
-					if (splittingStrategy < 2 || result.isEmpty() || !tok.isEmpty())
-					{
-						result.add(tok);
-						lastIndex = i + 1;
-						
-						count++;
-					}
-				}
-				else if ((ch | ' ') == '{')
-					brackets++;
-				else if ((ch | ' ') == '}')
-				{
-					if (brackets > 0)
+					if (++i >= len)
+						throw new IllegalArgumentException("Missing ("+ brackets + ") closing bracket in: " + s);
+					if ((ch = (s.charAt(i) | ' ')) == '{')
+						brackets++;
+					else if (ch == '}')
 						brackets--;
-					else
-						throw new IllegalArgumentException("Missing opening bracket in: " + s);
+					else if (ch == '"')
+						while (++i < len && s.charAt(i) != '"');
 				}
 			}
+			else if (isOneOf(ch, splitBreaks))
+				break;
+			else if (isOneOf(ch, splitter) &&
+				(splittingStrategy != 1 || ch != oldCh && (i >= len-1 || !isOneOf(s.charAt(i+1), splitter))))
+			{	
+				String tok = s.substring(lastIndex, i).trim();
+				if (splittingStrategy < 2 || result.isEmpty() || !tok.isEmpty())
+				{
+					result.add(tok);
+					lastIndex = i + 1;
+					
+					count++;
+				}
+			}
+			
 			oldCh = ch;
 		}
-		
-		if (brackets > 0)
-			throw new IllegalArgumentException("Unclosed brackets in: " + s);
 
 		result.add(s.substring(lastIndex, len).trim());
 		return result.toArray(new String[0]);
@@ -611,25 +611,30 @@ public final class Utils {
 	 */
 	public static int indexOfNotInObj(CharSequence s, int from, int to, int defaultReturn, boolean firstIndex, char... oneOf)
 	{
-		for (int brackets = 0; from < to; from++)
+		for (; from < to; from++)
 		{
-			char ch = s.charAt(from);
+			int ch = s.charAt(from);
 			if (ch == '"')
 				while (++from < to && s.charAt(from) != '"');
-			else if (brackets == 0 && /*oneOf.length == 0 ? ch == oneOf[0] :*/ isOneOf(ch, oneOf))
+			else if ((ch | ' ') == '{')
+			{
+				for (int brackets = 1; brackets != 0; )
+				{
+					if (++from >= to)
+						throw new IllegalArgumentException("Missing ("+ brackets + ") closing bracket in: " + s);
+					if ((ch = (s.charAt(from) | ' ')) == '{')
+						brackets++;
+					else if (ch == '}')
+						brackets--;
+					else if (ch == '"')
+						while (++from < to && s.charAt(from) != '"');
+				}
+			}
+			else if (isOneOf(ch, oneOf))
 			{
 				if (firstIndex)
 					return from;
 				defaultReturn = from;
-			}
-			else if ((ch | ' ') == '{')
-				brackets++;
-			else if ((ch | ' ') == '}')
-			{
-				if (brackets > 0)
-					brackets--;
-				else
-					throw new IllegalArgumentException("Missing closing bracket in: " + s);
 			}
 		}
 		return defaultReturn;
@@ -665,21 +670,26 @@ public final class Utils {
 		if (sequencesToFind.length < 1)
 			return defaultReturn;
 
-		for (int brackets = 0; from < to; from++)
+		for (; from < to; from++)
 		{
-			char ch = s.charAt(from);
+			int ch = s.charAt(from);
 			if (ch == '"')
 				while (++from < to && s.charAt(from) != '"');
 			else if ((ch | ' ') == '{')
-				brackets++;
-			else if ((ch | ' ') == '}')
 			{
-				if (brackets > 0)
-					brackets--;
-				else
-					throw new IllegalArgumentException("Missing closing bracket in: " + s);
+				for (int brackets = 1; brackets != 0; )
+				{
+					if (++from >= to)
+						throw new IllegalArgumentException("Missing ("+ brackets + ") closing bracket in: " + s);
+					if ((ch = (s.charAt(from) | ' ')) == '{')
+						brackets++;
+					else if (ch == '}')
+						brackets--;
+					else if (ch == '"')
+						while (++from < to && s.charAt(from) != '"');
+				}
 			}
-			else if (brackets == 0)
+			else
 			{
 				findMatch: for (int cur = 0, seqsLen = sequencesToFind.length; cur < seqsLen; cur++) 
 				{
