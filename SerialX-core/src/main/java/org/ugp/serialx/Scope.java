@@ -93,7 +93,7 @@ public class Scope extends GenericScope<String, Object>
 	/**
 	 * @param variablesMap | Initial variables to be added in to this scope!
 	 * @param values | Initial independent values to be added in to this scope!
-	 * @param | Parent of this scope.
+	 * @param parent | Parent of this scope.
 
 	 * @since 1.3.5
 	 */
@@ -103,7 +103,7 @@ public class Scope extends GenericScope<String, Object>
 	}
 	
 	@Override
-	public Scope clone() 
+	public Scope clone()
 	{
 		try 
 		{

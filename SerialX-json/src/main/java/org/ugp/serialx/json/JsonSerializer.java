@@ -229,7 +229,7 @@ public class JsonSerializer extends JussSerializer
 	}
 	
 	/**
-	 * @param jsonSerializer | JsonSerializer to create {@link JussSerializer} from!
+	 * @param jussSerializer | JussSerializer to create {@link JsonSerializer} from!
 	 * 
 	 * @return JussSerializer created from JsonSerializer, all values and variables will remain intact!
 	 * 

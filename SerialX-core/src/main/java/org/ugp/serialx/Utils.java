@@ -142,7 +142,7 @@ public final class Utils {
 	
 	/**
 	 * @param obj | The object the underlying method is invoked from!
-	 * @param cls | Class to invoke method from.
+	 * @param objCls | Class to invoke method from.
 	 * @param name | Name of public static method to be called.
 	 * @param args | Arguments of method. Arguments should be certain if method is overloaded!
 	 * 
@@ -165,7 +165,7 @@ public final class Utils {
 	
 	/**
 	 * @param obj | The object the underlying method is invoked from!
-	 * @param cls | Class to invoke method from.
+	 * @param objCls | Class to invoke method from.
 	 * @param name | Name of public static method to be called.
 	 * @param argClasses | Classes of args.
 	 * @param args | Arguments of method. Arguments should be certain if method is overloaded!
@@ -447,8 +447,8 @@ public final class Utils {
 	}
 	
 	/**
-	 * @param ch | String to multiply!
-	 * @param str | Count of multiplication!
+	 * @param str | String to multiply!
+	 * @param times | Count of multiplication!
 	 * 
 	 * @return Multiplied char, for example <code>multilpy("a", 5)</code> will return "aaaaa";
 	 * 

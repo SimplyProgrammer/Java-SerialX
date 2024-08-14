@@ -58,7 +58,7 @@ public class ConditionalAssignmentOperators implements DataParser
 	/**
 	 * @param str | Source string to search.
 	 * @param defaultCountOfConfitions | How many condition operators (tenraryTokens[0]) are expected. Should be 1 in most cases.
-	 * @param tenraryTokens | Characters representing parts of ternary operator. Index 0 should be '?' and index 1 should be ':'.
+	 * @param ternaryOperators | Characters representing parts of ternary operator. Index 0 should be '?' and index 1 should be ':'.
 	 * 
 	 * @return Return index of else branch in ternary operator expression or -1 if there is no else branch!
 	 * 

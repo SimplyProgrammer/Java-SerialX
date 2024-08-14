@@ -122,9 +122,9 @@ public class ObjectConverter extends ProtocolConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object arg, Object... args)
+	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args)
 	{
-		return toString(myHomeRegistry, arg, null, args);
+		return toString(myHomeRegistry, obj, null, args);
 	}
 	
 	/**
@@ -139,17 +139,17 @@ public class ObjectConverter extends ProtocolConverter
 	 * @since 1.3.5
 	 */
 	@SuppressWarnings("unchecked")
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object arg, SerializationProtocol<Object> preferedProtocol, Object... args) 
+	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, SerializationProtocol<Object> preferedProtocol, Object... args) 
 	{
-		if (arg instanceof Scope)
+		if (obj instanceof Scope)
 		{
 			Serializer serializer;
 			try
 			{
-				if (arg instanceof Serializer)
-					serializer = (Serializer) arg;
+				if (obj instanceof Serializer)
+					serializer = (Serializer) obj;
 				else if (args.length > 0 && args[0] instanceof Serializer)
-					(serializer = ((Serializer) args[0]).emptyClone()).addAll((GenericScope<String, ?>) arg);
+					(serializer = ((Serializer) args[0]).emptyClone()).addAll((GenericScope<String, ?>) obj);
 				else
 					serializer = getPreferredSerializer();
 			}
@@ -182,7 +182,7 @@ public class ObjectConverter extends ProtocolConverter
 			}
 		}
 
-		return super.toString(myHomeRegistry, arg, preferedProtocol, args);
+		return super.toString(myHomeRegistry, obj, preferedProtocol, args);
 	}
 	
 	@Override

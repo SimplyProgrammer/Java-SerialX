@@ -23,7 +23,7 @@ import org.ugp.serialx.converters.DataParser;
 public class ArithmeticOperators implements DataParser
 {
 	/**
-	 * @deprecated DO NOT USE! USE {@link ArithmeticOperators#evalOperator(Object, String, Object)} AND {@link ArithmeticOperators#getOperatorPriority(String)} INSTEAD!
+	 * @deprecated DO NOT USE! USE {@link ArithmeticOperators#operator(Object, String, Object)} AND {@link ArithmeticOperators#getOperatorPriority(String)} INSTEAD!
 	 */
 	@Deprecated
 	protected String[] priority1Oprs = {"*", "*-", "/", "/-", "%"}, priority2Oprs = {"**", "**-"};

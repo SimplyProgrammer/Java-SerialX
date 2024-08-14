@@ -169,7 +169,7 @@ public class SerializationDebugger implements DataConverter
 	
 	/**
 	 * @param serializer | Serializer to debug!
-	 * @param debuger | Specific debugger to use!
+	 * @param debugger | Specific debugger to use!
 	 * 
 	 * @return Serializer capable of debugging its serialization and deserialization!
 	 * 

@@ -388,7 +388,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	
 	/**
 	 * @param reader | Reader to read from!
-	 * @param formatingArgs | Additional arguments to use. In case of JussSerializer, this should be array of length 4 with 0. argument will being this pointer of this scope (it can be also boolean signifying if formating is required), 1. and 2. argument are null (they are used by JUSS parsers) and argument 3. will be {@link ProtocolRegistry} used by this {@link Serializer}, and additional argument 4. being of type {@link Class} containing information about class that is curently being serialized (used primarily by {@link ObjectConverter}).
+	 * @param args | Additional arguments to use. In case of JussSerializer, this should be array of length 4 with 0. argument will being this pointer of this scope (it can be also boolean signifying if formating is required), 1. and 2. argument are null (they are used by JUSS parsers) and argument 3. will be {@link ProtocolRegistry} used by this {@link Serializer}, and additional argument 4. being of type {@link Class} containing information about class that is curently being serialized (used primarily by {@link ObjectConverter}).
 	 * 
 	 * @return This scope after loading data from reader (you most likely want to return "this")!
 	 * 
@@ -673,7 +673,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 	
 	/**
-	 * @param variable | Variable to clone!
+	 * @param variableKey | Variable to clone!
 	 * 
 	 * @return Clone of value stored by variable with inserted name or null if there is no such a one!
 	 * <br><br>
@@ -681,13 +681,13 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @since 1.3.2
 	 */
-	public <T> T cloneOf(String variableName)
+	public <T> T cloneOf(String variableKey)
 	{
-		return cloneOf(variableName, null);
+		return cloneOf(variableKey, null);
 	}
 	
 	/**
-	 * @param variable | Variable to clone!
+	 * @param variableKey | Variable to clone!
 	 * @param defaultValue | Default value to return.
 	 * 
 	 * @return Clone of value stored by variable with inserted name or defaultValue if there is no such a one or given key contains null!
@@ -696,9 +696,9 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @since 1.3.2
 	 */
-	public <T> T cloneOf(String variableName, T defaultValue)
+	public <T> T cloneOf(String variableKey, T defaultValue)
 	{
-		T obj = get(variableName, defaultValue);
+		T obj = get(variableKey, defaultValue);
 		if (obj == defaultValue)
 			return defaultValue;
 		return Clone(obj, getParsers(), new Object[] {-99999, 0, this, getProtocols(), isGenerateComments()}, this, null, null, getProtocols());

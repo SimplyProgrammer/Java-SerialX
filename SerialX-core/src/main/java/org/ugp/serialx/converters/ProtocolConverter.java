@@ -164,9 +164,9 @@ public class ProtocolConverter implements DataConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object arg, Object... args)
+	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args)
 	{
-		return toString(myHomeRegistry, arg, null, args);
+		return toString(myHomeRegistry, obj, null, args);
 	}
 	
 	/**
@@ -181,15 +181,15 @@ public class ProtocolConverter implements DataConverter
 	 * @since 1.3.5
 	 */
 	@SuppressWarnings("unchecked")
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object arg, SerializationProtocol<Object> preferedProtocol, Object... args) 
+	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, SerializationProtocol<Object> preferedProtocol, Object... args) 
 	{
-		if (arg == null)
+		if (obj == null)
 			return CONTINUE;
 		
-		if (useBase64IfCan && arg instanceof Serializable)
+		if (useBase64IfCan && obj instanceof Serializable)
 			return CONTINUE;
 		
-		if (preferedProtocol != null || (preferedProtocol = (SerializationProtocol<Object>) getProtocolFor(arg, SerializationProtocol.MODE_SERIALIZE, args)) != null)
+		if (preferedProtocol != null || (preferedProtocol = (SerializationProtocol<Object>) getProtocolFor(obj, SerializationProtocol.MODE_SERIALIZE, args)) != null)
 		{
 			Class<?> oldObjectClass = null;
 			try
@@ -200,10 +200,10 @@ public class ProtocolConverter implements DataConverter
 				if (args.length < 5)
 					args = Arrays.copyOf(args, 5);
 				oldObjectClass = (Class<?>) args[4];
-				args[4] = arg.getClass();;
+				args[4] = obj.getClass();;
 
-				Object[] objArgs = preferedProtocol.serialize(arg);
-				StringBuilder sb = new StringBuilder(ImportsProvider.getAliasFor(args.length > 0 ? args[0] : null, arg.getClass()) + (objArgs.length <= 0 ? "" : " "));
+				Object[] objArgs = preferedProtocol.serialize(obj);
+				StringBuilder sb = new StringBuilder(ImportsProvider.getAliasFor(args.length > 0 ? args[0] : null, obj.getClass()) + (objArgs.length <= 0 ? "" : " "));
 				
 				args = args.clone();
 				for (int i = 0, sizeEndl = 10000; i < objArgs.length; i++) 
@@ -229,7 +229,7 @@ public class ProtocolConverter implements DataConverter
 			}
 			catch (Exception e)
 			{
-				LogProvider.instance.logErr("Exception while serializing instance of \"" + arg.getClass().getName() + "\":", e);
+				LogProvider.instance.logErr("Exception while serializing instance of \"" + obj.getClass().getName() + "\":", e);
 				e.printStackTrace();
 			}
 			args[4] = oldObjectClass;

@@ -196,7 +196,7 @@ public interface ImportsProvider
 		/**
 		 * Constructs an {@link Imports} with inserted imports.
 		 * 
-		 * @param parsers | Initial content of registry.
+		 * @param imports | Initial content of registry.
 		 * 
 		 * @since 1.3.5
 		 */

@@ -48,10 +48,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	   <maven.compiler.source>${java.version}</maven.compiler.source>
 	   <maven.compiler.target>${java.version}</maven.compiler.target>
+	   
+	   <project.build.finalName>serialx-${project.artifactId}-${project.version}</project.build.finalName>
 	</properties>
 
 	<build>
-		<finalName>serialx-${project.artifactId}-${project.version}</finalName>
+		<finalName>${project.build.finalName}</finalName>
 		
 		<plugins>
 		  <plugin>
@@ -78,6 +80,36 @@
 				</dependency>
             </dependencies>
 		  </plugin>
+		  <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-javadoc-plugin</artifactId>
+	        <version>3.6.3</version>
+	        
+	        <configuration>
+	         <additionalOptions>-Xdoclint:none</additionalOptions>
+	         <additionalJOption>-Xdoclint:none</additionalJOption>
+	      	</configuration>
+	        
+	        <executions>
+	          <execution>
+	            <goals>
+	              <goal>jar</goal>
+	            </goals>
+	          </execution>
+	        </executions>
+	      </plugin>
+	      <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-source-plugin</artifactId>
+	        <version>3.2.1</version>
+	        <executions>
+	          <execution>
+	            <goals>
+	              <goal>jar</goal>
+	            </goals>
+	          </execution>
+	        </executions>
+	      </plugin>
 		</plugins>
 	</build>
 </project>
