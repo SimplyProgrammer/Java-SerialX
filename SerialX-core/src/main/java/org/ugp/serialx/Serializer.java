@@ -651,11 +651,11 @@ public abstract class Serializer extends Scope
 			</tr>
 		    <tr>
 			    <td>{@link Appendable}</td>
-			    <td>{@link Serializer#SerializeTo(Appendable)}</td>
+			    <td>{@link Serializer#SerializeTo(Appendable, Object...)}</td>
 			</tr>
 			<tr>
 			    <td>{@link OutputStream}</td>
-			    <td>{@link Serializer#SerializeTo(OutputStream)}</td>
+			    <td>{@link Serializer#SerializeTo(OutputStream, Object...)}</td>
 		  	</tr>
 		  	<tr>
 			    <td>{@link URL}</td>
@@ -755,7 +755,7 @@ public abstract class Serializer extends Scope
 	/**
 	 * @param newInstance | New instance of specific {@link Serializer}
 	 * @param fromObj | Object to create serializer from!
-	 * @param fieldNamesToUse | Array of obj field names to map into scopes variables using getters (read method)! {@link PropertyDescriptor}s of these fields will be obtained using {@link GenericScope#getPropertyDescriptorsOf(Class, String...)}! This is used only as a last (default) option!
+	 * @param fieldNamesToUse | Array of obj field names to map into scopes variables using getters (read method)! {@link PropertyDescriptor}s of these fields will be obtained using {@link Scope#getPropertyDescriptorsOf(Class, String...)}! This is used only as a last (default) option!
 	 * 
 	 * @return {@link Serializer} created from given fromObj by mapping obj's fields into variables of created serializer via given fields (fieldNamesToUse) and conversion rules listed below!!<br><br>
 	 * Table of specific Object --> Serializer conversions:
@@ -772,7 +772,7 @@ public abstract class Serializer extends Scope
 			</tr>
 			<tr>
 			    <td>{@link CharSequence}</td>
-			    <td>{@link Serializer#LoadFrom(CharSequence)}</td>
+			    <td>{@link Serializer#LoadFrom(CharSequence, Object...)}</td>
 		  	</tr>
 			<tr>
 			    <td>{@link CharSequence} (as http address)</td>
@@ -780,7 +780,7 @@ public abstract class Serializer extends Scope
 		  	</tr>
 		    <tr>
 			    <td>{@link File}</td>
-			    <td>{@link Serializer#LoadFrom(File)}</td>
+			    <td>{@link Serializer#LoadFrom(File, Object...)}</td>
 			</tr>
 			<tr>
 			    <td>{@link Reader}</td>
@@ -788,7 +788,7 @@ public abstract class Serializer extends Scope
 			</tr>
 			<tr>
 			    <td>{@link InputStream}</td>
-			    <td>{@link Serializer#LoadFrom(InputStream)}</td>
+			    <td>{@link Serializer#LoadFrom(InputStream, Object...)}</td>
 		  	</tr>
 		  	<tr>
 			    <td>{@link URL}</td>

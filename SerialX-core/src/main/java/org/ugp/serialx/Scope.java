@@ -702,7 +702,7 @@ public class Scope extends GenericScope<String, Object>
 	 * If independent value is {@link GenericScope} like it supposed to, then values of scope are parsed to {@link SerializationProtocol} of objClass.
 	 * Note: Scopes are searched via regular independent value index no scope index like {@link Scope#getScope(int)}.
 	 * 
-	 * @see Serializer#PROTOCOL_REGISTRY
+	 * @see SerializationProtocol#REGISTRY
 	 * @see GenericScope#toObject(Class)
 	 * 
 	 * @throws Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!
@@ -725,7 +725,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @return Value of variable with name or null if there is no such a one! If there is no Scope<Object, ?> stored by variableWithScope this function behaves same as {@link Scope#get(String, Object)}!
 	 * If variableWithScope contains {@link GenericScope} like it supposed to, then values of scope are parsed to {@link SerializationProtocol} of objClass.
 	 * 
-	 * @see Serializer#PROTOCOL_REGISTRY
+	 * @see SerializationProtocol#REGISTRY
 	 * @see GenericScope#toObject(Class)
 	 * 
 	 * @throws Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!
@@ -745,7 +745,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @return Value of variable with name or defaultValue if there is no such a one or given key contains null! If there is no Scope<Object, ?> stored by variableWithScope this function behaves same as {@link Scope#get(String, Object)}!
 	 * If variableWithScope contains {@link GenericScope} like it supposed to, then values of scope are parsed to {@link SerializationProtocol} of objClass.
 	 * 
-	 * @see Serializer#PROTOCOL_REGISTRY
+	 * @see SerializationProtocol#REGISTRY
 	 * @see GenericScope#toObject(Class)
 	 * 
 	 * @throws Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!
@@ -766,7 +766,7 @@ public class Scope extends GenericScope<String, Object>
 	 * @return Value of variable with name or defaultValue if there is no such a one or given key contains null! If there is no Scope<Object, ?> stored by variableWithScope this function behaves same as {@link Scope#get(String, Object)}!
 	 * If variableWithScope contains {@link GenericScope} like it supposed to, then values of scope are parsed to {@link SerializationProtocol} of objClass.
 	 * 
-	 * @see Serializer#PROTOCOL_REGISTRY
+	 * @see SerializationProtocol#REGISTRY
 	 * @see GenericScope#toObject(Class)
 	 * 
 	 * @throws Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!

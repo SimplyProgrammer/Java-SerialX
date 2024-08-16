@@ -51,7 +51,7 @@ public final class Utils {
 	/**
 	 * @param f | Source file.
 	 * @param endlMode | 0 = no line brakes, 1 = always line brakes, 2 = line break only when contains with "//"! <br>
-	 * Note: You almost always want endlMode on 1. So thats why you should use {@link Serializer#LoadFileToString(File)} which is doing this automatically!
+	 * Note: You almost always want endlMode on 1. So thats why you should use {@link #LoadFileToString(File)} which is doing this automatically!
 	 * 
 	 * @return Content of file as string.
 	 * @throws IOException 
@@ -66,7 +66,7 @@ public final class Utils {
 	/**
 	 * @param input | Input stream to read to string!
 	 * @param endlMode | 0 = no line brakes, 1 = always line brakes, 2 = line break only when contains with "//"! <br>
-	 * Note: You almost always want endlMode on 1. So thats why you should use {@link Serializer#LoadFileToString(File)} which is doing this automatically!
+	 * Note: You almost always want endlMode on 1. So thats why you should use {@link #LoadFileToString(File)} which is doing this automatically!
 	 * 
 	 * @return Reader converted to string form!
 	 * 
@@ -82,7 +82,7 @@ public final class Utils {
 	/**
 	 * @param input | Input reader!
 	 * @param endlMode | 0 = no line brakes, 1 = always line brakes, 2 = line break only when contains with "//"! <br>
-	 * Note: You almost always want endlMode on 1. So thats why you should use {@link Serializer#LoadFileToString(File)} which is doing this automatically!
+	 * Note: You almost always want endlMode on 1. So thats why you should use {@link #LoadFileToString(File)} which is doing this automatically!
 	 * 
 	 * @return Reader converted to string form!
 	 * 
@@ -113,7 +113,7 @@ public final class Utils {
 	 * @param name | Name of public static method to be called.
 	 * @param args | Arguments of method. Arguments should be certain if method is overloaded!
 	 * 
-	 * @return The returned result of called method or {@link Serializer#VOID} if return type of method is void. If something when wrong you will be notified and null will be returned.
+	 * @return The returned result of called method or {@link #VOID} if return type of method is void. If something when wrong you will be notified and null will be returned.
 	 * 
 	 * @throws InvocationTargetException if called method throws and exception while calling!
 	 * 
@@ -129,7 +129,7 @@ public final class Utils {
 	 * @param name | Name of public static method to be called.
 	 * @param args | Arguments of method. Arguments should be certain if method is overloaded!
 	 * 
-	 * @return The returned result of called method or {@link Serializer#VOID} if return type of method is void. If something when wrong you will be notified and null will be returned.
+	 * @return The returned result of called method or {@link #VOID} if return type of method is void. If something when wrong you will be notified and null will be returned.
 	 * 
 	 * @throws InvocationTargetException if called method throws and exception while calling!
 	 * 
@@ -146,7 +146,7 @@ public final class Utils {
 	 * @param name | Name of public static method to be called.
 	 * @param args | Arguments of method. Arguments should be certain if method is overloaded!
 	 * 
-	 * @return The returned result of called method or {@link Serializer#VOID} if return type of method is void. If something when wrong you will be notified and null will be returned.
+	 * @return The returned result of called method or {@link #VOID} if return type of method is void. If something when wrong you will be notified and null will be returned.
 	 * 
 	 * @throws InvocationTargetException if called method throws and exception while calling!
 	 * 
@@ -170,7 +170,7 @@ public final class Utils {
 	 * @param argClasses | Classes of args.
 	 * @param args | Arguments of method. Arguments should be certain if method is overloaded!
 	 * 
-	 * @return The returned result of called method or {@link Serializer#VOID} if return type of method is void. If something when wrong you will be notified and null will be returned.
+	 * @return The returned result of called method or {@link #VOID} if return type of method is void. If something when wrong you will be notified and null will be returned.
 	 * 
 	 * @throws InvocationTargetException if called method throws and exception while calling!
 	 * 

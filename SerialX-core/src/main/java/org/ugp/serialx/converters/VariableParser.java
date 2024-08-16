@@ -36,7 +36,7 @@ public class VariableParser implements DataParser
 	 * @param source | Source object to get value of the member from (may or may not be null). Source should not be modified!
 	 * @param member | Name/key of the member to get.
 	 * 
-	 * @return The value of member from given source. You can think about this as ekvivalent to <code>source.member</code> in Java. If member with provided name/key is not present in the source or its value is not possible to get, {@link VOID} has to be returned! If source can't be accessed/dereferenced, <code>null</code> has to be returned!<br>
+	 * @return The value of member from given source. You can think about this as ekvivalent to <code>source.member</code> in Java. If member with provided name/key is not present in the source or its value is not possible to get, {@link #VOID} has to be returned! If source can't be accessed/dereferenced, <code>null</code> has to be returned!<br>
 	 * Note: This method is meant to be overridden in order to add support for accessing multiple sources because by default it supports only {@link GenericScope}
 	 * 
 	 * @since 1.3.8

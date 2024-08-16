@@ -1,6 +1,5 @@
 package org.ugp.serialx.juss.protocols;
 
-import static org.ugp.serialx.Utils.Instantiate;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -12,7 +11,7 @@ import java.util.List;
 
 import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.Scope;
-import org.ugp.serialx.Serializer;
+import org.ugp.serialx.Utils;
 import org.ugp.serialx.protocols.SerializationProtocol;
 
 /**
@@ -126,7 +125,7 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 	/**
 	 * @param objectClass | Class to create new instance of!
 	 * 
-	 * @return New blank instance of required class! When not override, it returns {@link Serializer#Instantiate(objectClass)} 
+	 * @return New blank instance of required class! When not override, it returns {@link Utils#Instantiate(Class)} 
 	 * 
 	 * @throws Exception if any exception occurs (based on implementation).
 	 * 
@@ -134,7 +133,7 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 	 */
 	public T createBlankInstance(Class<? extends T> objectClass) throws Exception
 	{
-		return Instantiate(objectClass);
+		return Utils.Instantiate(objectClass);
 	}
 	
 	@Override
@@ -168,7 +167,7 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 			return Scope.into(obj, (Scope) args[0], fieldDescriptors);
 		}
 		
-		for (int i = 0, size = fieldDescriptors.size(); i < size && i < args.length; i++)
+		for (int i = 0, size = Math.min(fieldDescriptors.size(), args.length); i < size; i++)
 		{
 			Method setter = fieldDescriptors.get(i).getWriteMethod();
 			Type expectedType = setter.getGenericParameterTypes()[0];

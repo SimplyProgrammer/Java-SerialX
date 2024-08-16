@@ -553,7 +553,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	/**
 	 * @param type | Class of object to create (may or may not support other implementations of {@link Type}).
 	 * 
-	 * @return Object of type constructed from this scopes independent values using protocol for given class or null if there was no protocol found in {@link Serializer#PROTOCOL_REGISTRY}! 
+	 * @return Object of type constructed from this scopes independent values using protocol for given class or null if there was no protocol found in {@link SerializationProtocol#REGISTRY}! 
 	 * 
 	 * @throws Exception | Exception if Exception occurred in {@link SerializationProtocol#unserialize(Class, Object...)}!
 	 * 

@@ -159,7 +159,7 @@ public class VariableConverter extends VariableParser implements DataConverter
 	 * @param genericVar | If true, member is expected be generic (not only string) and further parsing is required, may or may not be used... 
 	 * @param args | Some additional args to be used in case of parsing that are provided by called, may or may not be used... 
 	 *
-	 * @return By default it returns the previous value of the member. If member with provided name/key is not present in the source or its value is not possible to set, {@link VOID} should be returned! 
+	 * @return By default it returns the previous value of the member. If member with provided name/key is not present in the source or its value is not possible to set, {@link #VOID} should be returned! 
 	 * 
 	 * @since 1.3.8
 	 */

@@ -72,7 +72,7 @@ public class ComparisonOperators implements DataParser
 	 * @param obj2 | Object 2!
 	 * @param compareInstances | If true, this method will compare objects using <code>==</code> operator! 
 	 * 
-	 * @return True supposed to be returned if obj1 equals to obj2 otherwise false similar to {@link Objects#deepEquals(Object)} but this one can handle OOP crosstype number compression such as {@link Integer} and {@link Double}!
+	 * @return True supposed to be returned if obj1 equals to obj2 otherwise false similar to {@link Objects#deepEquals(Object, Object)} but this one can handle OOP crosstype number compression such as {@link Integer} and {@link Double}!
 	 * 
 	 * @since 1.3.2
 	 */
@@ -147,7 +147,7 @@ public class ComparisonOperators implements DataParser
 	 * @param obj1 | Object 1!
 	 * @param obj2 | Object 2!
 	 * 
-	 * @return True if obj1 equals to obj2 otherwise false similar to {@link Objects#deepEquals(Object)} but this one can handle OOP crosstype number compression such as {@link Integer} and {@link Double}!
+	 * @return True if obj1 equals to obj2 otherwise false similar to {@link Objects#deepEquals(Object, Object)} but this one can handle OOP crosstype number compression such as {@link Integer} and {@link Double}!
 	 * 
 	 * @since 1.3.0
 	 */
@@ -161,7 +161,7 @@ public class ComparisonOperators implements DataParser
 	 * @param obj2 | Object 2!
 	 * @param compareInstances | If true, this method will compare objects using <code>==</code> operator! 
 	 * 
-	 * @return True if obj1 equals to obj2 otherwise false similar to {@link Objects#deepEquals(Object)} but this one can handle OOP crosstype number compression such as {@link Integer} and {@link Double}!
+	 * @return True if obj1 equals to obj2 otherwise false similar to {@link Objects#deepEquals(Object, Object)} but this one can handle OOP crosstype number compression such as {@link Integer} and {@link Double}!
 	 * 
 	 * @since 1.3.2
 	 */

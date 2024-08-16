@@ -296,7 +296,7 @@ public class JsonSerializer extends JussSerializer
 			</tr>
 			<tr>
 			    <td>{@link CharSequence}</td>
-			    <td>{@link Serializer#LoadFrom(CharSequence)}</td>
+			    <td>{@link Serializer#LoadFrom(CharSequence, Object...)}</td>
 		  	</tr>
 			<tr>
 			    <td>{@link CharSequence} (as http address)</td>
@@ -304,7 +304,7 @@ public class JsonSerializer extends JussSerializer
 		  	</tr>
 		    <tr>
 			    <td>{@link File}</td>
-			    <td>{@link Serializer#LoadFrom(File)}</td>
+			    <td>{@link Serializer#LoadFrom(File, Object...)}</td>
 			</tr>
 			<tr>
 			    <td>{@link Reader}</td>
@@ -312,7 +312,7 @@ public class JsonSerializer extends JussSerializer
 			</tr>
 			<tr>
 			    <td>{@link InputStream}</td>
-			    <td>{@link Serializer#LoadFrom(InputStream)}</td>
+			    <td>{@link Serializer#LoadFrom(InputStream, Object...)}</td>
 		  	</tr>
 		  	<tr>
 			    <td>{@link URL}</td>
@@ -346,7 +346,7 @@ public class JsonSerializer extends JussSerializer
 	
 	/**
 	 * @param fromObj | Object to create serializer from!
-	 * @param fieldNamesToUse | Array of obj field names to map into scopes variables using getters (read method)! {@link PropertyDescriptor}s of these fields will be obtained using {@link GenericScope#getPropertyDescriptorsOf(Class, String...)}! This is used only as a last (default) option!
+	 * @param fieldNamesToUse | Array of obj field names to map into scopes variables using getters (read method)! {@link PropertyDescriptor}s of these fields will be obtained using {@link Scope#getPropertyDescriptorsOf(Class, String...)}! This is used only as a last (default) option!
 	 * 
 	 * @return {@link JsonSerializer} created from given fromObj by mapping obj's fields into variables of created serializer via given fields (fieldNamesToUse) and conversion rules listed below!!<br><br>
 	 * Table of specific Object --> JsonSerializer conversions:
@@ -363,7 +363,7 @@ public class JsonSerializer extends JussSerializer
 			</tr>
 			<tr>
 			    <td>{@link CharSequence}</td>
-			    <td>{@link Serializer#LoadFrom(CharSequence)}</td>
+			    <td>{@link Serializer#LoadFrom(CharSequence, Object...)}</td>
 		  	</tr>
 			<tr>
 			    <td>{@link CharSequence} (as http address)</td>
@@ -371,7 +371,7 @@ public class JsonSerializer extends JussSerializer
 		  	</tr>
 		    <tr>
 			    <td>{@link File}</td>
-			    <td>{@link Serializer#LoadFrom(File)}</td>
+			    <td>{@link Serializer#LoadFrom(File, Object...)}</td>
 			</tr>
 			<tr>
 			    <td>{@link Reader}</td>
@@ -379,7 +379,7 @@ public class JsonSerializer extends JussSerializer
 			</tr>
 			<tr>
 			    <td>{@link InputStream}</td>
-			    <td>{@link Serializer#LoadFrom(InputStream)}</td>
+			    <td>{@link Serializer#LoadFrom(InputStream, Object...)}</td>
 		  	</tr>
 		  	<tr>
 			    <td>{@link URL}</td>
