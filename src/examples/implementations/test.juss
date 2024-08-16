@@ -1,4 +1,4 @@
-//Date created: 08-14-2024 at 11:36:06 CEST 
+//Date created: 08-16-2024 at 13:02:23 CEST 
 
 //Scope serialization summary:
 //2 variables!
@@ -7,9 +7,9 @@
 num = 6; //Primitive data type: "6" the integer value! Stored by "num" variable!
 yourMom = "has an event horizon... //lol"; //Object of java.lang.String: "has an event horizon... //lol"! Stored by "yourMom" variable!
 "some string"; //Object of java.lang.String: "some string"!
-java.util.Random 68284896517770L; //Object of java.util.Random: "java.util.Random@6477463f" serialized using examples.implementations.GeneralExample$1[java.util.Random]!
+java.util.Random 68284896517770L; //Object of java.util.Random: "java.util.Random@46cdf8bd" serialized using examples.implementations.GeneralExample$1[java.util.Random]!
 ArrayList 0 0 T 1 3 0 5 T 5 6 {java.util.LinkedList 0 0 T 1 3 0 5 T 5 6}; //Object of java.util.ArrayList: "[0, 0, true, 1, 3, 0, 5, true, 5, 6, [0, 0, true, 1, 3, 0, 5, true, 5, 6]]" serialized using org.ugp.serialx.protocols.ListProtocol[java.util.Collection]!
-(1 2 3) (4 5 4) (3 2 1); //Primitive array [[I@3d71d552 converted by org.ugp.serialx.juss.converters.ArrayConverter
+(1 2 3) (4 5 4) (3 2 1); //Primitive array [[I@f0c8a99 converted by org.ugp.serialx.juss.converters.ArrayConverter
 {
 	//Scope serialization summary:
 	//1 variables!
