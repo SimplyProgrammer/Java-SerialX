@@ -14,7 +14,7 @@ UserInterfaceState.xcuserstate
 $RECYCLE.BIN/
 
 *.log
-_bench.juss
+*_bench.juss
 log.txt
 npm-debug.log*
 
