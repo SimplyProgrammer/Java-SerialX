@@ -51,8 +51,8 @@ public class Benchmarks {
 //	@Param({"true", "f", "TRue", "FaLse", "tru0", "asdasdzxc", "falsr"})
 //	String bvalue;
 	
-	@Param({"adsadas {adsa {asdasd adasdsa asdas} adasdsdas } adsad adas", "{a{b{c}}aaaaaa}"})
-	String objs;
+//	@Param({"adsadas {adsa {asdasd adasdsa asdas} adasdsdas } adsad adas", "{a{b{c}}aaaaaa}"})
+//	String objs;
 	
 	GenericScope<Object, Number> scope;
 	
@@ -140,12 +140,12 @@ public class Benchmarks {
 //		hole.consume(benchSubjectOld.parse(null, nvalue));
 //	}
 	
-	@Benchmark
-	public void bench(Blackhole hole)
-	{
-		hole.consume(scope.map(trans));
-//		hole.consume(boolConv.parse(null, bvalue));
-	}
+//	@Benchmark
+//	public void bench(Blackhole hole)
+//	{
+//		hole.consume(scope.map(trans));
+////		hole.consume(boolConv.parse(null, bvalue));
+//	}
 	
 //	@Benchmark
 //	public void benchOld(Blackhole hole)
@@ -158,6 +158,7 @@ public class Benchmarks {
 	public static void main(String[] args) throws Exception {
 		OptionsBuilder ob = new OptionsBuilder();
 		ob.measurementTime(TimeValue.milliseconds(100));
+		ob.include(Benchmarks.class.getSimpleName());
 
 //		ParserRegistry reg = Operators.install(new ParserRegistry(new OperationGroups(), new VariableConverter(), new StringConverter(), new ObjectConverter(), new ArrayConverter(), new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter()));
 //		
