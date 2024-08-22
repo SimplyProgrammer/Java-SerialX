@@ -116,7 +116,7 @@ public class Scope extends GenericScope<String, Object>
 	}
 	
 	/**
-	 * @param objClass | Class of object to create using protocols.
+	 * @param objClass | Class of object to create using protocols (may or may not support other implementations of {@link Type}).
 	 * @param protocolsToUse | Registry of protocols to use.
 	 * 
 	 * @return Object of objClass constructed from this scopes independent values using protocol for objClass or null if there was no protocol found in protocolsToUse! 

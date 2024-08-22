@@ -500,11 +500,11 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 	
 	/**
-	 * @return Formated content of reader ready to parse!
+	 * @return Formated content of reader ready to parse! Should not modify this object in any way!
 	 * 
 	 * @since 1.3.2
 	 */
-	protected StringBuilder readAndFormat(Reader reader, boolean format)
+	public StringBuilder readAndFormat(Reader reader, boolean format)
 	{
 		int quote = 0, multLineCom = -1;
 		//int brackets = 0, lastIndex = 0, delChars = 0;

@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.Writer;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -160,7 +161,7 @@ public abstract class Serializer extends Scope
 	}
 	
 	/**
-	 * @param type | Class of object to create.
+	 * @param objClass | Class of object to create (may or may not support other implementations of {@link Type}).
 	 * 
 	 * @return Object of type constructed from this scopes independent values using protocol for given class or null if there was no protocol found in this {@link Serializer#getProtocols()}! 
 	 * 
@@ -283,11 +284,25 @@ public abstract class Serializer extends Scope
 	public void SerializeTo(boolean append, File f, Object... args) throws IOException
 	{
 		//double t0 = System.nanoTime();
-		BufferedWriter writer = new BufferedWriter(new FileWriter(f, append));
+		Writer writer = new BufferedWriter(new FileWriter(f, append));
 
 		writer.write(Stringify(args));
 		
 		writer.close();
+		
+//		String serialized = Stringify(args);
+//
+//		RandomAccessFile fileOutputStream = new RandomAccessFile(f, "rw");
+//		FileChannel channel = fileOutputStream.getChannel();
+//
+////		channel.write(ByteBuffer.wrap(serialized.getBytes()));
+//		
+//		ByteBuffer buff = channel.map(FileChannel.MapMode.READ_WRITE, append ? channel.size() : 0, serialized.length());
+//		buff.put(serialized.getBytes());
+//
+//		channel.force(true);
+//		channel.close();
+//		fileOutputStream.close();
 	}
 	
 	/**
@@ -305,7 +320,7 @@ public abstract class Serializer extends Scope
 	}
 	
 	/**
-	 * @param source | Source {@link OutputStream} to serialize variables and objects into!
+	 * @param outputStream | Source {@link OutputStream} to serialize variables and objects into!
 	 * @param args | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (they should not be serialized)!
 	 * 
 	 * @return Source {@link OutputStream} with variables and objects serialized in specific format (may or may not be flushed).
@@ -382,10 +397,8 @@ public abstract class Serializer extends Scope
 	
 	/**
 	 * @param reader | Any {@link Reader} with serialized objects in specific format to load.
-	 * @param parserArgs | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (probably used for formating of incoming information)!
 	 * 
-	 * @return Unserialized objects and variables in {@link Scope} or empty {@link Scope} if string is empty.
-	 * You can use negative indexes to get objects from back of this array since 1.1.0 (-1 = last element)!
+	 * @return This scope after loading data from reader (you most likely want to return "this")!
 	 * 
 	 * @since 1.2.5
 	 */
