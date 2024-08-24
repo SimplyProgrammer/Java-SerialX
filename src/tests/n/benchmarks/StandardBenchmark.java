@@ -27,20 +27,22 @@ import org.ugp.serialx.Serializer;
 import org.ugp.serialx.juss.JussSerializer;
 
 /**
- * StandardBenchmark for SerialX
+ * StandardBenchmark for SerialX, single shot no warmup...
+ * 
+ * @version 1.0.0
  * 
  * @since 1.3.8
  * 
  * @author PETO
  */
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 0)
-@Measurement(iterations = 1)
+@Warmup(iterations = 0) // 2
+@Measurement(iterations = 1) // 1
 @BenchmarkMode(
 	Mode.SingleShotTime
 //	Mode.Throughput
 )
-@Fork(3) // 3 or 4
+@Fork(3) // 1
 public class StandardBenchmark 
 {
 	static final int seed = 123; // DO NOT CHANGE
@@ -54,27 +56,28 @@ public class StandardBenchmark
 		{
 			this.file = file;
 			
-			data = new ArrayList<>();
+			data = new ArrayList<>(count);
 			Random rand = new Random(seed);
-			for (int i = 1; i <= count; i++)
-				switch (rand.nextInt(4))
+			for (int i = 1, rng = rand.nextInt(count/2)+2, bool = rng % 2; i <= count; i++)
+				switch (i % 4)
 				{
 					case 0:
-						data.add(rand.nextBoolean()); break;
+						data.add(++bool % 2 == 0 || bool % 11 == 0); break;
 					case 1:
-						data.add(0.25 + rand.nextInt(i)); break;
+						data.add(0.25 + rng + i); break;
 					case 2:
-						data.add(rand.nextInt(i)); break;
+						data.add(rng + i); break;
 					case 3:
 						data.add("bench" + i); break;
 				}
 
-			try {
+			try 
+			{
 				if (file.createNewFile())
 					new JussSerializer(null, data).SerializeTo(file);
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+			} 
+			catch (IOException e) 
+			{
 				e.printStackTrace();
 			}
 			
@@ -277,6 +280,7 @@ public class StandardBenchmark
 		
 		OptionsBuilder ob = new OptionsBuilder();
 		ob.include(StandardBenchmark.class.getSimpleName());
+//		ob.addProfiler(StackProfiler.class);
 
 		new Runner(ob).run();
 		
