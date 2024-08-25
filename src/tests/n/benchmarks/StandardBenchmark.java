@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -17,9 +17,12 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.BenchmarkParams;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
@@ -29,136 +32,101 @@ import org.ugp.serialx.juss.JussSerializer;
 /**
  * StandardBenchmark for SerialX, single shot no warmup...
  * 
- * @version 1.0.0
+ * @version 1.1.0
  * 
  * @since 1.3.8
  * 
  * @author PETO
  */
+@State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Warmup(iterations = 0) // 2
 @Measurement(iterations = 1) // 1
 @BenchmarkMode(
 	Mode.SingleShotTime
-//	Mode.Throughput
 )
 @Fork(3) // 1
 public class StandardBenchmark 
 {
 	static final int seed = 123; // DO NOT CHANGE
 	
-	public static abstract class FileDataState
+	public static class DataState<M>
 	{
-		final File file;
-		final List<Object> data;
+		protected final M medium;
+		protected final Collection<Object> data;
 		
-		public FileDataState(File file, int count) // DO NOT CHANGE
+		public DataState(M medium, int count) // DO NOT CHANGE
 		{
-			this.file = file;
+			this.medium = medium;
 			
-			data = new ArrayList<>(count);
-			Random rand = new Random(seed);
-			for (int i = 1, rng = rand.nextInt(count/2)+2, bool = rng % 2; i <= count; i++)
-				switch (i % 4)
-				{
-					case 0:
-						data.add(++bool % 2 == 0 || bool % 11 == 0); break;
-					case 1:
-						data.add(0.25 + rng + i); break;
-					case 2:
-						data.add(rng + i); break;
-					case 3:
-						data.add("bench" + i); break;
-				}
-
-			try 
+			if (count > 0)
 			{
-				if (file.createNewFile())
-					new JussSerializer(null, data).SerializeTo(file);
-			} 
-			catch (IOException e) 
-			{
-				e.printStackTrace();
+				Object[] dataArr = new Object[count];
+				Random rand = new Random(seed);
+				for (int i = 0, rng = rand.nextInt(count/2)+2, bool = rng % 2; i < count; i++)
+					switch (i % 4)
+					{
+						case 0:
+							dataArr[i] = (++bool % 2 == 0 || bool % 11 == 0); break;
+						case 1:
+							dataArr[i] = (0.25 + rng + i); break;
+						case 2:
+							dataArr[i] = (rng + i); break;
+						case 3:
+							dataArr[i] = ("bench" + i); break;
+					}
+				data = Arrays.asList(dataArr);
 			}
+			else
+				data = null;
 			
-//			long i = 4000000000l;
+			setupMedium();
+			
+//			double t0 = System.nanoTime();
+//			long i = 4500000000l;
 //			while (i-- > 1);
-//			System.out.println(i);
+//			double t = System.nanoTime();
+//			System.out.println(i + " | " + (t-t0)/1000000);
 		}
 		
-		public abstract Serializer newSerializer(Map<String, ?> vars, List<?> data);
+		public void setupMedium() {}
 	}
 	
-	@State(Scope.Benchmark)
-	public static class LargeFileData extends FileDataState
+	public Serializer newSerializer(Map<String, ?> vars, Collection<?> data) 
 	{
-		public LargeFileData()
-		{
-			super(new File("src/tests/n/benchmarks/large_bench.juss"), 8000000);
-		}
-
-		@Override
-		public Serializer newSerializer(Map<String, ?> vars, List<?> data) 
-		{
-			JussSerializer srl = new JussSerializer(vars, data);
-			srl.getParsers().resetCache();
-			return srl;
-		}
+		JussSerializer srl = new JussSerializer(vars, data);
+		srl.getParsers().resetCache(); // Cached
+		return srl;
 	}
-
-	@State(Scope.Benchmark)
-	public static class MediumFileData extends FileDataState
+	
+	@Param({"8000000", "4000000"})
+	protected int dataCount;
+	
+	protected DataState<?> state;
+	
+	@Setup
+	public void setupState(BenchmarkParams params)
 	{
-		public MediumFileData()
-		{
-			super(new File("src/tests/n/benchmarks/medium_bench.juss"), 4000000);
-		}
-		
-		@Override
-		public Serializer newSerializer(Map<String, ?> vars, List<?> data) 
-		{
-			JussSerializer srl = new JussSerializer(vars, data);
-			srl.getParsers().resetCache();
-			return srl;
-		}
+		state = new DataState<File>(new File("src/tests/n/benchmarks/_" + dataCount + "_bench.juss"), params.getBenchmark().endsWith("write") ? dataCount : 0);
 	}
 	
 	@Benchmark
-	public void fileLarge_write(LargeFileData data, Blackhole hole) throws IOException
+	public void _0_write(Blackhole hole) throws IOException
 	{
-		JussSerializer serializer = (JussSerializer) data.newSerializer(null, data.data);
+		JussSerializer serializer = (JussSerializer) newSerializer(null, state.data);
 //		serializer.setGenerateComments(true);
 		
-		serializer.SerializeTo(data.file);
+		serializer.SerializeTo((File) state.medium);
 		
 		hole.consume(serializer);
 	}
 	
 	@Benchmark
-	public void fileLarge_read(LargeFileData data, Blackhole hole) throws FileNotFoundException
+	public Object _1_read() throws FileNotFoundException
 	{
-		JussSerializer deserializer = (JussSerializer) data.newSerializer(null, null);
+		JussSerializer deserializer = (JussSerializer) newSerializer(null, null);
 		
-		hole.consume(deserializer.LoadFrom(data.file));
-	}
-	
-	@Benchmark
-	public void fileMedium_write(MediumFileData data, Blackhole hole) throws IOException
-	{
-		JussSerializer serializer = (JussSerializer) data.newSerializer(null, data.data);
-//		serializer.setGenerateComments(true);
-		
-		serializer.SerializeTo(data.file);
-		
-		hole.consume(serializer);
-	}
-
-	@Benchmark
-	public void fileMedium_read(MediumFileData data, Blackhole hole) throws FileNotFoundException
-	{
-		JussSerializer deserializer = (JussSerializer) data.newSerializer(null, null);
-		
-		hole.consume(deserializer.LoadFrom(data.file));
+		return deserializer.LoadFrom((File) state.medium);
 	}
 	
 //	@Benchmark
@@ -170,7 +138,7 @@ public class StandardBenchmark
 	/* IO */
 	
 //	@Benchmark
-//	public StringBuilder file_readChars(LargeFileData data) throws IOException
+//	public StringBuilder readChars(LargeFileData data) throws IOException
 //	{
 //        try (Reader reader = new FileReader(data.file))
 //        {
@@ -179,7 +147,7 @@ public class StandardBenchmark
 //	}
 //	
 //	@Benchmark
-//    public StringBuilder file_readLinesAndChars(LargeFileData data) throws IOException {
+//    public StringBuilder readLinesAndChars(LargeFileData data) throws IOException {
 //        try (Reader reader = new FileReader(data.file))
 //        {
 //            return readLinesAndChars(reader);
@@ -188,7 +156,7 @@ public class StandardBenchmark
 //	
 //	
 //	@Benchmark
-//	public StringBuilder file_readCharsArrayed(LargeFileData data) throws IOException {
+//	public StringBuilder readCharsArrayed(LargeFileData data) throws IOException {
 //        try (Reader reader = new FileReader(data.file))
 //        {
 //            return readCharsArrayed(reader);
@@ -277,10 +245,16 @@ public class StandardBenchmark
 	public static void main(String[] args) throws Exception 
 	{
 //		org.openjdk.jmh.Main.main(args);
-		
+
 		OptionsBuilder ob = new OptionsBuilder();
 		ob.include(StandardBenchmark.class.getSimpleName());
-//		ob.addProfiler(StackProfiler.class);
+//		ob.jvm(System.getProperty("user.home") + "\\.sdkman\\candidates\\java\\17.0.12-graal\\bin\\java.exe");
+		
+//		ob.addProfiler(org.openjdk.jmh.profile.StackProfiler.class);
+//		ob.addProfiler(org.openjdk.jmh.profile.JavaFlightRecorderProfiler.class, "dir=./jfr_out");
+		
+//		ob.result("src/tests/n/benchmarks/bench.scsv");
+//		ob.resultFormat(ResultFormatType.SCSV);
 
 		new Runner(ob).run();
 		
