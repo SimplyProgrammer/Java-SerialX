@@ -408,7 +408,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		if (args[3] == null)
 			args[3] = getProtocols();
 		
-		StringBuilder str = readAndFormat(reader, formatRequired);
+		StringBuilder str = readAndFormat(reader, formatRequired); // TODO could be improved...
 		List<Object> objs = splitAndParse(str, args);
 		addAll(objs);
 		
