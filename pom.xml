@@ -9,7 +9,7 @@
 	<name>SerualX-test</name>
 	<description>Used for testing</description>
 
-	<dependencies>
+	<dependencies>	
 		<dependency>
 			<groupId>org.ugp.serialx</groupId>
 			<artifactId>json</artifactId>
@@ -46,7 +46,7 @@
 
 	<build> <!-- This project is not meant to be built or compiled -->
 		<sourceDirectory>src</sourceDirectory>
-	    <testSourceDirectory>src</testSourceDirectory>
+		<!-- <testSourceDirectory>src</testSourceDirectory> -->
 
 		<resources>
 			<resource>

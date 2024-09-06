@@ -39,6 +39,7 @@ tmp/
 .classpath
 .settings
 .project
+.factorypath
 
 target/
 
