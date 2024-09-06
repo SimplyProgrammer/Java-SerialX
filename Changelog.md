@@ -216,16 +216,28 @@ Release date: Near future...
 What was added:<br>
 **Maven:**
 * The whole library was modularized using Maven into the following modules:
- * SerialX-core - Contains core features and utilities shared across the library. It also contains basic protocols and parsers that resemble the functionalities of pre-1.2.X SerialX.
- * SerialX-juss - Now contains everything JUSS related, features that were added roughly in 1.2 and later... This includes things like JussSerializer, ArrayConverter, OperationGroups etc...
- * SerialX-json - A relatively small extension of the JUSS module that is more narrowly focused on JSON. This is now where SerialX support for JSON is located.
- * SerialX-operators - An extensional module, this is now where all operator parsers are located.
- * SerialX-devtools - Small module containing tools for debugging the library, mainly Parser/Converter API. It is intended for DSL developers and people who want to add their own data formats.
+  * SerialX-core - Contains core features and utilities shared across the library. It also contains basic protocols and parsers that resemble the functionalities of pre-1.2.X SerialX.
+  * SerialX-juss - Now contains everything JUSS related, features that were added roughly in 1.2 and later... This includes things like JussSerializer, ArrayConverter, OperationGroups etc...
+  * SerialX-json - A relatively small extension of the JUSS module that is more narrowly focused on JSON. This is now where SerialX support for JSON is located.
+  * SerialX-operators - An extensional module, this is now where all operator parsers are located.
+  * SerialX-devtools - Small module containing tools for debugging the library, mainly Parser/Converter API. It is intended for DSL developers and people who want to add their own data formats.
 * From now on Maven will be used for dependency management and building of this library.
 * Distribution of this library will be conducted using Maven from now on.
 
-**Unit tests:**
+**Unit tests and benchmarks:**
 * Some examples are now used as unit tests, this should greatly simplify the testing process and reduce the chance of bug introduction in the future.
 * These are now located on the new "tests-and-experimental-features" branch. This branch will be used for demonstrations, benchmarking, testing and experimenting. Note that this branch is not part of the main API.
 
-  TODO...
+**Specific changes:**
+* ImportsProvider now implements caching for Imports.
+* ParserRegistry now implements DataParser allowing for easier creation of more complex (context-free) languages.
+* NumberConverter was refactored, now providing all in one parsing numberOf function that is on average 12x faster than the old implementation.
+  * DecimalFormater was dumped in favor of the more customizable overridable format method.
+* BooleanConverter and NullConverter were slightly refactored allowing for near O(1) complexity of parsing.
+* ObjectConverter got a significant refactor!
+  * It was separated into 2 separate classes across 2 modules. Now it is ProtocolConverter that is extended by ObjectConverter.
+  * Static member invocation is now only allowed on a small carefully selected group of classes, fixing the major security exploit that would an attacker to call any static function in a hypothetical REST implementation.
+  * Both ObjectConverter and ProtocolConverter were slightly optimized.
+* StringConverter was slightly optimized by introducing caching. It is disabled by default, by enabling it the same String instance will be returned for the same strings during parsing.
+  * Static variables were made instance-specific allowing for more flexibility.
+* VariableConverter TODO
