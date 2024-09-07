@@ -250,7 +250,8 @@ What was added:<br>
 * All static utility functions (for instance string analyses and processing functions) were separated into new Utils class, in order to achieve better separation of concerns...
   * All string analyses and processing utility functions (for example indexOfNotInObj or splitValues) were rewritten into more "finite state machine"-like form which slightly increases their performance...
   * Some new utility functions were added and existing ones were improved!
- 
+
+&nbsp;
 * Operation group mark of OperationGroups (parentheses operator) is no longer static and always the same, now it is shorter and posedo-randomly generated which slightly increases the performance and highly mitigates the hypothetical "Group mark injection" attack which would result in unauthorized access to group mark at runtime.
 * UniversalObjectInstantiationProtocol is no longer registered by default and now requires manual registration for a specific class, this enhances security since instantiation of any object (dangerous or not) is prevented.
   * The same goes for SelfSerializableProtocol.
