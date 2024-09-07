@@ -240,4 +240,19 @@ What was added:<br>
   * Both ObjectConverter and ProtocolConverter were slightly optimized.
 * StringConverter was slightly optimized by introducing caching. It is disabled by default, by enabling it the same String instance will be returned for the same strings during parsing.
   * Static variables were made instance-specific allowing for more flexibility.
-* VariableConverter TODO
+* GenericScope and Scope received various API improvements, the most notable ones being:
+  * GenericScope now implements Collection instead of just Iterable making it part of Java collection API.
+  * From/Into API now partially supports recognition for generic types of declared Object<T> variables, making it more useful for non-JUSS formats such as JSON. This enhances also AutoProtocol and UniversalObjectInstantiationProtocol together with SelfSerializableProtocol.
+* Serializer (and core high-level changes):
+  * The concept of scope parent variable inheritance was abandoned due to being unacceptable and inefficient (both time and space-wise...), quite error-prone and tedious to work with as well as and potentially dangerous. Not mentioning the fact that the only reason for its existence was to allow you to access variables declared in the parent scope, for which it suboptimal solution to say at least...
+  * In a similar fashion, the notion of each parser having to return the new instance of respective object for every parsed string was abandoned as well and is no longer required, allowing for more flexibility and concepts such as already mentioned caching!
+  * OOP NULL was abandoned as well as it was a biproduct of sub-optimal decisions mentioned above and therefore conceptually flawed. It is deprecated and should not be used!
+* All static utility functions (for instance string analyses and processing functions) were separated into new Utils class, in order to achieve better separation of concerns...
+  * All string analyses and processing utility functions (for example indexOfNotInObj or splitValues) were rewritten into more "finite state machine"-like form which slightly increases their performance...
+  * Some new utility functions were added and existing ones were improved!
+ 
+* Operation group mark of OperationGroups (parentheses operator) is no longer static and always the same, now it is shorter and posedo-randomly generated which slightly increases the performance and highly mitigates the hypothetical "Group mark injection" attack which would result in unauthorized access to group mark at runtime.
+* UniversalObjectInstantiationProtocol is no longer registered by default and now requires manual registration for a specific class, this enhances security since instantiation of any object (dangerous or not) is prevented.
+  * The same goes for SelfSerializableProtocol.
+
+TODO
