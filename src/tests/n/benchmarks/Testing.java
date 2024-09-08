@@ -1,10 +1,17 @@
 package tests.n.benchmarks;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
+import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.Utils;
+import org.ugp.serialx.json.JsonSerializer;
 import org.ugp.serialx.juss.converters.OperationGroups;
 import org.ugp.serialx.juss.converters.VariableConverter;
+
+import examples.implementations.GeneralExample;
 
 /**
  * Testing random algorithms...
@@ -31,6 +38,8 @@ public class Testing {
 		str = "jjiij {ha -> asd } \"hchaha\" a->b\" aaa bbb ha {}";
 		System.err.println(Utils.showPosInString(str, Utils.indexOfNotInObj(str, 0, str.length(), -1, true, "->")));
 
+//		new JsonSerializer(new Object[] {1,2,3}, new HashMap<>(), GenericScope.mapKvArray(new HashMap<>(), "hi", 123), null, new ArrayList<>()).SerializeTo(new File("src/tests/n/benchmarks/test.json"));
+		
 //		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).setAllowStaticMemberInvocation(true);
 //		
 //		File file = new File("src/examples/implementations/test.juss");

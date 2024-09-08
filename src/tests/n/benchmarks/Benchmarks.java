@@ -1,6 +1,7 @@
 package tests.n.benchmarks;
 
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
+import static org.ugp.serialx.Utils.fastReplace;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +24,9 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 import org.ugp.serialx.GenericScope;
+import org.ugp.serialx.LogProvider;
+import org.ugp.serialx.Utils;
+import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.NumberConverter;
 
 @State(Benchmark)
@@ -33,11 +37,11 @@ import org.ugp.serialx.converters.NumberConverter;
 	Mode.SingleShotTime
 //	Mode.Throughput
 )
-@Fork(2) // 1 or 2
+@Fork(1) // 1 or 2
 public class Benchmarks {
 	
-//	@Param({"0", "0b11l", "12345", "-14445", "1 1", "0xff", "0b11111111", "011", "15.222", "16.88e2", "1234_5678_91011"})
-//	String nvalue;
+	@Param({"0", "0b11l", "12345", "-14445", "1 1", "0xff", "0b11111111", "011", "15.222", "16.88e2", "1234_5678_91011"})
+	String nvalue;
 	
 //	@Param({"java.util.ArrayList 5 5 5", "java.util.concurrent.TimeUnit 1 2 3", "5hjdhjsakhdjsakhdjsahdjhdjak {} 59", "{hjdhjsakhdjsakhdjsahdjhdjak T T T"})
 //	String str;
@@ -58,56 +62,56 @@ public class Benchmarks {
 	
 	static final Function<Number, Number> trans = val -> ((Number)val).doubleValue()+5;
 	
-//	DataConverter benchSubject = new NumberConverter();
-//	
-//	DataConverter benchSubjectOld = new NumberConverter() {
-//		public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args ) 
-//		{
-//			if (arg.length() > 0)
-//			{
-//				char ch = arg.charAt(0);
-//				if (ch == '+' || ch == '-' || ch == '.' || (ch >= '0' && ch <= '9'))
-//				{
-//					arg = normFormatNum(arg.toLowerCase());
-//					ch = arg.charAt(arg.length()-1); //ch = last char
-//					
-//					if (ch == '.')
-//						return CONTINUE;
-//					if (Utils.contains(arg, '.') || (!arg.startsWith("0x") && ch == 'f' || ch == 'd'))
-//					{
-//						if (ch == 'f')
-//							return new Float(fastReplace(arg, "f", ""));
-//						return new Double(fastReplace(arg, "d", ""));
-//					}
-//					 
-//					try
-//					{
-//						if (ch == 'l')
-//							return new Long(Long.parseLong(fastReplace(fastReplace(fastReplace(arg, "l", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
-//						if (ch == 's')
-//							return new Short(Short.parseShort(fastReplace(fastReplace(fastReplace(arg, "s", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
-//						if (ch == 'y')
-//							return new Byte(Byte.parseByte(fastReplace(fastReplace(arg, "y", ""), "0b", ""), arg.startsWith("0b") ? 2 : 10));
-//						return new Integer(Integer.parseInt(fastReplace(fastReplace(arg, "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
-//					}
-//					catch (NumberFormatException e)
-//					{
-//						if (arg.matches("[0-9.]+"))
-//							try
-//							{	
-//								return new Long(Long.parseLong(fastReplace(fastReplace(fastReplace(arg, "l", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
-//							}
-//							catch (NumberFormatException e2)
-//							{
-//								LogProvider.instance.logErr("Number " + arg + " is too big for its datatype! Try to change its datatype to double (suffix D)!", e2);
-//								return null;
-//							}
-//					}
-//				}
-//			}
-//			return CONTINUE;
-//		}
-//	};
+	DataConverter benchSubject = new NumberConverter();
+	
+	DataConverter benchSubjectOld = new NumberConverter() {
+		public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args ) 
+		{
+			if (arg.length() > 0)
+			{
+				char ch = arg.charAt(0);
+				if (ch == '+' || ch == '-' || ch == '.' || (ch >= '0' && ch <= '9'))
+				{
+					arg = normFormatNum(arg.toLowerCase());
+					ch = arg.charAt(arg.length()-1); //ch = last char
+
+					if (ch == '.')
+						return CONTINUE;
+					if (Utils.contains(arg, '.') || (!arg.startsWith("0x") && ch == 'f' || ch == 'd'))
+					{
+						if (ch == 'f')
+							return new Float(fastReplace(arg, "f", ""));
+						return new Double(fastReplace(arg, "d", ""));
+					}
+					 
+					try
+					{
+						if (ch == 'l')
+							return new Long(Long.parseLong(fastReplace(fastReplace(fastReplace(arg, "l", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
+						if (ch == 's')
+							return new Short(Short.parseShort(fastReplace(fastReplace(fastReplace(arg, "s", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
+						if (ch == 'y')
+							return new Byte(Byte.parseByte(fastReplace(fastReplace(arg, "y", ""), "0b", ""), arg.startsWith("0b") ? 2 : 10));
+						return new Integer(Integer.parseInt(fastReplace(fastReplace(arg, "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
+					}
+					catch (NumberFormatException e)
+					{
+						if (arg.matches("[0-9.]+"))
+							try
+							{	
+								return new Long(Long.parseLong(fastReplace(fastReplace(fastReplace(arg, "l", ""), "0b", ""), "0x", ""), arg.startsWith("0b") ? 2 : arg.startsWith("0x") ? 16 : 10));
+							}
+							catch (NumberFormatException e2)
+							{
+								LogProvider.instance.logErr("Number " + arg + " is too big for its datatype! Try to change its datatype to double (suffix D)!", e2);
+								return null;
+							}
+					}
+				}
+			}
+			return CONTINUE;
+		}
+	};
 //	
 //	BooleanConverter boolConv = new BooleanConverter();
 //	
@@ -126,19 +130,19 @@ public class Benchmarks {
 //		scope = new GenericScope<Object, Number>(null, nums(1000_000));
 //	}
 	
-//	@Benchmark
-//	public void bench(Blackhole hole)
-//	{
-//		hole.consume(benchSubject.parse(null, nvalue));
-//	}
-//	
-//	@Benchmark
-//	public void benchOld(Blackhole hole)
-//	{
-////		hole.consume(Integer.valueOf(value));
-////		hole.consume(Double.valueOf(value));
-//		hole.consume(benchSubjectOld.parse(null, nvalue));
-//	}
+	@Benchmark
+	public void bench(Blackhole hole)
+	{
+		hole.consume(benchSubject.parse(null, nvalue));
+	}
+	
+	@Benchmark
+	public void benchOld(Blackhole hole)
+	{
+//		hole.consume(Integer.valueOf(value));
+//		hole.consume(Double.valueOf(value));
+		hole.consume(benchSubjectOld.parse(null, nvalue));
+	}
 	
 //	@Benchmark
 //	public void bench(Blackhole hole)
