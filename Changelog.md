@@ -214,7 +214,7 @@ What was added:
 Release date: Near future...
 
 What was added:<br>
-**Maven:**
+### Maven:
 * The whole library was modularized using Maven into the following modules:
   * SerialX-core - Contains core features and utilities shared across the library. It also contains basic protocols and parsers that resemble the functionalities of pre-1.2.X SerialX.
   * SerialX-juss - Now contains everything JUSS related, features that were added roughly in 1.2 and later... This includes things like JussSerializer, ArrayConverter, OperationGroups etc...
@@ -224,14 +224,18 @@ What was added:<br>
 * From now on Maven will be used for dependency management and building of this library.
 * Distribution of this library will be conducted using Maven from now on.
 
-**Unit tests and benchmarks:**
+### Unit tests and benchmarks:
 * Some examples are now used as unit tests, this should greatly simplify the testing process and reduce the chance of bug introduction in the future.
 * These are now located on the new "tests-and-experimental-features" branch. This branch will be used for demonstrations, benchmarking, testing and experimenting. Note that this branch is not part of the main API.
 
-**Specific changes:**
+&nbsp;
+
+### Specific changes:
 * ImportsProvider now implements caching for Imports.
 * ParserRegistry now implements DataParser allowing for easier creation of more complex (context-free) languages.
 * NumberConverter was refactored, now providing all in one parsing numberOf function that is on average 12x faster than the old implementation.
+  * New numberOf function supports octadecimal number and has improved handling of E-notation.
+  * Java integer caching is now in place.
   * DecimalFormater was dumped in favor of the more customizable overridable format method.
 * BooleanConverter and NullConverter were slightly refactored allowing for near O(1) complexity of parsing.
 * ObjectConverter got a significant refactor!
@@ -256,4 +260,19 @@ What was added:<br>
 * UniversalObjectInstantiationProtocol is no longer registered by default and now requires manual registration for a specific class, this enhances security since instantiation of any object (dangerous or not) is prevented.
   * The same goes for SelfSerializableProtocol.
 
-TODO
+&nbsp;
+* JsonSerializer received many improvements and bug fixes in order to match JSON more accurately.
+  * Dedicated JsonCharacterConverter and JsonNumberConverter were added for this. Also, JsonObjectConverter was separated into its own class. 
+
+&nbsp;
+* Operators class was added, which is used for injecting all operator parsers into the specific registry.
+* Almost every operator parser was refactored, resulting in simpler, shorter and therefore more optimized code. The most notable ones are:
+  * ArithmeticOperators which now also allows you to declare your own arithmetic operators and/or specify their precedence.
+  * Due to refactoring, ResultWrapper is no longer needed and will be removed, this extends to LogicalOperators as well.
+ * NegationOperator now supports separate handling of logical negation (! operator) and mathematical negation (- operator), however by default their behavior is the same.
+
+&nbsp;
+* The ability to specify custom output PrintWriter was added for SerializationDebugger.
+
+&nbsp;
+* Besides the changes mentioned above, countless smaller improvements including numerous bug fixes, performance improvements, API enhancements or Javadoc specifications were added across the whole library.
