@@ -15,7 +15,7 @@
   </modules>
   
   <name>SerialX root</name>
-  <description>Store Java objects into file via SerialX. SerialX is a powerful utility library to serialize objects in Java programmatically via recursive descent parser for custom domain-specific languages!</description>
+  <description>Store Java objects into JSON or any format you want! SerialX is a powerful lightweight utility library to serialize Java objects programmatically via tweakable recursive descent parser for custom domain-specific languages!</description>
   <url>https://github.com/SimplyProgrammer/Java-SerialX</url>
   <inceptionYear>2020</inceptionYear>
   

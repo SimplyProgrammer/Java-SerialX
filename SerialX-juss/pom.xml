@@ -7,16 +7,16 @@
   </parent>
   
   <groupId>org.ugp.serialx</groupId>
-  <artifactId>juss</artifactId>
+  <artifactId>serialx-juss</artifactId>
   <version>1.3.8</version>
   
-  <name>SerialX-juss</name>
+  <name>SerialX juss</name>
   <description>SerialX support for Java Universal Serial Script data format, custom default format of SerialX!</description>
   
   <dependencies>
   	<dependency>
   		<groupId>org.ugp.serialx</groupId>
-  		<artifactId>core</artifactId>
+  		<artifactId>serialx-core</artifactId>
   		<version>${revision}</version>
   	</dependency>
   </dependencies>

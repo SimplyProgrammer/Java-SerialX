@@ -14,7 +14,7 @@ import org.ugp.serialx.protocols.SerializationProtocol;
  * 
  * @author PETO
  * 
- * @since 1.3.5
+ * @since 1.3.5 (separated from JsonSerializer since 1.3.8)
  */
 public class JsonObjectConverter extends ObjectConverter
 {		
@@ -22,16 +22,21 @@ public class JsonObjectConverter extends ObjectConverter
 	@Override
 	public CharSequence toString(ParserRegistry myHomeRegistry, Object arg, Object... args) 
 	{
+		if (arg == null)
+			return CONTINUE;
+
 		if (arg.getClass().isArray())
 			return super.toString(myHomeRegistry, new Scope(Utils.fromAmbiguousArray(arg)), args);
 		
 		if (arg instanceof Map)
 		{
 			Map<?, ?> map = (Map<?, ?>) arg;
-			if (map.isEmpty() || map.keySet().iterator().next() instanceof CharSequence)
+			if (map.isEmpty())
+				return "{}";
+			if (map.keySet().iterator().next() instanceof CharSequence)
 				return super.toString(myHomeRegistry, new Scope((Map<String, ?>) map), args);
 		}
-		
+			
 		SerializationProtocol<Object> prot = (SerializationProtocol<Object>) getProtocolFor(arg, SerializationProtocol.MODE_SERIALIZE, args);
 		if (prot != null && !(arg instanceof Scope))
 			try

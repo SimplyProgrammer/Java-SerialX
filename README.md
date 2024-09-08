@@ -1,2 +1,2 @@
 # Java-SerialX dev
-This branch is used for testing and stuff!
+This the main development branch!
