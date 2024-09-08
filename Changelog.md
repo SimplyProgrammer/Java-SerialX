@@ -276,3 +276,4 @@ What was added:<br>
 
 &nbsp;
 * Besides the changes mentioned above, countless smaller improvements including numerous bug fixes, performance improvements, API enhancements or Javadoc specifications were added across the whole library.
+#
