@@ -223,6 +223,7 @@ What was added:<br>
   * SerialX-devtools - Small module containing tools for debugging the library, mainly Parser/Converter API. It is intended for DSL developers and people who want to add their own data formats.
 * From now on Maven will be used for dependency management and building of this library.
 * Distribution of this library will be conducted using Maven from now on.
+  * This greatly simplifies a lot of lengthy, complex IDE-specific processes.
 
 ### Unit tests and benchmarks:
 * Some examples are now used as unit tests, this should greatly simplify the testing process and reduce the chance of bug introduction in the future.
@@ -247,6 +248,7 @@ What was added:<br>
 * GenericScope and Scope received various API improvements, the most notable ones being:
   * GenericScope now implements Collection instead of just Iterable making it part of Java collection API.
   * From/Into API now partially supports recognition for generic types of declared Object<T> variables, making it more useful for non-JUSS formats such as JSON. This enhances also AutoProtocol and UniversalObjectInstantiationProtocol together with SelfSerializableProtocol.
+* Mode of SerializationProtocol is now implemented with 64 int (long) bit-packing which allows for chaining of multiple modes which can now be understood as protocol types. This trades an overall number of unique modes for greater utility. 
 * Serializer (and core high-level changes):
   * The concept of scope parent variable inheritance was abandoned due to being unacceptable and inefficient (both time and space-wise...), quite error-prone and tedious to work with as well as and potentially dangerous. Not mentioning the fact that the only reason for its existence was to allow you to access variables declared in the parent scope, for which it suboptimal solution to say at least...
   * In a similar fashion, the notion of each parser having to return the new instance of respective object for every parsed string was abandoned as well and is no longer required, allowing for more flexibility and concepts such as already mentioned caching!
@@ -269,11 +271,12 @@ What was added:<br>
 * Almost every operator parser was refactored, resulting in simpler, shorter and therefore more optimized code. The most notable ones are:
   * ArithmeticOperators which now also allows you to declare your own arithmetic operators and/or specify their precedence.
   * Due to refactoring, ResultWrapper is no longer needed and will be removed, this extends to LogicalOperators as well.
- * NegationOperator now supports separate handling of logical negation (! operator) and mathematical negation (- operator), however by default their behavior is the same.
+* NegationOperator now supports separate handling of logical negation (! operator) and mathematical negation (- operator), however by default their behavior is the same.
 
 &nbsp;
 * The ability to specify custom output PrintWriter was added for SerializationDebugger.
 
 &nbsp;
 * Besides the changes mentioned above, countless smaller improvements including numerous bug fixes, performance improvements, API enhancements or Javadoc specifications were added across the whole library.
+  * Some functions were slightly renamed but it is usually documented but deprecated functions were removed!
 #
