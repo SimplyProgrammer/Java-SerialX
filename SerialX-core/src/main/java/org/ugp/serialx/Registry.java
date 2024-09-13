@@ -334,10 +334,10 @@ public class Registry<E> extends ArrayList<E>
 		for (int i = 0, size = size(); i < size; i++) 
 		{
 			C elm = (C) get(i);
-			Class<?> objCls = elm.getClass();
-			if (objCls == cls)
+			Class<?> objCls;
+			if ((objCls  = elm.getClass()) == cls)
 				return elm;
-			else if (includeChildrens && cls.isAssignableFrom(objCls))
+			if (includeChildrens && cls.isAssignableFrom(objCls))
 				obj = elm;
 		}
 		return obj;
@@ -371,7 +371,7 @@ public class Registry<E> extends ArrayList<E>
 			Class<?> objCls = get(i).getClass();
 			if (objCls == cls)
 				return i;
-			else if (includeChildrens && cls.isAssignableFrom(objCls))
+			if (includeChildrens && cls.isAssignableFrom(objCls))
 				index = i;
 		}
 		return index;

@@ -190,9 +190,7 @@ public class ObjectConverter extends ProtocolConverter
 	{
 		if (obj instanceof Scope && ((Scope) obj).isEmpty())
 			return "Empty scope!";
-		else if (obj instanceof CharSequence && indexOfNotInObj((CharSequence) obj, '\n', '\r') != -1)
-			return "Multiline char sequence!";
-		return new StringBuilder("Object of ").append(obj.getClass().getName()).append(": \"").append(obj.toString()).append("\" serialized using ").append(getProtocolFor(obj, SerializationProtocol.MODE_ALL, argsUsedConvert).toString()).append("!");
+		return super.getDescription(myHomeRegistry, obj, argsUsedConvert);
 	}
 	
 	/**

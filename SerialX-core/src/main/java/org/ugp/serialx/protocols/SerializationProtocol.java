@@ -26,7 +26,7 @@ public abstract class SerializationProtocol<T>
 	/**
 	 * This is serialization protocol registry. This is place where your {@link SerializationProtocol} implementations should be registered in order to work properly! Do not add there two protocols applicable for exactly same classes!
 	 * Also I recommend to register protocols in generic order of object that are they applicable for! In other words If some object Foo has child classes, protocol of these classes should be registered after each other.
-	 * Defaultly there are registered protocols from ugp.org.SerialX.protocols.
+	 * Defaultly there are registered protocols from org.ugp.serialx.protocols.
 	 * 
 	 * @since 1.3.0
 	 */
@@ -37,30 +37,30 @@ public abstract class SerializationProtocol<T>
 	 * 
 	 * @since 1.3.5
 	 */
-	public static final byte MODE_SERIALIZE = 0;
+	public static final long MODE_SERIALIZE = 0b01;
 	
 	/**
 	 * This mode is for protocols that are used for deserialization only!
 	 * 
 	 * @since 1.3.5
 	 */
-	public static final byte MODE_DESERIALIZE = 1; 
+	public static final long MODE_DESERIALIZE = 0b10; 
 	
 	/**
-	 * This mode is for protocols that chat can both serialize and deserialize!
+	 * This mode is for protocols that chat can both serialize and deserialize (<code>MODE_SERIALIZE | MODE_DESERIALIZE</code>)!
 	 * 
-	 * @since 1.3.5
+	 * @since 1.3.8 (originally known as MODE_ALL)
 	 */
-	public static final byte MODE_ALL = 2;
+	public static final long MODE_SERIALIZE_DESERIALIZE = MODE_SERIALIZE | MODE_DESERIALIZE;
 	
 	protected boolean isActive = true;
 	
 	@Override
-	public boolean equals(Object obj) 
+	public boolean equals(Object obj)
 	{
 		if (obj instanceof Class)
 			return applicableFor().equals(obj);
-		else if (obj instanceof SerializationProtocol)
+		if (obj instanceof SerializationProtocol)
 			return applicableFor().equals(((SerializationProtocol<?>) obj).applicableFor());
 		return super.equals(obj);
 	}
@@ -128,17 +128,16 @@ public abstract class SerializationProtocol<T>
 	public abstract Class<? extends T> applicableFor();
 	
 	/**
-	 * @return Mode of this protocol. Default is {@link SerializationProtocol#MODE_ALL}!
+	 * @return Mode of this protocol, describing its type or operation mode. Can be one or more chained with binary or. Default is {@link SerializationProtocol#MODE_SERIALIZE_DESERIALIZE}!
 	 *
-	 * @see SerializationProtocol#MODE_ALL
 	 * @see SerializationProtocol#MODE_DESERIALIZE
 	 * @see SerializationProtocol#MODE_SERIALIZE
 	 * 
 	 * @since 1.3.5
 	 */
-	public byte getMode()
+	public long getMode()
 	{
-		return MODE_ALL;
+		return MODE_SERIALIZE_DESERIALIZE;
 	}
 
 	/**
@@ -174,11 +173,12 @@ public abstract class SerializationProtocol<T>
 	 */
 	public static <O> Object[] serializeObj(O object) throws Exception
 	{
-		return serializeObj(REGISTRY, object);
+		return serializeObj(REGISTRY, 0, object);
 	}
 	
 	/**
 	 * @param registry | Registry to use!
+	 * @param aditionalType | Additional protocol mode that will be chained together with {@link SerializationProtocol#MODE_DESERIALIZE}.
 	 * @param object | The object.
 	 * 
 	 * @return Array of objects to serialize created from given object. Object will be serialized via protocol picked from registry.
@@ -186,9 +186,9 @@ public abstract class SerializationProtocol<T>
 	 * 
 	 * @since 1.3.0
 	 */
-	public static <O> Object[] serializeObj(ProtocolRegistry registry, O object) throws Exception
+	public static <O> Object[] serializeObj(ProtocolRegistry registry, long aditionalType, O object) throws Exception
 	{
-		SerializationProtocol<O> prot = registry.GetProtocolFor(object, MODE_SERIALIZE);
+		SerializationProtocol<O> prot = registry.GetProtocolFor(object, MODE_SERIALIZE | aditionalType);
 		if (prot == null)
 		{
 			LogProvider.instance.logErr("Unable to serialize \"" + object + "\" because there is no registered and active protocol for serializing " + object.getClass() + "!", null);
@@ -210,11 +210,12 @@ public abstract class SerializationProtocol<T>
 	 */
 	public static <O> O unserializeObj(Class<? extends O> objectClass, Object... args) throws Exception 
 	{
-		return unserializeObj(REGISTRY, objectClass, args);
+		return unserializeObj(REGISTRY, 0, objectClass, args);
 	}
 	
 	/**
 	 * @param registry | Registry to use!
+	 * @param aditionalType | Additional protocol mode that will be chained together with {@link SerializationProtocol#MODE_DESERIALIZE}.
 	 * @param objectClass | The class of object that should be created. This can be useful when object {@link O} has children classes with same constructors. You can use reflection to make protocol working also for these child classes! This class is also used to pick suitable protocol!
 	 * @param args | Args to create obj {@link T} from.
 	 * 
@@ -226,9 +227,9 @@ public abstract class SerializationProtocol<T>
 	 * @since 1.3.0
 	 */
 	@SuppressWarnings("unchecked")
-	public static <O> O unserializeObj(ProtocolRegistry registry, Class<? extends O> objectClass, Object... args) throws Exception 
+	public static <O> O unserializeObj(ProtocolRegistry registry, long aditionalType, Class<? extends O> objectClass, Object... args) throws Exception 
 	{
-		SerializationProtocol<O> prot = (SerializationProtocol<O>) registry.GetProtocolFor(objectClass, MODE_DESERIALIZE);
+		SerializationProtocol<O> prot = (SerializationProtocol<O>) registry.GetProtocolFor(objectClass, MODE_DESERIALIZE | aditionalType);
 		if (prot == null)
 		{
 			LogProvider.instance.logErr("Unable to unserialize " + Arrays.toString(args) + " because there is no registered and active protocol for unserializing \"" + objectClass + "\"!", null);
@@ -302,68 +303,65 @@ public abstract class SerializationProtocol<T>
 		/**
 		 * @param protocolsClass | Protocols class.
 		 * 
-		 * @return Protocol by its class.
+		 * @return Protocol by its class. Pretty much equivalent with {@link Registry#get(Class)}.
 		 * 
 		 * @since 1.0.0
 		 */
 		public SerializationProtocol<?> getProtocolByClass(Class<? extends SerializationProtocol<?>> protocolsClass)
 		{
-			for (SerializationProtocol<?> p : this) 
-				if (p.getClass().equals(protocolsClass))
-					return p;
-			return null;
+			return get(protocolsClass);
 		}
 		
 		/**
-		 * @return Sublist of protocols that are active and can be used.
+		 * @return Sublist of any protocols that are active and can be used.
 		 * 
 		 * @since 1.0.0
 		 */
 		public List<SerializationProtocol<?>> GetActiveProtocols()
 		{
-			return GetActiveProtocols(MODE_ALL);
+			return GetActiveProtocols(-1);
 		}	
 		
 		/**
-		 * @return Sublist of protocols that are not active and can't be used.
+		 * @return Sublist of any protocols that are not active and can't be used.
 		 * 
 		 * @since 1.0.0
 		 */
 		public List<SerializationProtocol<?>> GetDeactivatedProtocols()
 		{
-			return GetDeactivatedProtocols(MODE_ALL);
+			return GetDeactivatedProtocols(-1);
 		}
 		
 		/**
-		 * @param mode | Mode of protocol to find.
+		 * @param mode | Mode of protocols to find, or -1 if mode does not matter.
 		 * 
 		 * @return Sublist of protocols that are active and can be used according to mode.
 		 * 
 		 * @since 1.3.5
 		 */
-		public List<SerializationProtocol<?>> GetActiveProtocols(byte mode)
+		public List<SerializationProtocol<?>> GetActiveProtocols(long mode)
 		{
 			List<SerializationProtocol<?>> resault = new ArrayList<>();
 			
 			for (SerializationProtocol<?> p : this) 
-				if (p.isActive() && (p.getMode() == 2 || p.getMode() == mode))
+				if (p.isActive() && (p.getMode() & mode) != 0)
 					resault.add(p);
 			return resault;
 		}	
 		
 		/**
-		 * @param mode | Mode of protocol to find.
+		 * @param mode | Mode of protocols to find, or -1 if mode does not matter.
 		 * 
 		 * @return Sublist of protocols that are not active and can't be used according to mode.
 		 * 
 		 * @since 1.3.5
 		 */
-		public List<SerializationProtocol<?>> GetDeactivatedProtocols(byte mode)
+		public List<SerializationProtocol<?>> GetDeactivatedProtocols(long mode)
 		{
 			List<SerializationProtocol<?>> resault = new ArrayList<>();
 			
 			for (SerializationProtocol<?> p : this) 
-				if (!p.isActive() && (p.getMode() == 2 || p.getMode() == mode))
+				if (!p.isActive() && (p.getMode() & mode) != 0)
 					resault.add(p);
 			return resault;
 		}
@@ -378,7 +376,7 @@ public abstract class SerializationProtocol<T>
 		 */
 		public <O> SerializationProtocol<O> GetProtocolFor(O obj)
 		{
-			return GetProtocolFor(obj, MODE_ALL);
+			return GetProtocolFor(obj, MODE_SERIALIZE_DESERIALIZE);
 		}
 		
 		/**
@@ -391,20 +389,20 @@ public abstract class SerializationProtocol<T>
 		 */
 		public <O> SerializationProtocol<O> GetProtocolFor(Class<? extends O> applicableFor)
 		{
-			return GetProtocolFor(applicableFor, MODE_ALL);
+			return GetProtocolFor(applicableFor, MODE_SERIALIZE_DESERIALIZE);
 		}
 		
 		/**
 		 * @param <O>
 		 * @param obj | Object that is required protocol applicable for.
-		 * @param mode | Mode of protocol to find.
+		 * @param mode | Mode of protocols to find, or -1 if mode does not matter.
 		 * 
 		 * @return Protocol applicable for required objects class according to mode or null if there is no such an active protocol!
 		 * 
 		 * @since 1.3.5
 		 */
 		@SuppressWarnings("unchecked")
-		public <O> SerializationProtocol<O> GetProtocolFor(O obj, byte mode)
+		public <O> SerializationProtocol<O> GetProtocolFor(O obj, long mode)
 		{
 			return (SerializationProtocol<O>) GetProtocolFor(obj.getClass(), mode);
 		}
@@ -412,25 +410,25 @@ public abstract class SerializationProtocol<T>
 		/**
 		 * @param <O>
 		 * @param applicableFor | Class of object that is protocol applicable for.
-		 * @param mode | Mode of protocol to find.
+		 * @param mode | Mode of protocols to find, or -1 if mode does not matter.
 		 * 
 		 * @return Protocol applicable for required class according to mode or null if there is no such an active protocol!
 		 * 
 		 * @since 1.3.5
 		 */
 		@SuppressWarnings("unchecked")
-		public <O> SerializationProtocol<O> GetProtocolFor(Class<? extends O> applicableFor, byte mode)
+		public <O> SerializationProtocol<O> GetProtocolFor(Class<? extends O> applicableFor, long mode)
 		{
 			SerializationProtocol<O> protocol = null;
-			for (int i = 0, len = size(), myMode = 0; i < len; i++) 
+			for (int i = 0, len = size(); i < len; i++) 
 			{
 				SerializationProtocol<?> p = get(i);
-				if (p.isActive() && ((myMode = p.getMode()) == 2 || myMode == mode))
+				if (p.isActive() && (p.getMode() & mode) != 0)
 				{
 					Class<?> applicable = p.applicableFor();
 					if (applicable == applicableFor)
 						return (SerializationProtocol<O>) p;
-					else if (applicable.isAssignableFrom(applicableFor))
+					if (applicable.isAssignableFrom(applicableFor))
 						protocol = (SerializationProtocol<O>) p;
 				}
 			}

@@ -73,6 +73,8 @@ public class ProtocolConverter implements DataConverter
 	
 	protected Set<Class<?>> invokableClasses = new HashSet<>(Arrays.asList(Math.class, Scope.class, Double.class, Float.class, String.class));
 	
+	protected long protocolType = 0;
+	
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... compilerArgs)
 	{	
@@ -153,7 +155,7 @@ public class ProtocolConverter implements DataConverter
 			if (objArgs.length == 1 && objArgs[0] instanceof Scope && Scope.class.isAssignableFrom(objClass))
 				return objArgs[0];
 			compilerArgs[4] = oldObjectClass;
-			return SerializationProtocol.unserializeObj(compilerArgs.length > 3 && compilerArgs[3] instanceof ProtocolRegistry ? (ProtocolRegistry) compilerArgs[3] : SerializationProtocol.REGISTRY, objClass, objArgs);
+			return SerializationProtocol.unserializeObj(compilerArgs.length > 3 && compilerArgs[3] instanceof ProtocolRegistry ? (ProtocolRegistry) compilerArgs[3] : SerializationProtocol.REGISTRY, getProtocolType(), objClass, objArgs);
 		}
 		catch (Exception e) 
 		{
@@ -189,7 +191,7 @@ public class ProtocolConverter implements DataConverter
 		if (useBase64IfCan && obj instanceof Serializable)
 			return CONTINUE;
 		
-		if (preferedProtocol != null || (preferedProtocol = (SerializationProtocol<Object>) getProtocolFor(obj, SerializationProtocol.MODE_SERIALIZE, args)) != null)
+		if (preferedProtocol != null || (preferedProtocol = (SerializationProtocol<Object>) getProtocolFor(obj, SerializationProtocol.MODE_SERIALIZE | getProtocolType(), args)) != null)
 		{
 			Class<?> oldObjectClass = null;
 			try
@@ -240,11 +242,9 @@ public class ProtocolConverter implements DataConverter
 	@Override
 	public CharSequence getDescription(ParserRegistry myHomeRegistry, Object obj, Object... argsUsedConvert) 
 	{
-		if (obj instanceof Scope && ((Scope) obj).isEmpty())
-			return "Empty scope!";
-		else if (obj instanceof CharSequence && indexOfNotInObj((CharSequence) obj, '\n', '\r') != -1)
+		if (obj instanceof CharSequence && indexOfNotInObj((CharSequence) obj, '\n', '\r') != -1)
 			return "Multiline char sequence!";
-		return new StringBuilder("Object of ").append(obj.getClass().getName()).append(": \"").append(obj.toString()).append("\" serialized using ").append(getProtocolFor(obj, SerializationProtocol.MODE_ALL, argsUsedConvert).toString()).append("!");
+		return new StringBuilder("Object of ").append(obj.getClass().getName()).append(": \"").append(obj.toString()).append("\" serialized using ").append(getProtocolFor(obj, SerializationProtocol.MODE_SERIALIZE_DESERIALIZE | getProtocolType(), argsUsedConvert)).append("!");
 	}
 
 	/**
@@ -276,6 +276,26 @@ public class ProtocolConverter implements DataConverter
 	{
 		this.useBase64IfCan = useBase64IfCan;
 	}
+	
+	/**
+	 * @return The additional protocol type that will chained with {@link SerializationProtocol#MODE_SERIALIZE} and {@link SerializationProtocol#MODE_DESERIALIZE} (none (0) by default).
+	 * 
+	 * @since 1.3.8
+	 */
+	public long getProtocolType()
+	{
+		return protocolType;
+	}
+
+	/**
+	 * @param protocolType | Value of additional protocol type that will chained with {@link SerializationProtocol#MODE_SERIALIZE} and {@link SerializationProtocol#MODE_DESERIALIZE} (none (0) by default).
+	 * 
+	 * @since 1.3.8
+	 */
+	public void setProtocolType(long protocolType)
+	{
+		this.protocolType = protocolType;
+	}
 
 	/**
 	 * @return Classes that are eligible for public static member invocation (:: operator)!<br>
@@ -298,7 +318,7 @@ public class ProtocolConverter implements DataConverter
 	 *
 	 * @since 1.3.5
 	 */
-	public static SerializationProtocol<?> getProtocolFor(Object obj, byte mode, Object[] args)
+	public static SerializationProtocol<?> getProtocolFor(Object obj, long mode, Object[] args)
 	{
 		if (args.length > 3) 
 		{

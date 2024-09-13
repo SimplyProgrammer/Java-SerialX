@@ -92,7 +92,7 @@ public class UniversalObjectInstantiationProtocol<T> extends SerializationProtoc
 	}
 	
 	@Override
-	public byte getMode() 
+	public long getMode() 
 	{
 		return MODE_DESERIALIZE;
 	}

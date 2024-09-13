@@ -29,9 +29,9 @@ public class SelfSerializableProtocol<T extends SelfSerializable> extends Univer
 	}
 	
 	@Override
-	public byte getMode() 
+	public long getMode() 
 	{
-		return MODE_ALL;
+		return MODE_SERIALIZE_DESERIALIZE;
 	}
 }
  
