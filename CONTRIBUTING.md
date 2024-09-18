@@ -8,7 +8,7 @@ First off, thank you for considering contributing to this project. It's people l
 
 - **Ensure the bug was not already reported** by searching on GitHub under [Issues section](https://github.com/PetoPetko/Java-SerialX/issues).
 - If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/PetoPetko/Java-SerialX/issues/new).
-  - Make sure that the issue contains well enough description and if possible some additional data as well, such as code examples. This can help to better understand the issue or ease the reproduction process. 
+  - Make sure that the issue contains decent description and if possible some additional data as well, such as code examples. This can help to better understand the issue or ease the reproduction process. 
 
 ### Your First Code Contribution
 
@@ -24,7 +24,7 @@ git clone --single-branch --branch tests-and-experimental-features "https://gith
 - Make some changes (add something feature, fix some bugs, improve Javadocs...)
 - Go to SerialXTest and run `examples.implementations.GeneralExample`, `examples.implementations.SimpleQuerying` and `examples.implementations.SerializingWithJson` junit tests. Acknowledge that only changes that meet all the tests can be added to the library!
 - If all the tests are green you can `git add .`
-- Commit your changes (`git commit -am 'describe what you have done (adding/fixing/etc something)'`).
+- Commit your changes (`git commit -am 'describe what you have done (adding/fixing/improving/... something)'`).
 - Push to the branch (`git push`).
 - When you are done, open a new Pull Request.
 
@@ -33,7 +33,7 @@ git clone --single-branch --branch tests-and-experimental-features "https://gith
 - Introduce as few boundaries as possible, try making things as universal as possible (do not use final or private if possible).
 - Try for your code to not stick out stylistically ;)
 - Every added feature must have an outreaching purpose, must be tested, and perform reasonably.
-  - Make sure to NOT alter any of the tests unless your use case explicitly requires it, in that case make sure to document it!  
+  - Make sure to NOT alter any of the tests unless your use case explicitly requires it, in that case, make sure to document it!  
 - Every added class and method must be documented (/** doc */) and contain @author and @version. Method does not need to have @author, especially @author of the class is the same.
 - Note: Version does not have to be incremented in any way, adding _SNAPSHOT at the end should be sufficient.
 
