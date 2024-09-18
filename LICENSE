@@ -1,6 +1,6 @@
 Based on MIT License
 
-Copyright (c) USP 2019-2023 | Peto
+Copyright (c) USP 2019-2024 | Peto
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated files, to deal
@@ -8,8 +8,10 @@ in the Software without restriction, including without limitation the rights
 to use, copy or modify copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-Permission to publish, distribute, sublicense or sell for example as content of some game or application is allowed
-subject to the following conditions: Indication of the original source (https://github.com/PetoPetko/Java-SerialX/).
+Permission to re-publish, re-distribute, sublicense or sell any code contained in this repository (for example as a direct part of your game or application) under your own trademark is PROHIBITED unless the following conditions are met: 
+- Indication/pointing to the original source (https://github.com/PetoPetko/Java-SerialX/).
+The above does not apply if, and only if your project (game/application/etc.) is depended on the "jar file" form of this library.
+Any other situation MUST follow the conditions stated above!
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software!
