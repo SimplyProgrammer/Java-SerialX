@@ -211,7 +211,7 @@ What was added:
 
 # SerialX 1.3.8
 
-Release date: Near future...
+Release date: 9.22.2024
 
 What was added:<br>
 ### Maven:
