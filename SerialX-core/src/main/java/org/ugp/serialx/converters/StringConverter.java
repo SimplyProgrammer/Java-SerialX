@@ -79,12 +79,12 @@ public class StringConverter implements DataConverter
 					str = "{"+str+"}";
 				return str;
 			}
-			else if (serializeStringNormally)
+
+			if (serializeStringNormally)
 			{
 				if (contains(str, '\"', '\n', '\r'))
 					return CONTINUE;
-				else
-					return "\""+str+"\"";
+				return "\""+str+"\"";
 			}
 		}
 		return CONTINUE;

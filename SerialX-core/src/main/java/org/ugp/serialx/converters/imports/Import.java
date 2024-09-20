@@ -92,9 +92,9 @@ public class Import implements Cloneable, Type
 	{
 		if (obj instanceof String)
 			return getClsAlias().equals(obj);
-		else if (obj instanceof Class)
+		if (obj instanceof Class)
 			return getCls().equals(obj);
-		else if (obj instanceof Import)
+		if (obj instanceof Import)
 			return getClsAlias().equals(((Import) obj).getClsAlias()) && getCls().equals(((Import) obj).getCls());
 		return super.equals(obj);
 	}

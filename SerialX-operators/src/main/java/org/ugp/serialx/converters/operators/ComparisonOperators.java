@@ -117,13 +117,13 @@ public class ComparisonOperators implements DataParser
 	{
 		if (obj instanceof Map)
 			return ((Map<?, ?>) obj).size();
-		else if (obj instanceof Collection)
+		if (obj instanceof Collection)
 			return ((Collection<?>) obj).size();
-		else if (obj instanceof Scope)
+		if (obj instanceof Scope)
 			return ((Scope) obj).valuesCount() + ((Scope) obj).variablesCount();
-		else if (obj instanceof CharSequence)
+		if (obj instanceof CharSequence)
 			return ((CharSequence) obj).length();
-		else if ((obj = ArithmeticOperators.toNum(obj)).getClass().isArray())
+		if ((obj = ArithmeticOperators.toNum(obj)).getClass().isArray())
 			return Array.getLength(obj);
 		return obj;
 	}

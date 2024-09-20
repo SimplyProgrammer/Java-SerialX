@@ -104,11 +104,11 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	{
 		if (obj instanceof GenericScope)
 			return values().equals(((GenericScope<?, ?>) obj).values()) && variables().equals(((GenericScope<?, ?>) obj).variables());
-		else if (obj instanceof Collection)
+		if (obj instanceof Collection)
 			return variablesCount() <= 0 && values().equals(obj);
-		else if (obj instanceof Map)
+		if (obj instanceof Map)
 			return valuesCount() <= 0 && variables().equals(obj);
-		else if (obj != null && obj.getClass().isArray())
+		if (obj != null && obj.getClass().isArray())
 			return variablesCount() <= 0 && Objects.deepEquals(toArray(), Utils.fromAmbiguousArray(obj));
 		return super.equals(obj);
 	}
