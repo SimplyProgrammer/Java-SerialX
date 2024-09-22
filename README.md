@@ -17,11 +17,13 @@
 	</repository>
 </repositories>
 ```
+
 * If you want to add or see issues just click on [Issues section](https://github.com/PetoPetko/Java-SerialX/issues) in up.
 * If you want to comment or suggest a feature use [Discussions section](https://github.com/PetoPetko/Java-SerialX/discussions).
 * If you want to see or learn some things about library, take a look at [examples](https://github.com/SimplyProgrammer/Java-SerialX/tree/tests-and-experimental-features/src/examples).
 * And if you want to see the changelog open [changelog file](Changelog.md) or use [Releases section](https://github.com/PetoPetko/Java-SerialX/releases) too.
 <br>
+
 SerialX is powerful and lightweighted utility library to serialize objects in Java. Serialization means storing Java objects and values into some media (for example text file).<br>
 SerialX is improving regular Java Base64 serialization and adding serialization protocols that you can create for objects that cant be serialized using regular way. For example final non-serializable objects, 3rd party objects and others. SerialX API is storing objects into JSON like "programming" language (data format) called JUSS (Java universal serial script) which shares common functionality with JSON and provides more customizability and extended functionality! This allows you to serialize multiple objects into one string or also into file. But unlike to JSON, JUSS general conception is based on determinate order of arguments or values we can say. The latest versions also provides variable system (keys, values) similar to JSON. But in JUSS these variables can be overided and can interact with each other and can be used multiple times. Nowadays SerialX provides recursive descent parser that can be modified so you can create your own data structures! In other words SerialX allows you to serialize **anything**, it's pretty simple to use and practically limitless!
 ## Brief overview of working concept and advantages compared to regular serialization:
