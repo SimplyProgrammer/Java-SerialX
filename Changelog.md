@@ -232,6 +232,7 @@ What was added:<br>
 &nbsp;
 
 ### Specific changes:
+* Library is now compatible with JDK versions up to 21 (probably even newer but it was not tested)!
 * ImportsProvider now implements caching for Imports.
 * ParserRegistry now implements DataParser allowing for easier creation of more complex (context-free) languages.
 * NumberConverter was refactored, now providing all in one parsing numberOf function that is on average 12x faster than the old implementation.
