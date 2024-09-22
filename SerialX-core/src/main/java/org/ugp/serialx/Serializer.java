@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -740,7 +741,7 @@ public abstract class Serializer extends Scope
 			{
 				if (indexOfNotInObj((CharSequence) obj, "http") == 0)
 				{
-					URLConnection con = new URL(obj.toString()).openConnection();
+					URLConnection con = new URI(obj.toString()).toURL().openConnection();
 					con.setDoOutput(true);
 					if (con instanceof HttpURLConnection)
 						post(fromSerializer, (HttpURLConnection) con);
@@ -831,7 +832,7 @@ public abstract class Serializer extends Scope
 			{
 				String fromStr;
 				if (indexOfNotInObj(fromStr = fromObj.toString(), "http") == 0)
-					return newInstance.LoadFrom(new URL(fromStr).openStream());
+					return newInstance.LoadFrom(new URI(fromStr).toURL().openStream());
 				return newInstance.LoadFrom(new File(fromStr));
 			}
 			catch (Exception e)
