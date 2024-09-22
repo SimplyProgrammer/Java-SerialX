@@ -17,7 +17,12 @@
 	</modules>
 
 	<name>SerialX root</name>
-	<description>Store Java objects into JSON or any format you want! SerialX is a powerful lightweight utility library to serialize Java objects programmatically via tweakable recursive descent parser for custom domain-specific languages!</description>
+	<description>
+		Store Java objects into JSON or any format you want! SerialX is
+		a powerful lightweight utility library to serialize Java objects
+		programmatically via tweakable recursive descent parser for custom
+		domain-specific languages!
+	</description>
 	<url>https://github.com/SimplyProgrammer/Java-SerialX</url>
 	<inceptionYear>2020</inceptionYear>
 
@@ -58,11 +63,11 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 
-		<project.build.finalName>serialx-${project.artifactId}-${project.version}</project.build.finalName>
+		<!-- <project.build.finalName>serialx-${project.artifactId}-${project.version}</project.build.finalName> -->
 	</properties>
 
 	<build>
-		<finalName>${project.build.finalName}</finalName>
+		<!-- <finalName>${project.build.finalName}</finalName> -->
 
 		<plugins>
 			<plugin>
@@ -89,6 +94,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -118,6 +124,21 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				
+				<executions>
+			        <execution>
+			          <id>flatten</id>
+			          <phase>process-resources</phase>
+			          <goals>
+			            <goal>flatten</goal>
+			          </goals>
+			        </execution>
+			    </executions>
 			</plugin>
 		</plugins>
 	</build>
