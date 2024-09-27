@@ -6,7 +6,7 @@ First off, thank you for considering contributing to this project. It's people l
 
 ### Reporting Bugs
 
-- **Ensure the bug was not already reported** by searching on GitHub under [Issues section](https://github.com/PetoPetko/Java-SerialX/issues).
+- **Ensure the bug was not already reported** by searching through [Issues section](https://github.com/PetoPetko/Java-SerialX/issues).
 - If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/PetoPetko/Java-SerialX/issues/new).
   - Make sure that the issue contains decent description and if possible some additional data as well, such as code examples. This can help to better understand the issue or ease the reproduction process. 
 
