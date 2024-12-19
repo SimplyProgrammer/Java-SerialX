@@ -236,13 +236,13 @@ What was added:<br>
 * ImportsProvider now implements caching for Imports.
 * ParserRegistry now implements DataParser allowing for easier creation of more complex (context-free) languages.
 * NumberConverter was refactored, now providing all in one parsing numberOf function that is on average 12x faster than the old implementation.
-  * New numberOf function supports octadecimal number and has improved handling of E-notation.
+  * New numberOf function supports octadecimal numbers and has improved handling of E-notation.
   * Java integer caching is now in place.
   * DecimalFormater was dumped in favor of the more customizable overridable format method.
 * BooleanConverter and NullConverter were slightly refactored allowing for near O(1) complexity of parsing.
 * ObjectConverter got a significant refactor!
   * It was separated into 2 separate classes across 2 modules. Now it is ProtocolConverter that is extended by ObjectConverter.
-  * Static member invocation is now only allowed on a small carefully selected group of classes, fixing the major security exploit that would an attacker to call any static function in a hypothetical REST implementation.
+  * Static member invocation is now only allowed on a small carefully selected group of classes, fixing the major security (arbitrary code execution) exploit that would allow an attacker to call any static function of any class in a hypothetical REST implementation scenario. Note that this is only a mitigation that allows you to whitelist the specific classes for static member invocation so the maximal caution is still advised when doing so.
   * Both ObjectConverter and ProtocolConverter were slightly optimized.
 * StringConverter was slightly optimized by introducing caching. It is disabled by default, by enabling it the same String instance will be returned for the same strings during parsing.
   * Static variables were made instance-specific allowing for more flexibility.
@@ -252,7 +252,7 @@ What was added:<br>
 * Mode of SerializationProtocol is now implemented with 64 int (long) bit-packing which allows for chaining of multiple modes which can now be understood as protocol types. This trades an overall number of unique modes for greater utility. 
 * Serializer (and core high-level changes):
   * The concept of scope parent variable inheritance was abandoned due to being unacceptable and inefficient (both time and space-wise...), quite error-prone and tedious to work with as well as and potentially dangerous. Not mentioning the fact that the only reason for its existence was to allow you to access variables declared in the parent scope, for which it suboptimal solution to say at least...
-  * In a similar fashion, the notion of each parser having to return the new instance of respective object for every parsed string was abandoned as well and is no longer required, allowing for more flexibility and concepts such as already mentioned caching!
+  * In a similar fashion, the notion of each parser having to return the new instance of the respective object for every parsed string was abandoned as well and is no longer required, allowing for more flexibility and concepts such as already mentioned caching!
   * OOP NULL was abandoned as well as it was a biproduct of sub-optimal decisions mentioned above and therefore conceptually flawed. It is deprecated and should not be used!
 * All static utility functions (for instance string analyses and processing functions) were separated into new Utils class, in order to achieve better separation of concerns...
   * All string analyses and processing utility functions (for example indexOfNotInObj or splitValues) were rewritten into more "finite state machine"-like form which slightly increases their performance...
@@ -269,7 +269,7 @@ What was added:<br>
 
 &nbsp;
 * Operators class was added, which is used for injecting all operator parsers into the specific registry.
-* Almost every operator parser was refactored, resulting in simpler, shorter and therefore more optimized code. The most notable ones are:
+* Almost every operator parser was refactored, resulting in shorter, far simpler and therefore more optimized code. The most notable ones are:
   * ArithmeticOperators which now also allows you to declare your own arithmetic operators and/or specify their precedence.
   * Due to refactoring, ResultWrapper is no longer needed and will be removed, this extends to LogicalOperators as well.
 * NegationOperator now supports separate handling of logical negation (! operator) and mathematical negation (- operator), however by default their behavior is the same.
@@ -281,3 +281,14 @@ What was added:<br>
 * Besides the changes mentioned above, countless smaller improvements including numerous bug fixes, performance improvements, API enhancements or Javadoc specifications were added across the whole library.
   * Some functions were slightly renamed but it is usually documented but deprecated functions were removed!
 #
+
+# SerialX 1.3.9+
+
+Release date: UNKNOWN
+
+### Roadmap of potential changes:
+* Separating From/Into API from Scope and Serializer into the standalone classes making it more flexible and customizable.
+* ? Implementing Register in such a way that it will be possible to specify the underlying data structure.
+* Optimizing deserialization process in JussSerializer (unification of "those 2 methods" and getting rid of that stinky legacy spaghetti code they have).
+* ? Optimizations - Introducing char/class-based direct dispatch hashing algorithm for selecting the best fitting data converter for the string/object. (This is likely not going to be possible to fully implement due to internal dependencies between parsers and other legacy reasons...)
+
