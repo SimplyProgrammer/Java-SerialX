@@ -291,4 +291,6 @@ Release date: UNKNOWN
 * ? Implementing Register in such a way that it will be possible to specify the underlying data structure.
 * Optimizing deserialization process in JussSerializer (unification of "those 2 methods" and getting rid of that stinky legacy spaghetti code they have).
 * ? Optimizations - Introducing char/class-based direct dispatch hashing algorithm for selecting the best fitting data converter for the string/object. (This is likely not going to be possible to fully implement due to internal dependencies between parsers and other legacy reasons...)
+* Update CLRFs to be compatible with multiple systems.
+* ? Formating options
 
