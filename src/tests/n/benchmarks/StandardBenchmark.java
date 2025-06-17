@@ -2,7 +2,6 @@ package tests.n.benchmarks;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
@@ -32,7 +31,7 @@ import org.ugp.serialx.juss.JussSerializer;
 /**
  * StandardBenchmark for SerialX, single shot no warmup...
  * 
- * @version 1.1.0
+ * @version 1.1.1
  * 
  * @since 1.3.8
  * 
@@ -40,12 +39,15 @@ import org.ugp.serialx.juss.JussSerializer;
  */
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 0) // 2
-@Measurement(iterations = 1) // 1
+@Warmup(iterations = 0)
+//@Warmup(iterations = 2)
+@Measurement(iterations = 1)
+//@Measurement(iterations = 3)
 @BenchmarkMode(
 	Mode.SingleShotTime
 )
-@Fork(3) // 1
+@Fork(3)
+//@Fork(1)
 public class StandardBenchmark 
 {
 	static final int seed = 123; // DO NOT CHANGE
@@ -55,7 +57,9 @@ public class StandardBenchmark
 		protected final M medium;
 		protected final Collection<Object> data;
 		
-		public DataState(M medium, int count) // DO NOT CHANGE
+		protected String strData; // Setup with setupMedium...
+		
+		public DataState(M medium, int count) // DO NOT CHANGE (without incr the bench version)
 		{
 			this.medium = medium;
 			
@@ -73,6 +77,10 @@ public class StandardBenchmark
 						case 2:
 							dataArr[i] = (rng + i); break;
 						case 3:
+							if (i % 11 == 0) 
+							{
+								dataArr[i] = null; break;
+							}
 							dataArr[i] = ("bench" + i); break;
 					}
 				data = Arrays.asList(dataArr);
@@ -88,7 +96,7 @@ public class StandardBenchmark
 //			double t = System.nanoTime();
 //			System.out.println(i + " | " + (t-t0)/1000000);
 		}
-		
+
 		public void setupMedium() {}
 	}
 	
@@ -96,6 +104,7 @@ public class StandardBenchmark
 	{
 		JussSerializer srl = new JussSerializer(vars, data);
 		srl.getParsers().resetCache(); // Cached
+//		srl.getParsers().get(StringConverter.class).setParsingCache(new HashMap<>());
 		return srl;
 	}
 	
@@ -122,7 +131,7 @@ public class StandardBenchmark
 	}
 	
 	@Benchmark
-	public Object _1_read() throws FileNotFoundException
+	public Object _1_read() throws IOException
 	{
 		JussSerializer deserializer = (JussSerializer) newSerializer(null, null);
 		
@@ -137,64 +146,73 @@ public class StandardBenchmark
 	
 	/* IO */
 	
-//	@Benchmark
-//	public StringBuilder readChars(LargeFileData data) throws IOException
+//	@Setup
+//	public void setupState(BenchmarkParams params)
 //	{
-//        try (Reader reader = new FileReader(data.file))
-//        {
-//            return readChars(reader);
-//        }
-//	}
-//	
-//	@Benchmark
-//    public StringBuilder readLinesAndChars(LargeFileData data) throws IOException {
-//        try (Reader reader = new FileReader(data.file))
-//        {
-//            return readLinesAndChars(reader);
-//        }
-//    }
-//	
-//	
-//	@Benchmark
-//	public StringBuilder readCharsArrayed(LargeFileData data) throws IOException {
-//        try (Reader reader = new FileReader(data.file))
-//        {
-//            return readCharsArrayed(reader);
-//        }
+//		state = new DataState<File>(new File("src/tests/n/benchmarks/_" + dataCount + "_bench.juss"), dataCount) {
+//			@Override
+//			public void setupMedium() {
+//				StringBuilder sb = new StringBuilder(dataCount*2);
+//				for (Object object : data) {
+//					sb.append(object);
+//				}
+//				strData = sb.toString();
+//			}
+//		};
 //	}
 
-////StringBuilder sb = new StringBuilder();
-////char[] arr = new char[256*4];
-////try (Reader reader = new FileReader(fileLarge)) {
-////	for (; reader.read(arr) != -1; ) {
-////		sb.append(arr);
-////	}
-////}
-////strLarge = sb.toString();
-
 //	@Benchmark
-//	public int str_readChars(Blackhole hole) throws IOException
+//	public void file_readChars(Blackhole hole) throws IOException
 //	{
-//		try (Reader reader = new StringReader(strLarge))
+//		try (Reader reader = new FileReader((File) state.medium))
 //		{
-//			return readChars(reader);
+//			hole.consume(readChars(reader));
 //		}
 //	}
 //	
 //	@Benchmark
-//	public int str_readLinesAndChars() throws IOException, InterruptedException {
-//		try (Reader reader = new StringReader(strLarge))
+//	public void file_readLinesAndChars(Blackhole hole) throws IOException, InterruptedException 
+//	{
+//		try (Reader reader = new FileReader((File) state.medium))
 //		{
-//			return readLinesAndChars(reader);
+//			hole.consume(readLinesAndChars(reader));
+//		}
+//	}
+	
+	
+//	@Benchmark
+//	public void file_readCharsArrayed(Blackhole hole) throws IOException, InterruptedException 
+//	{
+//		try (Reader reader = new FileReader((File) state.medium))
+//		{
+//			hole.consume(readCharsArrayed(reader));
+//		}
+//	}
+	
+//	@Benchmark
+//	public void str_readChars(Blackhole hole) throws IOException
+//	{
+//		try (Reader reader = new StringReader(state.strData))
+//		{
+//			hole.consume(readChars(reader));
 //		}
 //	}
 //	
-//	
 //	@Benchmark
-//	public int str_readCharsArrayed() throws IOException, InterruptedException {
-//		try (Reader reader = new StringReader(strLarge))
+//	public void str_readLinesAndChars(Blackhole hole) throws IOException, InterruptedException 
+//	{
+//		try (Reader reader = new StringReader(state.strData))
 //		{
-//			return readCharsArrayed(reader);
+//			hole.consume(readLinesAndChars(reader));
+//		}
+//	}
+	
+//	@Benchmark
+//	public void str_readCharsArrayed(Blackhole hole) throws IOException, InterruptedException 
+//	{
+//		try (Reader reader = new StringReader(state.strData))
+//		{
+//			hole.consume(readCharsArrayed(reader));
 //		}
 //	}
 	
@@ -230,7 +248,7 @@ public class StandardBenchmark
 	public static StringBuilder readCharsArrayed(Reader r) throws IOException
 	{
 		StringBuilder sb = new StringBuilder();
-		char[] arr = new char[256];
+		char[] arr = new char[128*2];
 
 		for (int charsRead; (charsRead = r.read(arr)) != -1; ) {
 			for (int i = 0; i < charsRead; i++) {
@@ -248,16 +266,18 @@ public class StandardBenchmark
 
 		OptionsBuilder ob = new OptionsBuilder();
 		ob.include(StandardBenchmark.class.getSimpleName());
-//		ob.jvm(System.getProperty("user.home") + "\\.sdkman\\candidates\\java\\17.0.12-graal\\bin\\java.exe");
+		ob.jvm(System.getProperty("user.home") + "\\.sdkman\\candidates\\java\\21.0.7-graal\\bin\\java.exe");
 		
 //		ob.addProfiler(org.openjdk.jmh.profile.StackProfiler.class);
-//		ob.addProfiler(org.openjdk.jmh.profile.JavaFlightRecorderProfiler.class, "dir=./jfr_out");
+//		ob.addProfiler(org.openjdk.jmh.profile.JavaFlightRecorderProfiler.class, "dir=./bench_results/jfr_out_j8");
+		ob.addProfiler(org.openjdk.jmh.profile.JavaFlightRecorderProfiler.class, "dir=./bench_results/jfr_out_j21g");
 		
-//		ob.result("src/tests/n/benchmarks/bench.scsv");
-//		ob.resultFormat(ResultFormatType.SCSV);
+//		ob.result("bench_results/_StandardBenchmark_110_138_j8");
+//		ob.result("bench_results/_StandardBenchmark_110_138_j21g");
+//		ob.resultFormat(org.openjdk.jmh.results.format.ResultFormatType.TEXT);
 
 		new Runner(ob).run();
 		
-		System.out.println("Cached - 1.3.8");
+		System.out.println("StandardBenchmark 1.1.1 | Cached - 1.3.8");
 	}
 }

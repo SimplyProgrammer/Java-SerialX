@@ -15,7 +15,7 @@ $RECYCLE.BIN/
 
 *.log
 *_bench.juss
-jfr_out/
+bench_results/
 .jfr
 log.txt
 npm-debug.log*

@@ -95,7 +95,7 @@ public class GeneralExample
 			}
 		});
 		
-		File f = new File("src/examples/implementations/test.juss"); //File to write and read from!
+		File f = new File("examples/implementations/test.juss"); //File to write and read from!
 
 		//------------------------------------------- Generating mock data -------------------------------------------
 		
