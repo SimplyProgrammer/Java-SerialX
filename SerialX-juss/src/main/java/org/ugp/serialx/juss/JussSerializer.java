@@ -392,11 +392,13 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @return This scope after loading data from reader (you most likely want to return "this")!
 	 * 
+	 * @throws IOException When reading the reader fails...
+	 * 
 	 * @since 1.3.2
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public <S extends Scope> S LoadFrom(Reader reader, Object... args)
+	public <S extends Scope> S LoadFrom(Reader reader, Object... args) throws IOException
 	{	
 		boolean formatRequired = true;
 		
@@ -412,91 +414,140 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		List<Object> objs = splitAndParse(str, args);
 		addAll(objs);
 		
-		//double t0 = System.nanoTime();
-		/*Registry<DataParser> reg = DataParser.REGISTRY;
-		String lastLine = null;
-		int quote = 0, multLineCom = -1, brackets = 0;
-		try
-		{
-			BufferedReader lineReader = new BufferedReader(reader);
-			//String blanks = new String(new char[] {32, 9, 10, 12, 13});
-			for (String line = lineReader.readLine(); line != null; line = lineReader.readLine())
-			{
-				for (int i = 0, len = line.length(), com = -1, lastIndex = 0; i < len; i++)
-				{
-					char ch = line.charAt(i);
-					if (ch == '/' && i < len-1 && line.charAt(i+1) == '/')
-						com++;
-					else if (multLineCom <= -1 && ch == '"')
-						quote++;
-					
-					boolean notString = quote % 2 == 0;
-					if (multLineCom > -1 || com > -1) //Is comment
-					{
-						if (multLineCom > 0 && ch == '*' && i < len-1 && line.charAt(++i) == '/')
-							com = multLineCom = -1;
-					}
-					else if (notString && ch == '/' && i < len-1 && line.charAt(i+1) == '*')
-						i += multLineCom = 1;
-					/*else if (notString && blanks.indexOf(ch) > -1)
-					{
-						if ((chBefore = i > 0 ? line.charAt(i-1) : 0) != ';' && chBefore != '{' && blanks.indexOf(chBefore) <= -1)
-							sb.append(" ");
-					}*/
-					/*else if (notString && i < str.length()-1 && (ch == '!' && str.charAt(i+1) == '!' || ch == '-' && str.charAt(i+1) == '-' || ch == '+' && str.charAt(i+1) == '+'))
-						i++;*
-					else
-					{
-						if (notString)
-						{
-							if (ch | ' ') == '{' || ch == '[')
-								brackets++;
-							else if (ch == '}' || ch == ']')
-							{
-								if (brackets > 0)
-									brackets--;
-								else
-									throw new IllegalArgumentException("Missing opening bracket in: " + line);
-							}
-							else if (brackets == 0 && (ch == ';' || ch == ','))
-							{
-								//System.out.println(lastIndex + " " + i);
-								String str = line.substring(lastIndex == 0 ? 0 : lastIndex + 1, lastIndex = i);
-								//System.out.println(str);
-								if (!(str = str.trim()).isEmpty())
-								{
-									Object obj = ParseObjectHandleNull(reg, str, true, result);
-									if (obj != VOID)
-										result.add(obj);
-								}
-							}
-						}
-					}
-				}
-				lastLine = line;
-			}
-			lineReader.close();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		//double t = System.nanoTime();
-		//System.out.println((t-t0)/1000000);
-
-		if (lastLine != null && indexOfNotInObj(lastLine, ';', ',') <= -1)
-		{
-			if (!(lastLine = lastLine.trim()).isEmpty())
-			{
-				Object obj = ParseObjectHandleNull(reg, lastLine, true, result);
-				if (obj != VOID)
-					result.add(obj);
-			}
-		}*/
-
 		if (parent == null)
 			getImports().removeImportsOf(this);
 		return (S) this;
+	}
+	
+	public void readAndParse(Reader reader) throws IOException
+	{
+		final char endl = System.lineSeparator().charAt(0);
+		
+//		StringBuilder str = readAndFormat(reader, formatRequired); // TODO could be improved...
+//		List<Object> objs = splitAndParse(str, args);
+//		addAll(objs);
+		
+		StringBuilder sb = new StringBuilder();
+		char[] chars = new char[128*2];
+
+		for (int charsRead, oldCh = 0, state = 0, brackets; (charsRead = reader.read(chars)) != -1; )
+		{
+			int i = 0;
+			switch (state) // Complete the unfinished action from prev iter based on state // <- Too much repetitive code already, and pain in the ass to work around with, consider other solution
+			{
+				case '/': // Handle ongoing comments...
+					do if (chars[i] == endl) // Skip all until endl
+					{
+						oldCh = state = 0;
+						i++;
+						break;
+					}
+					while (++i < charsRead);
+					
+					break;
+				case '*':
+					do if (chars[i] == '*' && (++i < charsRead ? chars[i] : reader.read()) == '/') // Skip all until */
+					{
+						oldCh = state = 0;
+						i++;
+						break;
+					}
+					while (++i < charsRead);
+
+					break;
+
+				case '\"':
+				case '\'':
+					do // Append all chars until end of str/char
+					{
+						char ch;
+						sb.append(ch = chars[i]);
+						if (ch == state)
+						{
+							state = 0;
+							i++;
+							break;
+						}
+					}
+					while (++i < charsRead); 
+					
+					break;
+//				case ' ':
+//					do if (chars[i] > 32) // Skip all blanks until next non-blank
+//					{
+//						state = 0;
+//						//i++;
+//						break;
+//					}
+//					while (++i < charsRead);
+//					
+//					break;
+			}
+			
+			charsLoop: for (; i < charsRead; i++)
+			{
+				int ch = chars[i];
+				if (ch < 33) // Handle blanks, skip unnecessary
+				{
+					if (oldCh > 32) // First blank (in possible row)
+						sb.append(oldCh /*= state*/ = ' ');
+					continue;
+				}
+			
+				if (oldCh == '/') // Skip the comments...
+				{
+					if (ch == '/') // //
+					{
+						for (state = '/'; ++i < charsRead; ); // Skip all until endl
+							if (chars[i] == endl) 
+							{
+								oldCh = state = 0;
+								continue charsLoop;
+							}
+					}
+					else if (ch == '*') // /*
+					{
+						for (state = '*'; ++i < charsRead; ) // Skip all until */
+							if (chars[i] == '*' && (++i < charsRead ? chars[i] : reader.read()) == '/') // */
+							{
+								oldCh = state = 0;
+								continue charsLoop;
+							}
+					}
+					
+					continue;
+				}
+
+				if (ch == '\"' || ch == '\'')
+				{
+					sb.append(ch);
+					for (state = ch; ++i < charsRead; ) // Append all chars until end of str/char
+					{
+						sb.append(ch = chars[i]);
+						if (ch == state)
+						{
+							state = 0;
+							break;
+						}
+					}
+				}
+				else if ((ch | ' ') == '{')
+				{
+					for (brackets = 1; ++i < charsRead && brackets != 0; )
+					{
+						if ((ch = (chars[i] | ' ')) == '{')
+							brackets++;
+						else if (ch == '}')
+							brackets--;
+						else if (ch == '"')
+							while (++i < charsRead && chars[i] != '"');
+					}
+				}
+				
+				oldCh = ch;
+			}
+		}
+
 	}
 	
 	/**
@@ -589,7 +640,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @since 1.3.2
 	 */
-	protected List<Object> splitAndParse(StringBuilder formattedStr, Object... parserArgs)
+	public List<Object> splitAndParse(StringBuilder formattedStr, Object... parserArgs)
 	{
 		List<Object> result = new ArrayList<>();
 
@@ -624,6 +675,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 			else if ((ch == ';' || ch == ',')/* || (brackets == 1 && (isBracketSplit = ch == '}' || ch == ']'))*/)
 			{
 				String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, lastIndex = i /*+ (isBracketSplit ? 1 : 0)*/).trim();
+				System.out.println(str + "\n");
 				if (!str.isEmpty())
 				{
 					Object obj = parseObject(reg, str, parserArgs);
@@ -635,6 +687,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		}
 
 		String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, len).trim();
+		System.out.println(str + "\n");
 		if (!str.isEmpty())
 		{
 			Object obj = parseObject(reg, str, parserArgs);

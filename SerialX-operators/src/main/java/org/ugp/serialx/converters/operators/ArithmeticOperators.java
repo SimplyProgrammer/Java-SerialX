@@ -59,18 +59,18 @@ public class ArithmeticOperators implements DataParser
 			int index = 1;
 			try 
 			{
-				for (int opPrio = 2; opPrio > 0; opPrio--)
+				for (int opPrio = getHighestPriority(); opPrio > 0; opPrio--)
 					for (ListIterator<String> iter = oprs.listIterator(); iter.hasNext(); )
 					{
 						if (getOperatorPriority(op = iter.next()) == opPrio)
 						{
 							iter.remove();
-							cofs.set(index = iter.nextIndex(), operator(cofs.get(index), op, cofs.remove(index + 1)));
+							cofs.set(index = iter.nextIndex(), operator(cofs.get(index), op, cofs.remove(index + 1), myHomeRegistry, args));
 						}
 					}
 				
 				for (index = 1; (op = oprs.poll()) != null; )
-					cofs.set(0, operator(cofs.get(0), op, cofs.get(index++)));
+					cofs.set(0, operator(cofs.get(0), op, cofs.get(index++), myHomeRegistry, args));
 			}
 			catch (ClassCastException ex)
 			{
@@ -94,12 +94,14 @@ public class ArithmeticOperators implements DataParser
 	 * @param opr1 | Operand 1
 	 * @param op | The operator/operation
 	 * @param opr2 | Operand 2
+	 * @param myHomeRegistry | Registry provided by the caller, use only in special cases!
+	 * @param args | Some additional args provided by the caller for the myHomeRegistry, use only in special cases!
 	 * 
 	 * @return Result of binary operation described by op between opr1 and opr2! If operator is not known, opr1 will be returned by default!
 	 * 
 	 * @since 1.3.8
 	 */
-	public Object operator(Object opr1, String op, Object opr2)
+	public Object operator(Object opr1, String op, Object opr2, ParserRegistry myHomeRegistry, Object... args)
 	{
 //		System.err.println(opr1 + op + opr2);
 		switch (op.charAt(0))
@@ -125,6 +127,8 @@ public class ArithmeticOperators implements DataParser
 	 * 
 	 * @return Priority of provided operator (higher number = higher priority, 2 = high, 1 = medium, 0 = low)
 	 * 
+	 * @see ArithmeticOperators#getHighestPriority()
+	 * 
 	 * @since 1.3.8
 	 */
 	public byte getOperatorPriority(String op)
@@ -140,6 +144,16 @@ public class ArithmeticOperators implements DataParser
 			default:
 				return 1; // Medium  * / %
 		}
+	}
+	
+	/**
+	 * @return Number representing highest possible priority of operator (default is 2). 
+	 * 
+	 * @since 1.3.9
+	 */
+	protected byte getHighestPriority()
+	{
+		return 2;
 	}
 	
 	/** 

@@ -353,13 +353,13 @@ public abstract class Serializer extends Scope
 	 * @return Unserialized objects and variables in {@link Scope} or empty {@link Scope} if string is empty.
 	 * You can use negative indexes to get objects from back of this array since 1.1.0 (-1 = last element)!
 	 * 
-	 * @throws FileNotFoundException if file does not exist!
+	 * @throws FileNotFoundException if file does not exist or cannot be read!
 	 * 
 	 * @since 1.0.0
 	 * 
 	 * @see Serializer#LoadFrom(Reader, Object...)
 	 */
-	public <S extends Scope> S LoadFrom(File file, Object... parserArgs) throws FileNotFoundException
+	public <S extends Scope> S LoadFrom(File file, Object... parserArgs) throws IOException
 	{
 		return LoadFrom(new FileReader(file), parserArgs);
 	}
@@ -371,11 +371,13 @@ public abstract class Serializer extends Scope
 	 * @return Unserialized objects and variables in {@link Scope} or empty {@link Scope} if string is empty.
 	 * You can use negative indexes to get objects from back of this array since 1.1.0 (-1 = last element)!
 	 * 
+	 * @throws IOException When reading the char sequence fails...
+	 * 
 	 * @since 1.2.5
 	 * 
 	 * @see Serializer#LoadFrom(Reader, Object...)
 	 */
-	public <S extends Scope> S LoadFrom(CharSequence str, Object... parserArgs)
+	public <S extends Scope> S LoadFrom(CharSequence str, Object... parserArgs) throws IOException
 	{
 		return LoadFrom(new StringReader(str.toString()), parserArgs);
 	}
@@ -387,11 +389,13 @@ public abstract class Serializer extends Scope
 	 * @return Unserialized objects and variables in {@link Scope} or empty {@link Scope} if string is empty.
 	 * You can use negative indexes to get objects from back of this array since 1.1.0 (-1 = last element)!
 	 * 
+	 * @throws IOException When reading the input stream fails...
+	 * 
 	 * @since 1.3.2
 	 * 
 	 * @see Serializer#LoadFrom(Reader, Object...)
 	 */
-	public <S extends Scope> S LoadFrom(InputStream stream, Object... parserArgs)
+	public <S extends Scope> S LoadFrom(InputStream stream, Object... parserArgs) throws IOException
 	{
 		return LoadFrom(new InputStreamReader(stream), parserArgs);
 	}
@@ -401,9 +405,11 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @return This scope after loading data from reader (you most likely want to return "this")!
 	 * 
+	 * @throws IOException When reading the reader fails...
+	 * 
 	 * @since 1.2.5
 	 */
-	public <S extends Scope> S LoadFrom(Reader reader)
+	public <S extends Scope> S LoadFrom(Reader reader) throws IOException
 	{
 		return LoadFrom(reader, true);
 	}
@@ -414,9 +420,11 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @return This scope after loading data from reader (you most likely want to return "this")!
 	 * 
+	 * @throws IOException When reading the reader fails...
+	 * 
 	 * @since 1.3.2
 	 */
-	public abstract <S extends Scope> S LoadFrom(Reader reader, Object... parserArgs);
+	public abstract <S extends Scope> S LoadFrom(Reader reader, Object... parserArgs) throws IOException;
 	
 	/**
 	 * @return Clone of this {@link Serializer} without variables and values, protocols and parser will remain same!

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Base64;
 
 import org.ugp.serialx.GenericScope;
+import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.DataParser;
@@ -113,9 +114,22 @@ public class ObjectConverter extends ProtocolConverter
 					scope = getPreferredSerializer();
 				}
 				
-				compilerArgs = compilerArgs.clone();
-				compilerArgs[0] = false; //No extra formating...
-				return str.isEmpty() ? scope : scope.LoadFrom(new StringReader(str), compilerArgs);
+				if (compilerArgs.length > 0)
+				{
+					compilerArgs = compilerArgs.clone();
+					compilerArgs[0] = false; //No extra formating...
+				}
+				
+				if (str.isEmpty())
+					return scope;
+				try 
+				{
+					return scope.LoadFrom(new StringReader(str), compilerArgs);
+				} 
+				catch (IOException e) 
+				{
+					LogProvider.instance.logErr("Unable to parse the scope because:", e); // Should not occur...
+				}
 			}
 		}
 		return CONTINUE;
