@@ -379,21 +379,6 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	}
 	
 	/**
-	 * @deprecated USE {@link GenericScope#contains(Object)} instead!
-	 * 
-	 * @param value | Object the value.
-	 * 
-	 * @return True if independent value was found in this scope.
-	 * 
-	 * @since 1.2.0
-	 */
-	@Deprecated
-	public boolean containsIndependentValue(ValT value) 
-	{
-		return values().contains(value);
-	}
-	
-	/**
 	 * @param valueIndex | Index of independent value. Also can be negative, in this case u will get elements from back!
 	 * {@link IndexOutOfBoundsException} will be thrown if index is too big!
 	 * 

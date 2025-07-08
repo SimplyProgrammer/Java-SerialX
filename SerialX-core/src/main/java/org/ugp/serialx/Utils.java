@@ -932,34 +932,4 @@ public final class Utils {
         conn.setDoOutput(true);
         conn.getOutputStream().write(postDataBytes);
 	}
-	
-	/**
-	 * This is a "dummy" class that {@link Serializer} uses internally as an OOP programmatic interpretation of null. In otherwise this is wrapper object for null.
-	 * Note: You should not be able to come in contact with this during serialization and loading, if you did then you most likely encountered and bug and you should report it!
-	 * 
-	 * @author PETO
-	 *
-	 * @since 1.2.2
-	 * 
-	 * @deprecated (in 1.3.8) NO LONGER NEEDED, DO NOT USE THIS! You were never supposed to...
-	 */
-	public static final class NULL //TODO: REMOVE IN NEXT V!!!!
-	{
-		public static Object toOopNull(Object obj)
-		{
-			return obj == null ? new NULL() : obj;
-		}
-		
-		@Override
-		public boolean equals(Object obj) 
-		{
-			return obj == null || obj instanceof NULL;
-		}
-		
-		@Override
-		public String toString() 
-		{
-			return "NULL";
-		}
-	}
 }

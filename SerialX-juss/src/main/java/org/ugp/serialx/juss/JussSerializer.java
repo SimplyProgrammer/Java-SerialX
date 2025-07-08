@@ -19,6 +19,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -205,6 +206,8 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 	
 	/**
+	 * @deprecated (1.3.9) DO NOT USE THIS, USE {@link VariableConverter#NewVariable(String, Object)} OR VARIATION OF {@link AbstractMap.SimpleEntry} INSTEAD!
+	 * 
 	 * @param name | Name of variable.
 	 * @param value | Value of variable.
 	 * 
@@ -212,6 +215,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @since 1.1.5
 	 */
+	@Deprecated
 	@Override
 	public <T> String Var(String name, T value)
 	{
@@ -219,6 +223,8 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 	
 	/**
+	 * @deprecated (1.3.9) DO NOT USE THIS, USE {@link VariableConverter#NewVariable(String, Object)} OR VARIATION OF {@link AbstractMap.SimpleEntry} INSTEAD!
+	 * 
 	 * @param name | Name of variable.
 	 * @param value | Value of variable.
 	 * @param isValue | True if variables value supposed to by visible also during value loading.
@@ -227,6 +233,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @since 1.1.5
 	 */
+	@Deprecated
 	public <T> String Var(String name, T value, boolean isValue)
 	{
 		return Code((isValue ? "$" : "") + name + " = " + getParsers().toString(value, this, 0, 0, getProtocols(), getFormat()) + (isGenerateComments() ? "; //Object of " + value.getClass().getName() + ": \"" + value + "\" inserted manually! Stored by \"" + name + "\" variable!" : ""));

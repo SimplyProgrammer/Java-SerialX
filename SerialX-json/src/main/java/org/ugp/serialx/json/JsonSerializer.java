@@ -138,6 +138,7 @@ public class JsonSerializer extends JussSerializer
 		super(parsers, protocols, variablesMap, values, parent);
 	}
 	
+	@Deprecated
 	@Override
 	public <T> String Var(String name, T value, boolean isValue) 
 	{

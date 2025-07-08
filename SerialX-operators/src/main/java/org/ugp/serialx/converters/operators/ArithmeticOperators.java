@@ -23,12 +23,6 @@ import org.ugp.serialx.converters.DataParser;
 public class ArithmeticOperators implements DataParser
 {
 	/**
-	 * @deprecated DO NOT USE! USE {@link ArithmeticOperators#operator(Object, String, Object)} AND {@link ArithmeticOperators#getOperatorPriority(String)} INSTEAD!
-	 */
-	@Deprecated
-	protected String[] priority1Oprs = {"*", "*-", "/", "/-", "%"}, priority2Oprs = {"**", "**-"};
-	
-	/**
 	 * Operator characters recognized by {@link ArithmeticOperators}, operators can be any combination of provided characters. Exact behavior is handled by {@link ArithmeticOperators#operator(Object, String, Object)}.<br> Intended for override, should not be null or empty!
 	 * 
 	 * @since 1.3.8
@@ -513,32 +507,5 @@ public class ArithmeticOperators implements DataParser
 		if (obj instanceof Character)
 			return (int) (char) obj;
 		return obj; 
-	}
-	
-	/**
-	 * @deprecated THIS WAS QUIET A MESSY WORKAROUND, DO NOT USE!<br>
-	 * 
-	 * Used internally by {@link ArithmeticOperators} to wrap result of evaluation!
-	 * Mainly used by String results!
-	 * 
-	 * @author PETO
-	 *
-	 * @since 1.3.0
-	 */
-	@Deprecated
-	protected static class ResultWrapper
-	{
-		public final Object obj;
-		
-		public ResultWrapper(Object obj) 
-		{
-			this.obj = obj;
-		}
-		
-		@Override
-		public String toString() 
-		{
-			return obj.toString();
-		}
 	}
 }

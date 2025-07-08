@@ -25,6 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -198,6 +199,8 @@ public abstract class Serializer extends Scope
 	}
 	
 	/**
+	 * @deprecated (1.3.9) DO NOT USE THIS, USE VARIATION OF {@link AbstractMap.SimpleEntry} OR {@link VariableConverter#NewVariable(String, Object)} FROM <code>serialx-juss module</code> INSTEAD!
+	 * 
 	 * @param name | Name of variable.
 	 * @param value | Value of variable.
 	 * 
@@ -205,6 +208,7 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.1.5
 	 */
+	@Deprecated
 	public <T> String Var(String name, T value)
 	{
 		return Code(name + " = " + getParsers().toString(value, 0, 0, this, getProtocols(), false) + ";");

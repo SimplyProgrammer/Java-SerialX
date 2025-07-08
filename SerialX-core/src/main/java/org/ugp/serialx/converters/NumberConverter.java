@@ -1,11 +1,6 @@
 package org.ugp.serialx.converters;
 
 import static org.ugp.serialx.Utils.contains;
-import static org.ugp.serialx.Utils.fastReplace;
-
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 /**
  * This converter is capable of converting {@link Number} including all common implementations like {@link Double}, {@link Float}, {@link Integer} and others. They are determine by suffixes like in java!
@@ -93,19 +88,6 @@ import java.util.Locale;
  */
 public class NumberConverter implements DataConverter 
 {
-	/**
-	 * {@link DecimalFormat} to format decimal numbers (double, float) during serialization!<br>
-	 * Default {@link DecimalFormat} will round decimal numbers to 3 decimal places (format pattern #.###)!
-	 * 
-	 * Set this on null and decimal numbers will not be formated! Do this when you need accuracy!
-	 * 
-	 * @serial 1.1.0 (moved to {@link NumberConverter} since 1.3.0)
-	 * 
-	 * @deprecated DO NOT USE! Override {@link NumberConverter#format(Object)} and write your format logic there instead!
-	 */
-	@Deprecated
-	public static DecimalFormat decimalFormatter = new DecimalFormat("#.###", DecimalFormatSymbols.getInstance(Locale.US));
-	
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String arg, Object... args) 
 	{
@@ -256,28 +238,5 @@ public class NumberConverter implements DataConverter
 		if (type == 'y')
 			return (byte) result;
 		return (int) result;
-	}
-	
-	/**
-	 * @deprecated THIS IS OBSOLET, SLOW AND NO LONGER NECESSARY BECAUSE {@link NumberConverter#numberOf(CharSequence, char, int, int, int)} CAN DO THE SAME THING MUCH FASTET!
-	 * 
-	 * @param num | Number string to format!
-	 * 
-	 * @return Original string with formated sign and deleted '_'!
-	 * 
-	 * @since 1.3.0
-	 */
-	@Deprecated
-	public static String normFormatNum(String num)
-	{
-		if (num.length() > 2)
-			for (boolean minus = num.startsWith("+-") || num.startsWith("-+"); minus || num.startsWith("++") || num.startsWith("--"); minus = num.startsWith("+-") || num.startsWith("-+"))
-			{
-				num = num.substring(2);
-				if (minus)
-					num = "-"+num;
-			}
-		
-		return fastReplace(num, "_", "");
 	}
 }

@@ -26,16 +26,6 @@ import org.ugp.serialx.converters.DataParser;
 public class OperationGroups implements DataParser
 {
 	/**
-	 * @deprecated (since 1.3.8) DO NOT USE, USE {@link OperationGroups#groupMark} instead! <br>
-	 * 
-	 * Opening and closing of group mark!
-	 * 
-	 * @since 1.3.0
-	 */
-	@Deprecated
-	public static final char[] GROUP_MARK_OP = new char[] {127, 128, 129}, GROUP_MARK_CLS = new char[] {129, 128, 127};
-	
-	/**
 	 * Character marking the opening of {@link OperationGroups} mark in processed string, closing should be marked as this character -1.<br>
 	 * This character is generated in sami-random fashion but it will never be an ASCII character.
 	 * 
