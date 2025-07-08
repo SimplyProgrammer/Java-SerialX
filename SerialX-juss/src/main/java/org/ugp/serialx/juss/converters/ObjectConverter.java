@@ -153,6 +153,7 @@ public class ObjectConverter extends ProtocolConverter
 	 * @since 1.3.5
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, SerializationProtocol<Object> preferedProtocol, Object... args) 
 	{
 		if (obj instanceof Scope)
@@ -171,19 +172,21 @@ public class ObjectConverter extends ProtocolConverter
 			{
 				serializer = getPreferredSerializer();
 			}
-			
-			if (serializer instanceof JussSerializer)
-				((JussSerializer) serializer).setGenerateComments(args.length > 5 && args[5] instanceof Boolean && (boolean) args[5]);
 
+			if (args.length < 6)
+				args = Arrays.copyOf(args, 6);
+			else
+			{
+				if (args[5] instanceof Byte)
+					serializer.setFormat((byte) args[5]);
+
+				args = args.clone(); 
+			}
+			args[2] = 0;
+			args[3] = serializer.getProtocols();
+			
 			try 
 			{
-				if (args.length < 4)
-					args = Arrays.copyOf(args, 4);
-				else
-					args = args.clone(); 
-				args[2] = 0;
-				args[3] = serializer.getProtocols();
-				
 				StringBuilder sb = new StringBuilder();
 				GenericScope<?, ?> parent;
 				if ((parent = serializer.getParent()) == null || serializer.getClass() != parent.getClass())

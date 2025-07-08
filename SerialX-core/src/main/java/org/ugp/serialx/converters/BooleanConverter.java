@@ -56,7 +56,7 @@ public class BooleanConverter implements DataConverter
 	 * 
 	 * @since 1.3.5
 	 */
-	public BooleanConverter(boolean shorten) 
+	public BooleanConverter(boolean shorten)
 	{
 		setShorten(shorten);
 	}

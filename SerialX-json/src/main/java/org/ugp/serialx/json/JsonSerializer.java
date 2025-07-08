@@ -30,8 +30,8 @@ import org.ugp.serialx.converters.StringConverter;
 import org.ugp.serialx.json.converters.JsonCharacterConverter;
 import org.ugp.serialx.json.converters.JsonNumberConverter;
 import org.ugp.serialx.json.converters.JsonObjectConverter;
+import org.ugp.serialx.json.converters.JsonVariableConverter;
 import org.ugp.serialx.juss.JussSerializer;
-import org.ugp.serialx.juss.converters.VariableConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 
@@ -68,7 +68,7 @@ public class JsonSerializer extends JussSerializer
 	 */
 	public static final String EMPTY_OBJECT = StringConverter.DirectCode("{}");
 	
-	public static final ParserRegistry JSON_PARSERS = new ParserRegistry(new VariableConverter(true), new StringConverter(), new JsonNumberConverter(), new BooleanConverter(false), new JsonCharacterConverter(false), new NullConverter(), new JsonObjectConverter());
+	public static final ParserRegistry JSON_PARSERS = new ParserRegistry(new JsonVariableConverter(), new StringConverter(), new JsonNumberConverter(), new BooleanConverter(false), new JsonCharacterConverter(false), new NullConverter(), new JsonObjectConverter());
 	
 	/**
 	 * @param values | Initial independent values to be added in to this scope!
@@ -141,7 +141,7 @@ public class JsonSerializer extends JussSerializer
 	@Override
 	public <T> String Var(String name, T value, boolean isValue) 
 	{
-		return Code((isValue ? "$\"" : "\"") + name + "\" = " + getParsers().toString(value, 0, 0, this, getProtocols(), isGenerateComments()) + (generateComments ? ", //Object of " + value.getClass().getName() + ": \"" + value + "\" inserted manually! Stored by \"" + name + "\" variable!" : ""));
+		return Code((isValue ? "$\"" : "\"") + name + "\" = " + getParsers().toString(value, this, 0, 0, getProtocols(), getFormat()) + (isGenerateComments() ? ", //Object of " + value.getClass().getName() + ": \"" + value + "\" inserted manually! Stored by \"" + name + "\" variable!" : ""));
 	}
 	
 	@Override
@@ -156,13 +156,12 @@ public class JsonSerializer extends JussSerializer
 	public JsonSerializer emptyClone(Scope parent) 
 	{
 		JsonSerializer srl = emptyClone(new JsonSerializer(), parent);
-		srl.setGenerateComments(isGenerateComments());
 		return srl;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <S extends Scope> S LoadFrom(Reader reader, Object... formatArgs) 
+	public <S extends Scope> S LoadFrom(Reader reader, Object... formatArgs) throws IOException 
 	{
 		Scope sc = super.LoadFrom(reader, formatArgs);
 
@@ -202,7 +201,9 @@ public class JsonSerializer extends JussSerializer
 	@Override
 	protected Appendable appandVar(Appendable source, CharSequence serializedVar, Entry<String, ?> var, int tabs, boolean isLast) throws IOException
 	{
-		source.append(multilpy('\t', tabs)).append(serializedVar);
+		if (format != 0)
+			source.append(multilpy('\t', tabs));
+		source.append(serializedVar);
 		if (isLast)
 			return source;
 		return source.append(',');
@@ -216,7 +217,9 @@ public class JsonSerializer extends JussSerializer
 	@Override
 	protected Appendable appandVal(Appendable source, CharSequence serializedVal, Object value, int tabs, boolean isLast) throws IOException
 	{
-		source.append(multilpy('\t', tabs)).append(serializedVal);
+		if (format != 0)
+			source.append(multilpy('\t', tabs));
+		source.append(serializedVal);
 		if (isLast || serializedVal != null && indexOfNotInObj(serializedVal, "//") != -1)
 			return source;
 		return source.append(',');

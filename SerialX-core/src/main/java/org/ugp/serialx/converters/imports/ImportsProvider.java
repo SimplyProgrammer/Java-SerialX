@@ -38,7 +38,7 @@ public interface ImportsProvider
 	 * 
 	 * @since 1.3.5
 	 */
-	public Imports getImports();
+	Imports getImports();
 	
 	/**
 	 * @param obj | Object to get imports from (its supposed to be instance of {@link ImportsProvider} or collection of {@link Import})!

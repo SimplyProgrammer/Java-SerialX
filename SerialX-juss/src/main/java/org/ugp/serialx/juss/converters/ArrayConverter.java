@@ -94,37 +94,60 @@ public class ArrayConverter implements DataConverter
 			
 			if (index <= 0 || myHomeRegistry.indexOf(OperationGroups.class) > -1)
 			{
-				int tabs = args.length > 1 && args[1] instanceof Integer ? (int) args[1] : 0;
+				int tabs;
 
 				if (args.length > 2)
 				{
+					tabs = args[1] instanceof Integer ? (int) args[1] : 0;
+					
 					args = args.clone(); //Necessary for preventing this from affecting other objects and arrays...
 					args[2] = index + 1;
 				}
+				else
+					tabs = args.length > 1 && args[1] instanceof Integer ? (int) args[1] : 0;
 				
 				Object[] elms = fromAmbiguousArray(obj);
+				final int len = elms.length;
 				StringBuilder sb = new StringBuilder();
-				for (int i = 0, length = elms.length, sizeEndl = 10000; i < length; i++) 
+				if (args.length > 5 && args[5] instanceof Byte && (byte) args[5] != 0) // Format
 				{
-					if (i > 0)
-						if (sb.length() > sizeEndl)
-						{
-							sb.append('\n');
-							for (int j = 0; j < tabs+1; j++) 
-								sb.append('\t');
-							sizeEndl += 10000;
-						}
-						else 
-							sb.append(' ');
-
-					CharSequence str = myHomeRegistry.toString(elms[i], args);
-					char ch = str.charAt(0);
-					if ((ch | ' ') == '{')
-						sb.append('(').append(str).append(')');
-					else
-						sb.append(str);
-
+					for (int i = 0, sizeEndl = 10000; i < len; i++)
+					{
+						if (i != 0)
+							if (sb.length() > sizeEndl)
+							{
+								sb.append('\n');
+								for (int j = 0; j < tabs+1; j++) 
+									sb.append('\t');
+								sizeEndl += 10000;
+							}
+							else 
+								sb.append(' ');
+						
+						CharSequence str = myHomeRegistry.toString(elms[i], args);
+						char ch = str.charAt(0);
+						if ((ch | ' ') == '{')
+							sb.append('(').append(str).append(')');
+						else
+							sb.append(str);
+					}
 				}
+				else
+				{
+					for (int i = 0; i < len; i++) 
+					{
+						if (i != 0)
+							sb.append(' ');
+						
+						CharSequence str = myHomeRegistry.toString(elms[i], args);
+						char ch = str.charAt(0);
+						if ((ch | ' ') == '{')
+							sb.append('(').append(str).append(')');
+						else
+							sb.append(str);
+					}
+				}
+					
 				return index > 0 ? sb.insert(0, '(').append(')') : sb;
 			}
 		}

@@ -1,7 +1,6 @@
 package org.ugp.serialx.juss.converters;
 
 import static org.ugp.serialx.Utils.contains;
-import static org.ugp.serialx.Utils.multilpy;
 import static org.ugp.serialx.Utils.splitValues;
 
 import java.util.AbstractMap;
@@ -11,6 +10,7 @@ import java.util.Map.Entry;
 import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataConverter;
+import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.VariableParser;
 
 /**
@@ -28,6 +28,7 @@ import org.ugp.serialx.converters.VariableParser;
  */
 public class VariableConverter extends VariableParser implements DataConverter
 {
+	@Deprecated
 	protected boolean jsonStyle;
 	
 	public VariableConverter() 
@@ -36,10 +37,14 @@ public class VariableConverter extends VariableParser implements DataConverter
 	}
 	
 	/**
+	 * @deprecated (1.3.9) IF YOU WANT THIS TO BE TRUE, YOU WANT TO USE <code>JsonVariableConverter</code> FROM <code>json-serializer</code> MODULE!
+	 * FORMATING IS NO DONE IN {@link VariableConverter#appendEntry(StringBuilder, CharSequence, Object, Object...)}
+	 * 
 	 * @param jsonStyle | If true, this converter will be using Json style of variables ("key" : value)!
 	 * 
 	 * @since 1.3.2
 	 */
+	@Deprecated
 	public VariableConverter(boolean jsonStyle) 
 	{
 		setJsonStyle(jsonStyle);
@@ -91,7 +96,7 @@ public class VariableConverter extends VariableParser implements DataConverter
 
 						if ((op0Index = var.indexOf('.')) > -1)
 						{
-							String[] path = splitValues(var, op0Index, 0, 0, new char[0],  '.');
+							String[] path = splitValues(var, op0Index, 0, 0, new char[0], '.');
 							int iLast = path.length-1, j = 0;
 							
 							backlook: do
@@ -132,15 +137,36 @@ public class VariableConverter extends VariableParser implements DataConverter
 		if (obj instanceof Entry)
 		{
 			Entry<?, ?> var = (Entry<?, ?>) obj;
-			int tabs = args.length > 1 && args[1] instanceof Integer ? (int) args[1] : 0;
-
-			boolean jsonStyle = isJsonStyle(), genericVar;
-			Object key = (genericVar = !((key = var.getKey()) instanceof String)) ? myHomeRegistry.toString(key, args) : key, val = var.getValue();
-			return new StringBuilder().append(jsonStyle && !genericVar ? "\""+key+"\"" : key)
-					.append(val instanceof GenericScope && !((GenericScope<?, ?>) val).isEmpty() ? (jsonStyle ? " : " : " =\n" + multilpy('\t', tabs)) : (jsonStyle ? " : " : " = "))
-					.append(myHomeRegistry.toString(val, args));
+			
+			final Object key, val = var.getValue();
+			return appendEntry(new StringBuilder((key = var.getKey()) instanceof String ? 
+						(String) key : 
+						myHomeRegistry.toString(key, args)
+					), myHomeRegistry.toString(val, args), val, args);
 		}
 		return CONTINUE;
+	}
+	
+	/**
+	 * @param keyString | The string builder containing the key as string.
+	 * @param valueString | The string containing the serialized value.
+	 * @param value | The real value, the valueString before it was serialized...
+	 * @param args | Same as {@link DataParser#parse(org.ugp.serialx.converters.DataParser.ParserRegistry, String, Object...)}
+	 * 
+	 * @return Should return the string form of an entry (key value pair). Preferably constructed by appending some form of assignment operator (such as <code>=</code>) to the keyString and then appending the valueString at the end with some formating around it if needed.
+	 * No unrelated characters should be included!
+	 * 
+	 * @since 1.3.9
+	 */
+	protected StringBuilder appendEntry(StringBuilder keyString, CharSequence valueString, Object value, Object... args)
+	{
+//		int tabs = args.length > 1 && args[1] instanceof Integer ? (int) args[1] : 0;
+//		return sb
+//			.append(val instanceof GenericScope && !((GenericScope<?, ?>) val).isEmpty() ? (jsonStyle ? " : " : " =\n" + multilpy('\t', tabs)) : (jsonStyle ? " : " : " = "))
+//			.append(myHomeRegistry.toString(val, args));
+		if (args.length > 5 && args[5] instanceof Byte && (byte) args[5] != 0)
+			return keyString.append(" = ").append(valueString);
+		return keyString.append("=").append(valueString);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -176,20 +202,28 @@ public class VariableConverter extends VariableParser implements DataConverter
 	}
 	
 	/**
+	 * @deprecated (1.3.9) IF YOU WANT THIS TO BE TRUE, YOU WANT TO USE <code>JsonVariableConverter</code> FROM <code>json-serializer</code> MODULE!
+	 * FORMATING IS NO DONE IN {@link VariableConverter#appendEntry(StringBuilder, CharSequence, Object, Object...)}
+	 * 
 	 * @return True if variables will be serialized using json style ("key" : value)!
 	 * 
 	 * @since 1.3.2
 	 */
+	@Deprecated
 	public boolean isJsonStyle() 
 	{
 		return jsonStyle;
 	}
 
 	/**
+	 * @deprecated (1.3.9) IF YOU WANT THIS TO BE TRUE, YOU WANT TO USE <code>JsonVariableConverter</code> FROM <code>json-serializer</code> MODULE!
+	 * FORMATING IS NO DONE IN {@link VariableConverter#appendEntry(StringBuilder, CharSequence, Object, Object...)}
+	 * 
 	 * @param jsonStyle | If true, this converter will be using Json style of variables ("key" : value)!
 	 * 
 	 * @since 1.3.2
 	 */
+	@Deprecated
 	public void setJsonStyle(boolean jsonStyle) 
 	{
 		this.jsonStyle = jsonStyle;
@@ -225,21 +259,14 @@ public class VariableConverter extends VariableParser implements DataConverter
 						while (++i < len && s.charAt(i) != '"');
 				}
 			}
-			else if ((ch == '=' || ch == ':') && !(oldCh == '=' || oldCh == ':' || oldCh == '!' || oldCh == '>'|| oldCh == '<') && (i >= len-1 || !((chNext = s.charAt(i+1)) == '=' || chNext == ':' || chNext ==  '!' || chNext == '>'|| chNext == '<')))
+			else if ((ch == '=' || ch == ':') && !(oldCh == '=' || oldCh == ':' || oldCh == '!' || oldCh == '>'|| oldCh == '<') && (i >= len-1 || !((chNext = s.charAt(i+1)) == '=' || chNext == ':' || chNext == '!' || chNext == '>'|| chNext == '<')))
 				return i;	
 
 			oldCh = ch;
 		}
 		return -1;
 	}
-	
-//	public static <K, V> V getValueOf(GenericScope<K, V> scope, K... pathToScope) 
-//	{
-//		
-//		if (scope.containsVariable(pathToScope[0]))
-//			return scope.getGenericScope(pathToScope);
-//	}
-	
+
 	/**
 	 * @param varName | Name of variable.
 	 * @param varValue | Value of variable.

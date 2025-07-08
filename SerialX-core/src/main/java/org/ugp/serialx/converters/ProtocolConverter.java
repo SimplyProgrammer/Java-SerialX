@@ -1,6 +1,6 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.Utils.Instantiate;
+import static org.ugp.serialx.Utils.*;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
 import static org.ugp.serialx.Utils.splitValues;
 
@@ -193,24 +193,25 @@ public class ProtocolConverter implements DataConverter
 		
 		if (preferedProtocol != null || (preferedProtocol = (SerializationProtocol<Object>) getProtocolFor(obj, SerializationProtocol.MODE_SERIALIZE | getProtocolType(), args)) != null)
 		{
-			Class<?> oldObjectClass = null;
+			if (args.length < 6)
+				args = Arrays.copyOf(args, 6);
+			Class<?> oldObjectClass = (Class<?>) args[4];
+			args[4] = obj.getClass();
+			
+			int tabs = args[1] instanceof Integer ? (int) args[1] : 0;
+			int	index = args[2] instanceof Integer ? (int) args[2] : 0;
+
 			try
 			{
-				int tabs = args.length > 1 && args[1] instanceof Integer ? (int) args[1] : 0;
-				int	index = args.length > 2 && args[2] instanceof Integer ? (int) args[2] : 0;
-				
-				if (args.length < 5)
-					args = Arrays.copyOf(args, 5);
-				oldObjectClass = (Class<?>) args[4];
-				args[4] = obj.getClass();;
-
 				Object[] objArgs = preferedProtocol.serialize(obj);
-				StringBuilder sb = new StringBuilder(ImportsProvider.getAliasFor(args.length > 0 ? args[0] : null, obj.getClass()) + (objArgs.length <= 0 ? "" : " "));
-				
+				final int len = objArgs.length;
+
+				StringBuilder sb = new StringBuilder(ImportsProvider.getAliasFor(args[0], obj.getClass()));
 				args = args.clone();
-				for (int i = 0, sizeEndl = 10000; i < objArgs.length; i++) 
+				if (args[5] instanceof Byte && (byte) args[5] != 0) // Format
 				{
-					if (i > 0)
+					for (int i = 0, sizeEndl = 10000; i < len; i++) 
+					{
 						if (sb.length() > sizeEndl)
 						{
 							sb.append('\n'); 
@@ -220,14 +221,26 @@ public class ProtocolConverter implements DataConverter
 						}
 						else 
 							sb.append(' ');
-
-					if (args.length > 2)
-						args[2] = index + 1;
-					sb.append(myHomeRegistry.toString(objArgs[i], args));
+						
+						if (args.length > 2)
+							args[2] = index + 1; // DO NOT TOUCH
+						sb.append(myHomeRegistry.toString(objArgs[i], args));
+					}
+				}
+				else
+				{
+					for (int i = 0; i < len; i++)
+					{
+						sb.append(' ');
+						
+						if (args.length > 2)
+							args[2] = index + 1; // DO NOT TOUCH
+						sb.append(myHomeRegistry.toString(objArgs[i], args));
+					}
 				}
 				
 				args[4] = oldObjectClass;
-				return index > 0 && objArgs.length > 0 ? sb.insert(0, '{').append('}') : sb;
+				return index > 0 && len != 0 ? sb.insert(0, '{').append('}') : sb;
 			}
 			catch (Exception e)
 			{
@@ -242,7 +255,7 @@ public class ProtocolConverter implements DataConverter
 	@Override
 	public CharSequence getDescription(ParserRegistry myHomeRegistry, Object obj, Object... argsUsedConvert) 
 	{
-		if (obj instanceof CharSequence && indexOfNotInObj((CharSequence) obj, '\n', '\r') != -1)
+		if (obj instanceof CharSequence && indexOfNotInObj((CharSequence) obj, ENDL) != -1)
 			return "Multiline char sequence!";
 		return new StringBuilder("Object of ").append(obj.getClass().getName()).append(": \"").append(obj.toString()).append("\" serialized using ").append(getProtocolFor(obj, SerializationProtocol.MODE_SERIALIZE_DESERIALIZE | getProtocolType(), argsUsedConvert)).append("!");
 	}

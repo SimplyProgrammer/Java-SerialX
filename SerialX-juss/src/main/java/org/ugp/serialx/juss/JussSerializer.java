@@ -1,8 +1,10 @@
 package org.ugp.serialx.juss;
 
 import static org.ugp.serialx.Utils.Clone;
+import static org.ugp.serialx.Utils.*;
 import static org.ugp.serialx.Utils.InvokeStaticFunc;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
+import static org.ugp.serialx.Utils.isOneOf;
 import static org.ugp.serialx.Utils.multilpy;
 import static org.ugp.serialx.converters.DataParser.VOID;
 
@@ -89,11 +91,14 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	protected Imports imports;
 	
 	/**
+	 * @deprecated (1.3.9) SET 0b10 BIT OF {@link Serializer#getFormat()} TO 1 INSTEAD IF YOU WANT TO SET THIS ON TRUE. OR SIMPLY USE {@link JussSerializer#setGenerateComments(boolean)}
+	 * 
 	 * Set this on true and program will generate comments and report!<br>
 	 * Note: Keep this on false to achieve the best performance!
 	 * 
 	 * @since 1.0.5
 	 */
+	@Deprecated
 	protected boolean generateComments = false;
 	
 	/**
@@ -165,23 +170,9 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 	
 	@Override
-	public Scope clone() 
-	{
-		Scope scope = super.clone();
-		if (scope instanceof JussSerializer)
-		{
-			((JussSerializer) scope).setGenerateComments(isGenerateComments());
-			((JussSerializer) scope).setParsers(getParsers());
-			((JussSerializer) scope).setProtocols(getProtocols());
-		}
-		return scope;
-	}
-	
-	@Override
-	public JussSerializer emptyClone(Scope parent) 
+	public JussSerializer emptyClone(Scope parent)
 	{
 		JussSerializer srl = emptyClone(new JussSerializer(), parent);
-		srl.setGenerateComments(isGenerateComments());
 		return srl;
 	}
 	
@@ -209,7 +200,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	public Scope clone(boolean absoluteClone) 
 	{
 		if (absoluteClone)
-			return Clone(this, getParsers(), new Object[] {-9999, 0, this, getProtocols(), isGenerateComments()}, this, null, null, getProtocols());
+			return Clone(this, getParsers(), new Object[] {this, -9999, 0, getProtocols(), getFormat()}, this, null, null, getProtocols());
 		return super.clone();
 	}
 	
@@ -238,7 +229,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 */
 	public <T> String Var(String name, T value, boolean isValue)
 	{
-		return Code((isValue ? "$" : "") + name + " = " + getParsers().toString(value, 0, 0, this, getProtocols(), isGenerateComments()) + (generateComments ? "; //Object of " + value.getClass().getName() + ": \"" + value + "\" inserted manually! Stored by \"" + name + "\" variable!" : ""));
+		return Code((isValue ? "$" : "") + name + " = " + getParsers().toString(value, this, 0, 0, getProtocols(), getFormat()) + (isGenerateComments() ? "; //Object of " + value.getClass().getName() + ": \"" + value + "\" inserted manually! Stored by \"" + name + "\" variable!" : ""));
 	}
 	
 	/**
@@ -256,13 +247,16 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	{
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0, len = args.length; i < len; i++) 
-			sb.append(getParsers().toString(args[i], 0, 0, this, getProtocols(), isGenerateComments())).append(i < len-1 ? " " : "");
+			sb.append(getParsers().toString(args[i], this, 0, 0, getProtocols(), getFormat())).append(i < len-1 ? " " : "");
 		return Code(cls.getName() + "::" + staticMethodName + (args.length <= 0 ? "" : " ") + sb);
 	}
 	
 	/**
 	 * @param source | Source {@link Appendable} to serialize variables and objects into!
-	 * @param args | Additional arguments to use, in case of {@link JussSerializer} this should be array of length 6 with 0. argument being this pointer to this serializer, argument 1. and 2. being integers signifying number of tabs and index of parsing iteration (used primarily by {@link ObjectConverter}), argument 3. containing {@link ProtocolRegistry} of this {@link Serializer}, argument 4. being of type {@link Class} containing information about class that is curently being serialized (used primarily by {@link ObjectConverter}), and argument 5. being boolean signifying whether or not code comments are supposed to be generated! 
+	 * @param args | Additional arguments to use, in case of {@link JussSerializer} this should be array of length 6 with 0. argument being this pointer to this serializer, 
+	 * argument 1. and 2. being integers signifying number of tabs and index of parsing iteration (used primarily by {@link ObjectConverter}), argument 3. containing {@link ProtocolRegistry} of this {@link Serializer}, 
+	 * argument 4. being of type {@link Class} containing information about class that is currently being serialized (used primarily by {@link ObjectConverter} and should start as null), 
+	 * and argument 5. being byte bit array containing the formating flags ({@link Serializer#getFormat()}) containing the information about if the code comments are supposed to be generated and/or indentation and newline characters inclusion! 
 	 * 
 	 * @return Source {@link Appendable} with variables and objects serialized in specific format.
 	 * 
@@ -275,6 +269,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		Map<String, ?> variables = variables();
 		List<Object> objs = values();
 		int valuesLen = objs.size(), varLen = variables.size(), i = 0, tabs = 0;
+		boolean generateComments = isGenerateComments();
 		
 		if (args.length < 6)
 			args = Arrays.copyOf(args, 6);
@@ -288,7 +283,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		if (args[3] == null)
 			args[3] = getProtocols();
 		if (args[5] == null)
-			args[5] = isGenerateComments();
+			args[5] = getFormat();
 
 		source = source == null ? (A) new StringBuilder() : source;
 		if (generateComments && varLen + valuesLen > 0) //Gen scope comment
@@ -304,34 +299,76 @@ public class JussSerializer extends Serializer implements ImportsProvider
 			if (tabs > -1)
 				source.append('\n');
 		}
-		
+
 		ParserRegistry reg = getParsers();
 		
 		if (varLen > 0)
 		{
-			for (Entry<String, ?> var : variables.entrySet()) //Vars
+			if (generateComments)
 			{
-				appandVar(source, reg.toString(var, args), var, tabs, i >= varLen-1 && valuesLen <= 0);
-				if (generateComments && (!(var.getValue() instanceof Scope) || ((Scope) var.getValue()).isEmpty()))
-					GenerateComment(source, reg, var);
-			
-				if (++i < varLen || valuesLen > 0)
-					source.append('\n');
+				for (Entry<String, ?> var : variables.entrySet()) //Vars
+				{
+					appandVar(source, reg.toString(var, args), var, tabs, i >= varLen-1 && valuesLen <= 0);
+					if (!(var.getValue() instanceof Scope) || ((Scope) var.getValue()).isEmpty())
+						GenerateComment(source, reg, var);
+					
+					if (++i < varLen || valuesLen > 0)
+						source.append('\n');
+				}
+			}
+			else if (format != 0)
+			{
+				for (Entry<String, ?> var : variables.entrySet()) //Vars
+				{
+					appandVar(source, reg.toString(var, args), var, tabs, i >= varLen-1 && valuesLen <= 0);
+					
+					if (++i < varLen || valuesLen > 0)
+						source.append('\n');
+				}
+			}
+			else // No formating
+			{
+				for (Entry<String, ?> var : variables.entrySet()) //Vars
+				{
+					appandVar(source, reg.toString(var, args), var, tabs, i++ >= varLen-1 && valuesLen <= 0);
+				}
 			}
 		}
 		
-		for (i = 0; i < valuesLen; i++) //Values
+		if (generateComments)
 		{
-			if (i > 0)
-				source.append('\n');
-
-			Object obj = objs.get(i);
-			CharSequence serialized = reg.toString(obj, args);
-
-			appandVal(source, serialized, obj, tabs, i >= valuesLen-1);
-			if (generateComments && (!(obj instanceof Scope) || ((Scope) obj).isEmpty()))
-				GenerateComment(source, reg, obj);
-		} 
+			for (i = 0; i < valuesLen; i++) //Values
+			{
+				if (i != 0)
+					source.append('\n');
+				
+				Object obj = objs.get(i);
+				CharSequence serialized = reg.toString(obj, args);
+				
+				appandVal(source, serialized, obj, tabs, i == valuesLen-1);
+				if (!(obj instanceof Scope) || ((Scope) obj).isEmpty())
+					GenerateComment(source, reg, obj);
+			} 
+		}
+		else if (format != 0)
+		{
+			for (i = 0; i < valuesLen; i++) //Values
+			{
+				if (i != 0)
+					source.append('\n');
+				
+				Object obj;
+				appandVal(source, reg.toString(obj = objs.get(i), args), obj, tabs, i == valuesLen-1);
+			} 
+		}
+		else // No formating
+		{
+			for (i = 0; i < valuesLen; i++) //Values
+			{
+				Object obj;
+				appandVal(source, reg.toString(obj = objs.get(i), args), obj, tabs, i == valuesLen-1);
+			} 
+		}
 
 		if (source instanceof Flushable)
 			((Flushable) source).flush();
@@ -347,8 +384,10 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 */
 	protected Appendable appandVar(Appendable source, CharSequence serializedVar, Entry<String, ?> var, int tabs, boolean isLast) throws IOException
 	{
-		source.append(multilpy('\t', tabs)).append(serializedVar);
-		if (isLast && var.getValue() instanceof Scope)
+		if (format != 0)
+			source.append(multilpy('\t', tabs));
+		source.append(serializedVar);
+		if (isLast)
 			return source;
 		return source.append(';');
 	}
@@ -360,8 +399,10 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 */
 	protected Appendable appandVal(Appendable source, CharSequence serializedVal, Object value, int tabs, boolean isLast) throws IOException
 	{
-		source.append(multilpy('\t', tabs)).append(serializedVal);
-		if (isLast && value instanceof Scope || serializedVal != null && indexOfNotInObj(serializedVal, "//") != -1)
+		if (format != 0)
+			source.append(multilpy('\t', tabs));
+		source.append(serializedVal);
+		if (isLast || serializedVal != null && indexOfNotInObj(serializedVal, "//") != -1)
 			return source;
 		return source.append(';');
 	}
@@ -388,7 +429,9 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	
 	/**
 	 * @param reader | Reader to read from!
-	 * @param args | Additional arguments to use. In case of JussSerializer, this should be array of length 4 with 0. argument will being this pointer of this scope (it can be also boolean signifying if formating is required), 1. and 2. argument are null (they are used by JUSS parsers) and argument 3. will be {@link ProtocolRegistry} used by this {@link Serializer}, and additional argument 4. being of type {@link Class} containing information about class that is curently being serialized (used primarily by {@link ObjectConverter}).
+	 * @param args | Additional arguments to use. In case of JussSerializer, this should be array of length 4 with 0. argument will being this pointer of this serializer, 
+	 * 1. and 2. argument are null (they are used by JUSS parsers) and argument 3. will be {@link ProtocolRegistry} used by this {@link Serializer}, 
+	 * and additional argument 4. being of type {@link Class} containing information about class that is currently being serialized (used primarily by {@link ObjectConverter} and should start as null).
 	 * 
 	 * @return This scope after loading data from reader (you most likely want to return "this")!
 	 * 
@@ -404,157 +447,174 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		
 		if (args.length < 4)
 			args = Arrays.copyOf(args, 4);
-		if (args[0] instanceof Boolean)
-			formatRequired = (boolean) args[0];
+//		if (args[0] instanceof Boolean)
+//			formatRequired = (boolean) args[0];
 		args[0] = this;
 		if (args[3] == null)
 			args[3] = getProtocols();
 		
-		StringBuilder str = readAndFormat(reader, formatRequired); // TODO could be improved...
+		StringBuilder str = readAndFormat(reader, formatRequired);
 		List<Object> objs = splitAndParse(str, args);
 		addAll(objs);
+		
+//		readAndParse(values(), reader, 512, args);
 		
 		if (parent == null)
 			getImports().removeImportsOf(this);
 		return (S) this;
 	}
 	
-	public void readAndParse(Reader reader) throws IOException
+	/**
+	 * @param result | Resulting collection of objects to fill up with parsed objects from reader.
+	 * @param reader | The reader to {@link Reader#read(char[], int, int)}.
+	 * @param charBuffLen | Length of internal char buffer (number of chars that are processed at once). Recommended length is 512, in case of increase should be the power of 2.
+	 * @param parserArgs | Additional arguments to use. Take a look at {@link Serializer#LoadFrom(File, Object...)}.
+	 * 
+	 * @throws IOException If {@link Reader} instance throws it during reading...
+	 * 
+	 * @since 1.3.9
+	 */
+	public void readAndParse(Collection<Object> result, Reader reader, final int charBuffLen, Object... parserArgs) throws IOException
 	{
-		final char endl = System.lineSeparator().charAt(0);
-		
-//		StringBuilder str = readAndFormat(reader, formatRequired); // TODO could be improved...
-//		List<Object> objs = splitAndParse(str, args);
-//		addAll(objs);
+		ParserRegistry reg = getParsers();
 		
 		StringBuilder sb = new StringBuilder();
-		char[] chars = new char[128*2];
-
-		for (int charsRead, oldCh = 0, state = 0, brackets; (charsRead = reader.read(chars)) != -1; )
+		int len;
+		
+		char chars[] = new char[charBuffLen], oldCh = 0;
+		readerLoop: for (int charsRead, /*state = 0,*/ brackets; (charsRead = reader.read(chars, 0, charBuffLen)) != -1; )
 		{
-			int i = 0;
-			switch (state) // Complete the unfinished action from prev iter based on state // <- Too much repetitive code already, and pain in the ass to work around with, consider other solution
+			charsLoop: for (int i = 0; i < charsRead; i++)
 			{
-				case '/': // Handle ongoing comments...
-					do if (chars[i] == endl) // Skip all until endl
-					{
-						oldCh = state = 0;
-						i++;
-						break;
-					}
-					while (++i < charsRead);
-					
-					break;
-				case '*':
-					do if (chars[i] == '*' && (++i < charsRead ? chars[i] : reader.read()) == '/') // Skip all until */
-					{
-						oldCh = state = 0;
-						i++;
-						break;
-					}
-					while (++i < charsRead);
-
-					break;
-
-				case '\"':
-				case '\'':
-					do // Append all chars until end of str/char
-					{
-						char ch;
-						sb.append(ch = chars[i]);
-						if (ch == state)
-						{
-							state = 0;
-							i++;
-							break;
-						}
-					}
-					while (++i < charsRead); 
-					
-					break;
-//				case ' ':
-//					do if (chars[i] > 32) // Skip all blanks until next non-blank
-//					{
-//						state = 0;
-//						//i++;
-//						break;
-//					}
-//					while (++i < charsRead);
-//					
-//					break;
-			}
-			
-			charsLoop: for (; i < charsRead; i++)
-			{
-				int ch = chars[i];
-				if (ch < 33) // Handle blanks, skip unnecessary
-				{
-					if (oldCh > 32) // First blank (in possible row)
-						sb.append(oldCh /*= state*/ = ' ');
-					continue;
-				}
+				char ch = chars[i];
 			
 				if (oldCh == '/') // Skip the comments...
 				{
-					if (ch == '/') // //
+					if (ch == '/' || ch == '*') // // | /*
 					{
-						for (state = '/'; ++i < charsRead; ); // Skip all until endl
-							if (chars[i] == endl) 
-							{
-								oldCh = state = 0;
+						sb.setLength(len = (sb.length() - 1)); // Pop / and restore old char, important!
+						oldCh = len == 0 ? 0 : sb.charAt(len - 1);
+						for (;;) // Skip all till end of comm
+						{
+							if (++i >= charsRead) // Check and read on if necessary...
+								if ((charsRead = reader.read(chars, 0, charBuffLen)) != -1)
+									i = 0;
+								else break readerLoop;
+
+							if (ch == '/' ? 
+								isOneOf(chars[i], ENDL) :
+								chars[i] == '*' && (++i < charsRead ? chars[i] : reader.read()) == '/' // */
+							) {
 								continue charsLoop;
 							}
+						}
 					}
-					else if (ch == '*') // /*
-					{
-						for (state = '*'; ++i < charsRead; ) // Skip all until */
-							if (chars[i] == '*' && (++i < charsRead ? chars[i] : reader.read()) == '/') // */
-							{
-								oldCh = state = 0;
-								continue charsLoop;
-							}
-					}
-					
-					continue;
 				}
 
 				if (ch == '\"' || ch == '\'')
 				{
 					sb.append(ch);
-					for (state = ch; ++i < charsRead; ) // Append all chars until end of str/char
+					for (oldCh = ch; ; ) // Append all chars until end of str/char
 					{
+						if (++i >= charsRead) // Check and read on if necessary...
+							if ((charsRead = reader.read(chars, 0, charBuffLen)) != -1)
+								i = 0;
+							else break readerLoop;
+						
 						sb.append(ch = chars[i]);
-						if (ch == state)
-						{
-							state = 0;
-							break;
-						}
+						if (ch == oldCh)
+							continue charsLoop; // break;
 					}
 				}
 				else if ((ch | ' ') == '{')
 				{
-					for (brackets = 1; ++i < charsRead && brackets != 0; )
+					sb.append(ch);
+					brackets = 1;
+					do
 					{
-						if ((ch = (chars[i] | ' ')) == '{')
+						if (++i >= charsRead) // Check and read on if necessary...
+							if ((charsRead = reader.read(chars, 0, charBuffLen)) != -1)
+								i = 0;
+							else break readerLoop;
+						
+						sb.append(ch = chars[i]);
+						if ((ch |= ' ') == '{')
 							brackets++;
 						else if (ch == '}')
 							brackets--;
-						else if (ch == '"')
-							while (++i < charsRead && chars[i] != '"');
+						else if (ch == '\"' || ch == '\'')
+						{
+							for (oldCh = ch; ; ) // Append all chars until end of str/char
+							{
+								if (++i >= charsRead) // Check and read on if necessary...
+									if ((charsRead = reader.read(chars, 0, charBuffLen)) != -1)
+										i = 0;
+									else break readerLoop;
+								
+								sb.append(ch = chars[i]);
+								if (ch == oldCh)
+									break;
+							}
+						}
 					}
+					while (brackets != 0);
 				}
+				else if (ch == ';' || ch == ',' || (oldCh == '}' && isOneOf(ch, ENDL)))
+				{
+					if ((len = sb.length()) != 0)
+					{
+						if (oldCh == ' ') // Trim
+							sb.setLength(--len);
+						
+						if (len != 0)
+						{
+//							System.err.println("|" + sb.toString() + "| " + (oldCh == ' ') + "\n");
+							Object obj = parseObject(reg, sb.toString(), parserArgs);
+							if (obj != VOID)
+								result.add(obj);
+							sb.setLength(0);
+						}
+					}
+					
+					oldCh = 0;
+					continue;
+				}
+				else if (ch <= ' ') // Handle blanks, skip unnecessary
+				{
+					if (oldCh > ' ') // First blank (in possible row)
+						sb.append(oldCh /*= state*/ = ' ');
+					continue;
+				}
+				else
+					sb.append(ch);
 				
 				oldCh = ch;
 			}
 		}
 
+		if ((len = sb.length()) == 0)
+			return; 
+			
+		if (oldCh == ' ') // Trim
+			sb.setLength(--len);
+
+		if (len != 0)
+		{
+//			System.err.println("|" + sb.toString() + "| " + (oldCh) + "\n");
+			Object obj = parseObject(reg, sb.toString(), parserArgs);
+			if (obj != VOID)
+				result.add(obj);
+		}
 	}
 	
 	/**
+	 * @deprecated (1.3.9) DO NOT USE, IT IS SLOW AND POORLY WRITTEN, USE {@link JussSerializer#readAndParse(Collection, Reader, Object...)} INSTEAD!
+	 * 
 	 * @return Formated content of reader ready to parse! Should not modify this object in any way!
 	 * 
 	 * @since 1.3.2
 	 */
+	@Deprecated
 	public StringBuilder readAndFormat(Reader reader, boolean format)
 	{
 		int quote = 0, multLineCom = -1;
@@ -636,10 +696,13 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 
 	/**
+	 * @deprecated (1.3.9) DO NOT USE, IT IS SLOW AND POORLY WRITTEN, USE {@link JussSerializer#readAndParse(Collection, Reader, Object...)} INSTEAD!
+	 * 
 	 * @return List of objects parsed from given formatted string!
 	 * 
 	 * @since 1.3.2
 	 */
+	@Deprecated
 	public List<Object> splitAndParse(StringBuilder formattedStr, Object... parserArgs)
 	{
 		List<Object> result = new ArrayList<>();
@@ -675,9 +738,9 @@ public class JussSerializer extends Serializer implements ImportsProvider
 			else if ((ch == ';' || ch == ',')/* || (brackets == 1 && (isBracketSplit = ch == '}' || ch == ']'))*/)
 			{
 				String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, lastIndex = i /*+ (isBracketSplit ? 1 : 0)*/).trim();
-				System.out.println(str + "\n");
 				if (!str.isEmpty())
 				{
+//					System.out.println("|" + str + "|\n");
 					Object obj = parseObject(reg, str, parserArgs);
 					if (obj != VOID)
 						result.add(obj);
@@ -687,9 +750,9 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		}
 
 		String str = formattedStr.substring(lastIndex == 0 ? 0 : lastIndex + 1, len).trim();
-		System.out.println(str + "\n");
 		if (!str.isEmpty())
 		{
+//			System.out.println("|" + str + "|\n");
 			Object obj = parseObject(reg, str, parserArgs);
 			if (obj != VOID)
 				result.add(obj);
@@ -754,7 +817,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		T obj = get(variableKey, defaultValue);
 		if (obj == defaultValue)
 			return defaultValue;
-		return Clone(obj, getParsers(), new Object[] {-99999, 0, this, getProtocols(), isGenerateComments()}, this, null, null, getProtocols());
+		return Clone(obj, getParsers(), new Object[] {this, -99999, 0, getProtocols(), getFormat()}, this, null, null, getProtocols());
 	}
 
 	/**
@@ -770,7 +833,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	public <T> T cloneOf(int valueIndex)
 	{
 		T obj = get(valueIndex);
-		return Clone(obj, getParsers(), new Object[] {-99999, 0, this, getProtocols(), isGenerateComments()}, this, null, null, getProtocols());
+		return Clone(obj, getParsers(), new Object[] {this, -99999, 0, getProtocols(), getFormat()}, this, null, null, getProtocols());
 	}
 	
 	/**
@@ -780,7 +843,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 */
 	public boolean isGenerateComments() 
 	{
-		return generateComments;
+		return (format & 0b10) != 0;
 	}
 
 	/**
@@ -790,7 +853,10 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 */
 	public void setGenerateComments(boolean generateComments)
 	{
-		this.generateComments = generateComments;
+		if (generateComments)
+			format |= 0b10;
+		else
+			format &= 0xff ^ 0b10;
 	}
 	
 //	/**

@@ -59,6 +59,8 @@ public abstract class Serializer extends Scope
 	protected ParserRegistry parsers;
 	protected ProtocolRegistry protocols;
 	
+	protected byte format = 0;
+	
 	/**
 	 * @param values | Initial independent values to be added in to this scope!
 	 * 
@@ -257,6 +259,7 @@ public abstract class Serializer extends Scope
 	
 	/**
 	 * @param f | File to write in. This must be a text file.
+	 * @param args | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (they should not be serialized)!
 	 * 
 	 * @return String with variables and objects serialized in specific format.
 	 * 
@@ -264,9 +267,9 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.1.5		
 	 */
-	public void SerializeTo(File f) throws IOException
+	public void SerializeTo(File f, Object... args) throws IOException
 	{
-		SerializeTo(false, f);
+		SerializeTo(false, f, args);
 	}
 	
 	/**
@@ -472,9 +475,23 @@ public abstract class Serializer extends Scope
 	{
 		newEmptyInstance.setParsers(getParsers());
 		newEmptyInstance.setProtocols(getProtocols());
+		newEmptyInstance.setFormat(getFormat());
 		newEmptyInstance.parent = parent;
 		return newEmptyInstance;
-	} 
+	}
+	
+	@Override
+	public Scope clone()
+	{
+		Scope scope = super.clone();
+		if (scope instanceof Serializer)
+		{
+			((Serializer) scope).setParsers(getParsers());
+			((Serializer) scope).setProtocols(getProtocols());
+			((Serializer) scope).setFormat(getFormat());
+		}
+		return scope;
+	}
 	
 	/**
 	 * @return {@link Registry} with parsers that this {@link Serializer} uses!
@@ -607,18 +624,27 @@ public abstract class Serializer extends Scope
 	 * @since 1.3.5
 	 */
 	@SuppressWarnings("unchecked")
-	public <A extends Appendable> A SerializeAsSubscope(A source, char[] wrappingBrackets, Object... args) throws IOException
+	public <A extends Appendable> A SerializeAsSubscope(A source, final char[] wrappingBrackets, Object... args) throws IOException
 	{
-		int tabs = 0;
-		if (args.length > 1 && args[1] instanceof Integer)
-		{
-			tabs = (int) args[1];
-			args[1] = tabs + 1;
-		}
 		source.append(wrappingBrackets[0]);
-		if (!isEmpty())
-			source = (A) SerializeTo(source.append('\n'), args).append('\n').append(multilpy('\t', tabs));
-		return (A) source.append(wrappingBrackets[1]);
+		if (isEmpty())
+			return (A) source.append(wrappingBrackets[1]);
+
+		if (format == 0) // No format...
+		{
+			if (args.length > 1 && args[1] instanceof Integer)
+				args[1] = ((int) args[1]) + 1;
+			return (A) SerializeTo(source, args).append(wrappingBrackets[1]);
+		}
+
+		int tabs;
+		if (args.length > 1 && args[1] instanceof Integer)
+			args[1] = (tabs = (int) args[1]) + 1;
+		else
+			tabs = 0;
+		
+		return (A) SerializeTo(source.append('\n'), args).append('\n').append(multilpy('\t', tabs))
+					.append(wrappingBrackets[1]);
 	}
 	
 	/**
@@ -647,6 +673,28 @@ public abstract class Serializer extends Scope
 	public <T> T getParsed(String variableWithStringValue, Object... args)
 	{
 		return (T) getParsers().parse(getString(variableWithStringValue), args);
+	}
+
+	/**
+	 * @return Non 0 value if proper indentation and newline characters should be used when serializing. Default is 0, no formating...
+	 * The exact behavior of other values will depend on the specific implementation of {@link Serializer#SerializeTo(Appendable, Object...)}
+	 * 
+	 * @since 1.3.9
+	 */
+	public byte getFormat() 
+	{
+		return format;
+	}
+
+	/**
+	 * @param format | A non 0 value if proper indentation and newline characters should be used when serializing.
+	 * The exact behavior of other values will depend on the specific implementation of {@link Serializer#SerializeTo(Appendable, Object...)}
+	 * 
+	 * @since 1.3.9
+	 */
+	public void setFormat(byte format) 
+	{
+		this.format = format;
 	}
 	
 	/**
@@ -773,7 +821,7 @@ public abstract class Serializer extends Scope
 		
 		return (T) Scope.into(obj, fromSerializer, fieldNamesToUse);
 	}
-	
+
 	/**
 	 * @param newInstance | New instance of specific {@link Serializer}
 	 * @param fromObj | Object to create serializer from!

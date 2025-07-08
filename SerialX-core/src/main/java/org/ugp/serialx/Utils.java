@@ -17,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +35,13 @@ import org.ugp.serialx.protocols.SerializationProtocol;
  */
 public final class Utils {
 	private Utils() {}
+	
+	/**
+	 * {@link System#lineSeparator()}
+	 * 
+	 * @since 1.3.9
+	 */
+	public static final char[] ENDL = System.lineSeparator().toCharArray();
 	
 	/**
 	 * @param f | Source file.
@@ -235,7 +243,7 @@ public final class Utils {
 	 * @since 1.3.2
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T Clone(T obj, Registry<DataParser> parsersToUse, Object[] converterArgs, Object... parserArgs)
+	public static <T> T Clone(T obj, Collection<DataParser> parsersToUse, Object[] converterArgs, Object... parserArgs)
 	{
 		if (obj == null) 
 			return null;
@@ -749,18 +757,16 @@ public final class Utils {
 	 * @param ch | Char to compare!
 	 * @param chars | Chars to match!
 	 * 
-	 * @return True if inserted char is any of inserted chars!
+	 * @return True if inserted char (ch) is any of inserted chars!
 	 * 
 	 * @since 1.3.0 
 	 */
 	public static boolean isOneOf(int ch, char... chars)
 	{
-		if (chars.length > 0)
-		{
-			for (int i = 0, len = chars.length; i < len; i++)
-				if (chars[i] == ch)
-					return true;
-		}
+		final int charsLen = chars.length;
+		for (int i = 0; i < charsLen; i++)
+			if (chars[i] == ch)
+				return true;
 		return false;
 	}
 	
@@ -821,7 +827,7 @@ public final class Utils {
 
 		try
 		{
-			if (contains(str, '\n', '\r'))
+			if (contains(str, ENDL))
 				return str.subSequence(0, pos) + "»" + str.subSequence(pos, str.length());
 			return multilpy(' ', pos).append('^').insert(0, '\n').insert(0, str).toString();
 		}
@@ -881,14 +887,14 @@ public final class Utils {
 	{
 		if (array instanceof Object[])
 			return (Object[]) array;
-		
-		int len = Array.getLength(array);
+
+		int len = Array.getLength(array); // Arr of primitives cos Java...
 		Object[] arr = new Object[len];
 		for (int i = 0; i < len; i++) 
 			arr[i] = Array.get(array, i);
 		return arr;
 	}
-	
+
 	/* Others... */
 	
 	/**
