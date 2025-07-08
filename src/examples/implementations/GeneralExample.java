@@ -26,7 +26,9 @@ import org.ugp.serialx.converters.StringConverter;
 import org.ugp.serialx.devtools.SerializationDebugger;
 import org.ugp.serialx.juss.JussSerializer;
 import org.ugp.serialx.juss.converters.ObjectConverter;
+import org.ugp.serialx.juss.converters.VariableConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
+import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 
 import examples.Bar;
 import examples.Foo;
@@ -53,9 +55,15 @@ public class GeneralExample
 	public static final String TEST_6 = "HELLO_WORLD";
 	
 	@Test
-	public void test() throws Exception 
+	public void test() throws Exception
 	{
 		GeneralExample.main(new String[0]);
+	}
+	
+	@Test
+	public void test1() throws Exception
+	{
+		GeneralExample.main(new String[1]);
 	}
 	
 	public static void main(String[] args) throws Exception
@@ -64,40 +72,44 @@ public class GeneralExample
 
 		//------------------------------------------- Custom protocol registration -------------------------------------------
 		
-		SerializationProtocol.REGISTRY.addAll(new Bar.BarProtocol(), new Foo.FooProtocol(), new SerializationProtocol<Random>() //Sample custom protocol to serialized Random. 
-		{																													    //Random will be serialized also without protocol via classic Java Base64 because it implements java.io.Serializable!
-			@Override
-			public Object[] serialize(Random object) 
-			{
-				try
-				{
-					Field f = Random.class.getDeclaredField("seed");
-					f.setAccessible(true);
-					return new Object[] {((AtomicLong) f.get(object)).get()};
-				}
-				catch (Exception e) 
-				{
-					e.printStackTrace();
-					return new Object[] {-1};
-				}
-			}
-
-			@Override
-			public Random unserialize(Class<? extends Random> objectClass, Object... args) 
-			{
-				return new Random(((Number) args[0]).longValue());
-			}
-
-			@Override
-			public Class<? extends Random> applicableFor() 
-			{
-				return Random.class;
-			}
-		});
+		ProtocolRegistry protocols = SerializationProtocol.REGISTRY.clone(); // We could add them directly to SerializationProtocol.REGISTRY but cloning it is recommended (also tests would not work otherwise).
 		
-		File f = new File("examples/implementations/test.juss"); //File to write and read from!
+		protocols.addAll(new Bar.BarProtocol(), new Foo.FooProtocol());
+		if (args.length != 0)
+			protocols.addAll(new SerializationProtocol<Random>()	//Sample custom protocol to serialized Random. 
+			{																			//Random will be serialized also without protocol, via classic Java Base64 because it implements java.io.Serializable!
+				@Override
+				public Object[] serialize(Random object) 
+				{
+					try
+					{
+						Field f = Random.class.getDeclaredField("seed");
+						f.setAccessible(true);
+						return new Object[] {((AtomicLong) f.get(object)).get()};
+					}
+					catch (Exception e) 
+					{
+						e.printStackTrace();
+						return new Object[] {-1};
+					}
+				}
+	
+				@Override
+				public Random unserialize(Class<? extends Random> objectClass, Object... args) 
+				{
+					return new Random(((Number) args[0]).longValue());
+				}
+	
+				@Override
+				public Class<? extends Random> applicableFor() 
+				{
+					return Random.class;
+				}
+			});
+		
+		File f = new File("src/examples/implementations/test.juss"); //File to write and read from!
 
-		//------------------------------------------- Generating mock data -------------------------------------------
+		//------------------------------------------- Setup and generating mock data -------------------------------------------
 		
 		Random r = new Random(123);
 		List<Object> list = new ArrayList<>();
@@ -118,21 +130,25 @@ public class GeneralExample
 		neastedScope2.add(StringConverter.DirectCode("$num"));
 		neastedScope1.put("neastedTest", neastedScope2);
 		someScope.put("test", neastedScope1);
+		
+		Object[] parserArgs = new Object[10], converterArgs = new Object[10];
 
 		//------------------------------------------- Serializing -------------------------------------------
 
 		JussSerializer.JUSS_PARSERS.get(ObjectConverter.class).getInvokableClasses().add(GeneralExample.class); //This is necessary since 1.3.8
 		
 		JussSerializer serializer = new JussSerializer(vars); //Creating an instance of Serializer that will serialize objects using Juss! Serializer is instance of scope so it behaves like so!										   
+		serializer.setProtocols(protocols);
 		//Adding independent values																		         																																									Invokation of static members of this class (calling method "println" and obtaining "hello" field as argument! 
-		serializer.addAll(TEST_3, r, list, ints, someScope, serializer.Comment("Size of array"), serializer.Var("arrSize", list.size()), new Bar(serializer.Code("$parent")), 1, 2.2, 3, 'A', true, false, null, serializer.Code("-$num::new"), serializer.Code(complexExpression), serializer.StaticMember(GeneralExample.class, "println", serializer.StaticMember(GeneralExample.class, "hello")));
+		serializer.addAll(TEST_3, r, list, ints, someScope, serializer.Comment("Size of array"), VariableConverter.NewVariable("arrSize", list.size()), new Bar(serializer.Code("$parent")), 1, 2.2, 3, 'A', true, false, null, serializer.Code("-$num::new"), serializer.Code(complexExpression), serializer.StaticMember(GeneralExample.class, "println", serializer.StaticMember(GeneralExample.class, "hello")));
 											    			//This will insert an comment          Another way to add variable except put method			     				   									$ is used to obtain value from variable, ::new will attempt to clone the value
 		serializer.setGenerateComments(true); //Enabling comment generation
 		
-		serializer.getParsers().resetCache(); //Enabling cache, this can improve performance when serializing a lot of data (not case of this example)!
+		if (args.length != 0) // This is for the tests, but also a good example of how nasty can parser caching get...
+			serializer.getParsers().resetCache(); //Enabling cache, this can improve performance when serializing a lot of data (not case of this example)!
 
 		double t0 = System.nanoTime();			
-		serializer.SerializeTo(f); //Saving content of serializer to file (serializing)
+		serializer.SerializeTo(f, converterArgs); //Saving content of serializer to file (serializing)
 		double t = System.nanoTime();						  
 		System.out.println("Write: " + (t-t0)/1000000 + " ms"); //Write benchmark
 		
@@ -140,6 +156,7 @@ public class GeneralExample
 		SerializationProtocol.REGISTRY.setActivityForAll(true); //Enabling all protocols, just in case...
 
 		JussSerializer deserializer = new JussSerializer(); //Creating instance of Serializer that will deserialize objects serialized in Juss (same class is responsible for serializing and deserializing)!
+		deserializer.setProtocols(protocols);
 		deserializer.setParsers(JussSerializer.JUSS_PARSERS_AND_OPERATORS); //Doing this will allow us to use operators from org.ugp.serialx.converters.operators while deserializing!
 		deserializer.put("parent", TEST_1); //Setting global variables
 		
@@ -151,7 +168,7 @@ public class GeneralExample
 		deserializer.getParsers().preCache(SerializationDebugger.class);
 		
 		t0 = System.nanoTime();
-		deserializer.LoadFrom(f); //Loading content of file in to deserializer!
+		deserializer.LoadFrom(f, parserArgs); //Loading content of file in to deserializer!
 		t = System.nanoTime();
 		System.out.println("Read: " + (t-t0)/1000000 + " ms"); //Read benchmark
 
@@ -161,7 +178,7 @@ public class GeneralExample
 		System.out.println(deserializer.variables());
 		System.out.println(deserializer.values());
 
-		//Performing test
+		//Performing test (complex integration tests...)
 		assertEquals(TEST_1, deserializer.getString("parent"));
 		assertEquals(TEST_2, deserializer.getString("yourMom"));
 		assertEquals(deserializer.getString("yourMom").charAt(0), deserializer.getChar("yourMom"));
@@ -183,6 +200,9 @@ public class GeneralExample
 		assertEquals(Utils.multilpy(GenericScope.intoBidirectional(Scope.from(new Scope()) , null, Arrays.asList(97)).getChar(0), +1 +-6 / -2*(2+1)%- 100 + 1).toString(), deserializer.get(-2));
 		
 		assertEquals(TEST_6, new Scope(deserializer).getString(-1));
+		
+		assertEquals(serializer.getClass(), converterArgs[0].getClass());
+		assertEquals(deserializer.getClass(), parserArgs[0].getClass());
  	}
 	
 	//We can invoke static members in JUSS!

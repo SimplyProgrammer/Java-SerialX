@@ -1,6 +1,6 @@
 [
 	{
-		"str" : "Hi!",
+		"str" : "Hi there!",
 		"date" : 1,
 		"mappedReplies" : null
 	},
@@ -14,8 +14,13 @@
 		"date" : 3,
 		"mappedReplies" : {
 			"entry1" : {
-				"str" : "Hello to you as well from map!",
+				"str" : "Hello to you as well from this map!",
 				"date" : 12,
+				"mappedReplies" : null
+			},
+			"entry2" : {
+				"str" : "Hello to you as well from the another map!",
+				"date" : 13,
 				"mappedReplies" : null
 			}
 		}

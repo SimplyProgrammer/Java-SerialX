@@ -32,6 +32,8 @@ public class SerializingWithJson
 {
 	public static final String[] NO_SCOPE = new String[] {"str", "date", "replies"};
 	
+	public static final String[] NO_FORMAT = new String[] {"str", "date", "mappedReplies"};
+	
 	@Test
 	public void test() throws Exception // SelfSerializable
 	{
@@ -47,17 +49,23 @@ public class SerializingWithJson
 	@Test
 	public void test2() throws Exception // AutoProtocol
 	{
-		SerializingWithJson.main(new String[] {"str", "date"});
+		SerializingWithJson.main(NO_FORMAT);
 	}
 	
 	@Test
 	public void test3() throws Exception // AutoProtocol
 	{
-		SerializingWithJson.main(new String[] {"str", "date", "replies"});
+		SerializingWithJson.main(new String[] {"str", "date"});
 	}
 	
 	@Test
 	public void test4() throws Exception // AutoProtocol
+	{
+		SerializingWithJson.main(new String[] {"str", "date", "replies"});
+	}
+	
+	@Test
+	public void test5() throws Exception // AutoProtocol
 	{
 		SerializingWithJson.main(new String[] {"str", "date", "mappedReplies"});
 	}
@@ -96,11 +104,16 @@ public class SerializingWithJson
 		
 		// Content to serialize (list of Messages) 
 		List<Message> messages = new ArrayList<>();
-		messages.add(new Message("Hi!", 1));
+		messages.add(new Message("Hi there!", 1));
 		messages.add(new Message("My name is Json.", 2));
 		messages.add(new Message("And I am data format!", 3));
 		if (Objects.deepEquals(args, new String[] {"str", "date", "mappedReplies"}))
-			messages.get(2).setMappedReplies(Scope.mapKvArray(new HashMap<>(), "entry1", new Message("Hello to you as well from map!", 12)));
+		{
+			messages.get(2).setMappedReplies(Scope.mapKvArray(new HashMap<>(), 
+				"entry1", new Message("Hello to you as well from this map!", 12), 
+				"entry2", new Message("Hello to you as well from the another map!", 13))
+			);
+		}
 		else
 		{
 			messages.get(0).setReplies(new ArrayList<>());
@@ -111,6 +124,8 @@ public class SerializingWithJson
 		 * Creating new JsonSerializer object and putting out Messages into it.
 		 */
 		Serializer serializer = new JsonSerializer(null, messages);
+		if (args != NO_FORMAT)
+			serializer.setFormat((byte)1);
 		serializer.SerializeTo(medium); // Serializing to given file.
 		
 		System.out.println("-------- Serialization complete! --------");

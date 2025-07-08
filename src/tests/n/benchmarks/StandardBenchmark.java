@@ -17,7 +17,6 @@ import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
@@ -37,7 +36,7 @@ import org.ugp.serialx.juss.JussSerializer;
  * 
  * @author PETO
  */
-@State(Scope.Benchmark)
+@State(org.openjdk.jmh.annotations.Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Warmup(iterations = 0)
 //@Warmup(iterations = 2)
@@ -50,6 +49,8 @@ import org.ugp.serialx.juss.JussSerializer;
 //@Fork(1)
 public class StandardBenchmark 
 {
+	static final String VERSION = "1.1.1", LIB_VERSION = "1.3.9_SNAPSHOT";
+
 	static final int seed = 123; // DO NOT CHANGE
 	
 	public static class DataState<M>
@@ -263,21 +264,22 @@ public class StandardBenchmark
 	public static void main(String[] args) throws Exception 
 	{
 //		org.openjdk.jmh.Main.main(args);
+		
+//		String jvmVersion = "8.0.412-tem";
+		String jvmVersion = "21.0.7-graal";
 
 		OptionsBuilder ob = new OptionsBuilder();
 		ob.include(StandardBenchmark.class.getSimpleName());
-		ob.jvm(System.getProperty("user.home") + "\\.sdkman\\candidates\\java\\21.0.7-graal\\bin\\java.exe");
-		
+		ob.jvm(System.getProperty("user.home") + "\\.sdkman\\candidates\\java\\" + jvmVersion + "\\bin\\java.exe");
+
 //		ob.addProfiler(org.openjdk.jmh.profile.StackProfiler.class);
-//		ob.addProfiler(org.openjdk.jmh.profile.JavaFlightRecorderProfiler.class, "dir=./bench_results/jfr_out_j8");
-		ob.addProfiler(org.openjdk.jmh.profile.JavaFlightRecorderProfiler.class, "dir=./bench_results/jfr_out_j21g");
-		
-//		ob.result("bench_results/_StandardBenchmark_110_138_j8");
-//		ob.result("bench_results/_StandardBenchmark_110_138_j21g");
+		ob.addProfiler(org.openjdk.jmh.profile.JavaFlightRecorderProfiler.class, "dir=./bench_results/jfr-" + (VERSION + "-" + LIB_VERSION + "-j" + jvmVersion).replace(".", ""));
+
+//		ob.result("bench_results/_StandardBenchmark-" + (VERSION + "-" + LIB_VERSION + ".j" + jvmVersion).replace(".", "") + ".bn");
 //		ob.resultFormat(org.openjdk.jmh.results.format.ResultFormatType.TEXT);
 
 		new Runner(ob).run();
 		
-		System.out.println("StandardBenchmark 1.1.1 | Cached - 1.3.8");
+		System.out.println("StandardBenchmark " + VERSION + " | Cached - " + LIB_VERSION);
 	}
 }
