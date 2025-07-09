@@ -124,7 +124,7 @@ public class ObjectConverter extends ProtocolConverter
 					return scope;
 				try 
 				{
-					return scope.LoadFrom(new StringReader(str), compilerArgs);
+					return scope.loadFrom(new StringReader(str), compilerArgs);
 				} 
 				catch (IOException e) 
 				{
@@ -191,7 +191,7 @@ public class ObjectConverter extends ProtocolConverter
 				GenericScope<?, ?> parent;
 				if ((parent = serializer.getParent()) == null || serializer.getClass() != parent.getClass())
 					sb.append(ImportsProvider.getAliasFor(serializer, getClass()) + " ");
-				return serializer.SerializeAsSubscope(sb, args);
+				return serializer.serializeAsSubscope(sb, args);
 			} 
 			catch (IOException e) 
 			{

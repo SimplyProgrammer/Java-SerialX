@@ -271,7 +271,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public <A extends Appendable> A SerializeTo(A source, Object... args) throws IOException
+	public <A extends Appendable> A serializeTo(A source, Object... args) throws IOException
 	{	
 		Map<String, ?> variables = variables();
 		List<Object> objs = values();
@@ -448,9 +448,9 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public <S extends Scope> S LoadFrom(Reader reader, Object... args) throws IOException
+	public <S extends Scope> S loadFrom(Reader reader, Object... args) throws IOException
 	{	
-		boolean formatRequired = true;
+//		boolean formatRequired = true;
 		
 		if (args.length < 4)
 			args = Arrays.copyOf(args, 4);
@@ -460,11 +460,11 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		if (args[3] == null)
 			args[3] = getProtocols();
 		
-		StringBuilder str = readAndFormat(reader, formatRequired);
-		List<Object> objs = splitAndParse(str, args);
-		addAll(objs);
+//		StringBuilder str = readAndFormat(reader, formatRequired);
+//		List<Object> objs = splitAndParse(str, args);
+//		addAll(objs);
 		
-//		readAndParse(values(), reader, 512, args);
+		readAndParse(values(), reader, 512, args);
 		
 		if (parent == null)
 			getImports().removeImportsOf(this);
@@ -472,10 +472,12 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 	
 	/**
+	 * This acts basically as a lexer for Juss and Json...
+	 * 
 	 * @param result | Resulting collection of objects to fill up with parsed objects from reader.
 	 * @param reader | The reader to {@link Reader#read(char[], int, int)}.
 	 * @param charBuffLen | Length of internal char buffer (number of chars that are processed at once). Recommended length is 512, in case of increase should be the power of 2.
-	 * @param parserArgs | Additional arguments to use. Take a look at {@link Serializer#LoadFrom(File, Object...)}.
+	 * @param parserArgs | Additional arguments to use. Take a look at {@link Serializer#loadFrom(File, Object...)}.
 	 * 
 	 * @throws IOException If {@link Reader} instance throws it during reading...
 	 * 
@@ -910,7 +912,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 			</tr>
 			<tr>
 			    <td>{@link CharSequence}</td>
-			    <td>{@link Serializer#LoadFrom(CharSequence, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(CharSequence, Object...)}</td>
 		  	</tr>
 			<tr>
 			    <td>{@link CharSequence} (as http address)</td>
@@ -918,15 +920,15 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		  	</tr>
 		    <tr>
 			    <td>{@link File}</td>
-			    <td>{@link Serializer#LoadFrom(File, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(File, Object...)}</td>
 			</tr>
 			<tr>
 			    <td>{@link Reader}</td>
-			    <td>{@link Serializer#LoadFrom(Reader)}</td>
+			    <td>{@link Serializer#loadFrom(Reader)}</td>
 			</tr>
 			<tr>
 			    <td>{@link InputStream}</td>
-			    <td>{@link Serializer#LoadFrom(InputStream, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(InputStream, Object...)}</td>
 		  	</tr>
 		  	<tr>
 			    <td>{@link URL}</td>
@@ -977,7 +979,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 			</tr>
 			<tr>
 			    <td>{@link CharSequence}</td>
-			    <td>{@link Serializer#LoadFrom(CharSequence, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(CharSequence, Object...)}</td>
 		  	</tr>
 			<tr>
 			    <td>{@link CharSequence} (as http address)</td>
@@ -985,15 +987,15 @@ public class JussSerializer extends Serializer implements ImportsProvider
 		  	</tr>
 		    <tr>
 			    <td>{@link File}</td>
-			    <td>{@link Serializer#LoadFrom(File, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(File, Object...)}</td>
 			</tr>
 			<tr>
 			    <td>{@link Reader}</td>
-			    <td>{@link Serializer#LoadFrom(Reader)}</td>
+			    <td>{@link Serializer#loadFrom(Reader)}</td>
 			</tr>
 			<tr>
 			    <td>{@link InputStream}</td>
-			    <td>{@link Serializer#LoadFrom(InputStream, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(InputStream, Object...)}</td>
 		  	</tr>
 		  	<tr>
 			    <td>{@link URL}</td>

@@ -252,12 +252,12 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.3.2
 	 * 
-	 * @see Serializer#Stringify(Object...)
+	 * @see Serializer#stringify(Object...)
 	 */
 	public String toString(boolean serialize) throws IOException 
 	{
 		if (serialize)
-			return Stringify();
+			return stringify();
 		return super.toString();
 	}
 	
@@ -271,9 +271,9 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.1.5		
 	 */
-	public void SerializeTo(File f, Object... args) throws IOException
+	public void serializeTo(File f, Object... args) throws IOException
 	{
-		SerializeTo(false, f, args);
+		serializeTo(false, f, args);
 	}
 	
 	/**
@@ -287,18 +287,18 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.1.5
 	 * 
-	 * @see Serializer#SerializeTo(Appendable, Object...)
+	 * @see Serializer#serializeTo(Appendable, Object...)
 	 */
-	public void SerializeTo(boolean append, File f, Object... args) throws IOException
+	public void serializeTo(boolean append, File f, Object... args) throws IOException
 	{
 		//double t0 = System.nanoTime();
 		Writer writer = new BufferedWriter(new FileWriter(f, append));
 
-		writer.write(Stringify(args));
+		writer.write(stringify(args));
 		
 		writer.close();
 		
-//		String serialized = Stringify(args);
+//		String serialized = stringify(args);
 //
 //		RandomAccessFile fileOutputStream = new RandomAccessFile(f, "rw");
 //		FileChannel channel = fileOutputStream.getChannel();
@@ -320,11 +320,11 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.0.0
 	 * 
-	 * @see Serializer#SerializeTo(Appendable, Object...)
+	 * @see Serializer#serializeTo(Appendable, Object...)
 	 */
-	public String Stringify(Object... args) throws IOException
+	public String stringify(Object... args) throws IOException
 	{
-		return SerializeTo(new StringBuilder(), args).toString();
+		return serializeTo(new StringBuilder(), args).toString();
 	}
 	
 	/**
@@ -335,11 +335,11 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.3.2
 	 * 
-	 * @see Serializer#SerializeTo(Appendable, Object...)
+	 * @see Serializer#serializeTo(Appendable, Object...)
 	 */
-	public OutputStream SerializeTo(OutputStream outputStream, Object... args) throws IOException
+	public OutputStream serializeTo(OutputStream outputStream, Object... args) throws IOException
 	{
-		SerializeTo(new OutputStreamWriter(outputStream), args);
+		serializeTo(new OutputStreamWriter(outputStream), args);
 		return outputStream;
 	}
 	
@@ -351,7 +351,7 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.3.2
 	 */
-	public abstract <A extends Appendable> A SerializeTo(A source, Object... args) throws IOException;
+	public abstract <A extends Appendable> A serializeTo(A source, Object... args) throws IOException;
 
 	/**
 	 * @param file | Text file with serialized objects in specific format to load.
@@ -364,11 +364,11 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.0.0
 	 * 
-	 * @see Serializer#LoadFrom(Reader, Object...)
+	 * @see Serializer#loadFrom(Reader, Object...)
 	 */
-	public <S extends Scope> S LoadFrom(File file, Object... parserArgs) throws IOException
+	public <S extends Scope> S loadFrom(File file, Object... parserArgs) throws IOException
 	{
-		return LoadFrom(new FileReader(file), parserArgs);
+		return loadFrom(new FileReader(file), parserArgs);
 	}
 	
 	/**
@@ -382,11 +382,11 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.2.5
 	 * 
-	 * @see Serializer#LoadFrom(Reader, Object...)
+	 * @see Serializer#loadFrom(Reader, Object...)
 	 */
-	public <S extends Scope> S LoadFrom(CharSequence str, Object... parserArgs) throws IOException
+	public <S extends Scope> S loadFrom(CharSequence str, Object... parserArgs) throws IOException
 	{
-		return LoadFrom(new StringReader(str.toString()), parserArgs);
+		return loadFrom(new StringReader(str.toString()), parserArgs);
 	}
 	
 	/**
@@ -400,11 +400,11 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.3.2
 	 * 
-	 * @see Serializer#LoadFrom(Reader, Object...)
+	 * @see Serializer#loadFrom(Reader, Object...)
 	 */
-	public <S extends Scope> S LoadFrom(InputStream stream, Object... parserArgs) throws IOException
+	public <S extends Scope> S loadFrom(InputStream stream, Object... parserArgs) throws IOException
 	{
-		return LoadFrom(new InputStreamReader(stream), parserArgs);
+		return loadFrom(new InputStreamReader(stream), parserArgs);
 	}
 	
 	/**
@@ -416,9 +416,9 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.2.5
 	 */
-	public <S extends Scope> S LoadFrom(Reader reader) throws IOException
+	public <S extends Scope> S loadFrom(Reader reader) throws IOException
 	{
-		return LoadFrom(reader, true);
+		return loadFrom(reader, true);
 	}
 	
 	/**
@@ -431,7 +431,7 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.3.2
 	 */
-	public abstract <S extends Scope> S LoadFrom(Reader reader, Object... parserArgs) throws IOException;
+	public abstract <S extends Scope> S loadFrom(Reader reader, Object... parserArgs) throws IOException;
 	
 	/**
 	 * @return Clone of this {@link Serializer} without variables and values, protocols and parser will remain same!
@@ -613,9 +613,9 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @since 1.3.5
 	 */
-	public <A extends Appendable> A SerializeAsSubscope(A source, Object... args) throws IOException
+	public <A extends Appendable> A serializeAsSubscope(A source, Object... args) throws IOException
 	{
-		return SerializeAsSubscope(source, new char[] {'{', '}'}, args);
+		return serializeAsSubscope(source, new char[] {'{', '}'}, args);
 	}
 	
 	/**
@@ -628,7 +628,7 @@ public abstract class Serializer extends Scope
 	 * @since 1.3.5
 	 */
 	@SuppressWarnings("unchecked")
-	public <A extends Appendable> A SerializeAsSubscope(A source, final char[] wrappingBrackets, Object... args) throws IOException
+	public <A extends Appendable> A serializeAsSubscope(A source, final char[] wrappingBrackets, Object... args) throws IOException
 	{
 		source.append(wrappingBrackets[0]);
 		if (isEmpty())
@@ -638,7 +638,7 @@ public abstract class Serializer extends Scope
 		{
 			if (args.length > 1 && args[1] instanceof Integer)
 				args[1] = ((int) args[1]) + 1;
-			return (A) SerializeTo(source, args).append(wrappingBrackets[1]);
+			return (A) serializeTo(source, args).append(wrappingBrackets[1]);
 		}
 
 		int tabs;
@@ -647,7 +647,7 @@ public abstract class Serializer extends Scope
 		else
 			tabs = 0;
 		
-		return (A) SerializeTo(source.append('\n'), args).append('\n').append(multilpy('\t', tabs))
+		return (A) serializeTo(source.append('\n'), args).append('\n').append(multilpy('\t', tabs))
 					.append(wrappingBrackets[1]);
 	}
 	
@@ -681,7 +681,7 @@ public abstract class Serializer extends Scope
 
 	/**
 	 * @return Non 0 value if proper indentation and newline characters should be used when serializing. Default is 0, no formating...
-	 * The exact behavior of other values will depend on the specific implementation of {@link Serializer#SerializeTo(Appendable, Object...)}
+	 * The exact behavior of other values will depend on the specific implementation of {@link Serializer#serializeTo(Appendable, Object...)}
 	 * 
 	 * @since 1.3.9
 	 */
@@ -692,7 +692,7 @@ public abstract class Serializer extends Scope
 
 	/**
 	 * @param format | A non 0 value if proper indentation and newline characters should be used when serializing.
-	 * The exact behavior of other values will depend on the specific implementation of {@link Serializer#SerializeTo(Appendable, Object...)}
+	 * The exact behavior of other values will depend on the specific implementation of {@link Serializer#serializeTo(Appendable, Object...)}
 	 * 
 	 * @since 1.3.9
 	 */
@@ -721,15 +721,15 @@ public abstract class Serializer extends Scope
 			</tr>
 		    <tr>
 			    <td>{@link File}</td>
-			    <td>{@link Serializer#SerializeTo(File)}</td>
+			    <td>{@link Serializer#serializeTo(File)}</td>
 			</tr>
 		    <tr>
 			    <td>{@link Appendable}</td>
-			    <td>{@link Serializer#SerializeTo(Appendable, Object...)}</td>
+			    <td>{@link Serializer#serializeTo(Appendable, Object...)}</td>
 			</tr>
 			<tr>
 			    <td>{@link OutputStream}</td>
-			    <td>{@link Serializer#SerializeTo(OutputStream, Object...)}</td>
+			    <td>{@link Serializer#serializeTo(OutputStream, Object...)}</td>
 		  	</tr>
 		  	<tr>
 			    <td>{@link URL}</td>
@@ -759,19 +759,19 @@ public abstract class Serializer extends Scope
 	{
 		if (obj instanceof File)
 		{
-			fromSerializer.SerializeTo((File) obj);
+			fromSerializer.serializeTo((File) obj);
 			return (T) obj;
 		}
 		
 		if (obj instanceof Appendable)
 		{
-			fromSerializer.SerializeTo((Appendable) obj);
+			fromSerializer.serializeTo((Appendable) obj);
 			return (T) obj;
 		}
 		
 		if (obj instanceof OutputStream)
 		{
-			fromSerializer.SerializeTo((OutputStream) obj);
+			fromSerializer.serializeTo((OutputStream) obj);
 			return (T) obj;
 		}
 		
@@ -782,7 +782,7 @@ public abstract class Serializer extends Scope
 			if (con instanceof HttpURLConnection)
 				post(fromSerializer, (HttpURLConnection) con);
 			else
-				fromSerializer.SerializeTo(con.getOutputStream());
+				fromSerializer.serializeTo(con.getOutputStream());
 			return (T) con;
 		}
 		
@@ -791,7 +791,7 @@ public abstract class Serializer extends Scope
 			if (obj instanceof HttpURLConnection)
 				post(fromSerializer, (HttpURLConnection) obj);
 			else
-				fromSerializer.SerializeTo(((URLConnection) obj).getOutputStream());
+				fromSerializer.serializeTo(((URLConnection) obj).getOutputStream());
 			return (T) obj;
 		}
 		
@@ -806,14 +806,14 @@ public abstract class Serializer extends Scope
 					if (con instanceof HttpURLConnection)
 						post(fromSerializer, (HttpURLConnection) con);
 					else
-						fromSerializer.SerializeTo(con.getOutputStream());
+						fromSerializer.serializeTo(con.getOutputStream());
 					return (T) con;
 				}
 			
 				try
 				{
 					File file = new File(obj.toString());
-					fromSerializer.SerializeTo(file);
+					fromSerializer.serializeTo(file);
 					return (T) file;
 				}
 				catch (Exception e)
@@ -846,7 +846,7 @@ public abstract class Serializer extends Scope
 			</tr>
 			<tr>
 			    <td>{@link CharSequence}</td>
-			    <td>{@link Serializer#LoadFrom(CharSequence, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(CharSequence, Object...)}</td>
 		  	</tr>
 			<tr>
 			    <td>{@link CharSequence} (as http address)</td>
@@ -854,15 +854,15 @@ public abstract class Serializer extends Scope
 		  	</tr>
 		    <tr>
 			    <td>{@link File}</td>
-			    <td>{@link Serializer#LoadFrom(File, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(File, Object...)}</td>
 			</tr>
 			<tr>
 			    <td>{@link Reader}</td>
-			    <td>{@link Serializer#LoadFrom(Reader)}</td>
+			    <td>{@link Serializer#loadFrom(Reader)}</td>
 			</tr>
 			<tr>
 			    <td>{@link InputStream}</td>
-			    <td>{@link Serializer#LoadFrom(InputStream, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(InputStream, Object...)}</td>
 		  	</tr>
 		  	<tr>
 			    <td>{@link URL}</td>
@@ -892,8 +892,8 @@ public abstract class Serializer extends Scope
 			{
 				String fromStr;
 				if (indexOfNotInObj(fromStr = fromObj.toString(), "http") == 0)
-					return newInstance.LoadFrom(new URI(fromStr).toURL().openStream());
-				return newInstance.LoadFrom(new File(fromStr));
+					return newInstance.loadFrom(new URI(fromStr).toURL().openStream());
+				return newInstance.loadFrom(new File(fromStr));
 			}
 			catch (Exception e)
 			{
@@ -901,19 +901,19 @@ public abstract class Serializer extends Scope
 					throw e;
 			}
 
-			return newInstance.LoadFrom((CharSequence) fromObj);
+			return newInstance.loadFrom((CharSequence) fromObj);
 		}
 		
 		if (fromObj instanceof File)
-			return newInstance.LoadFrom((File) fromObj);
+			return newInstance.loadFrom((File) fromObj);
 		if (fromObj instanceof Reader)
-			return newInstance.LoadFrom((Reader) fromObj);
+			return newInstance.loadFrom((Reader) fromObj);
 		if (fromObj instanceof InputStream)
-			return newInstance.LoadFrom((InputStream) fromObj);
+			return newInstance.loadFrom((InputStream) fromObj);
 		if (fromObj instanceof URL)
-			return newInstance.LoadFrom(((URL) fromObj).openStream());
+			return newInstance.loadFrom(((URL) fromObj).openStream());
 		if (fromObj instanceof URLConnection)
-			return newInstance.LoadFrom(((URLConnection) fromObj).getInputStream());
+			return newInstance.loadFrom(((URLConnection) fromObj).getInputStream());
 		
 		newInstance.addAll(Scope.from(fromObj, fieldNamesToUse));
 		return newInstance;

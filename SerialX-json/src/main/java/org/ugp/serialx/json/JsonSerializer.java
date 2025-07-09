@@ -162,9 +162,9 @@ public class JsonSerializer extends JussSerializer
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <S extends Scope> S LoadFrom(Reader reader, Object... formatArgs) throws IOException 
+	public <S extends Scope> S loadFrom(Reader reader, Object... formatArgs) throws IOException 
 	{
-		Scope sc = super.LoadFrom(reader, formatArgs);
+		Scope sc = super.loadFrom(reader, formatArgs);
 
 		if (formatArgs.length > 0 && formatArgs[0] instanceof Serializer)
 			return (S) sc;
@@ -175,7 +175,7 @@ public class JsonSerializer extends JussSerializer
 	}
 	
 	@Override
-	public <A extends Appendable> A SerializeTo(A source, Object... args) throws IOException 
+	public <A extends Appendable> A serializeTo(A source, Object... args) throws IOException 
 	{
 		int tabs = args.length > 1 && args[1] instanceof Integer ? (int) args[1] : 0;
 		
@@ -183,9 +183,9 @@ public class JsonSerializer extends JussSerializer
 		{
 			JussSerializer scope = emptyClone(null);
 			scope.add(this);
-			return scope.SerializeTo(source, args);
+			return scope.serializeTo(source, args);
 		}
-		return super.SerializeTo(source, args);
+		return super.serializeTo(source, args);
 	}
 	
 	@Override
@@ -227,9 +227,9 @@ public class JsonSerializer extends JussSerializer
 	}
 	
 	@Override
-	public <A extends Appendable> A SerializeAsSubscope(A source, Object... args) throws IOException 
+	public <A extends Appendable> A serializeAsSubscope(A source, Object... args) throws IOException 
 	{
-		return SerializeAsSubscope(source, variablesCount() > 0 ? new char[] {'{', '}'} : new char[] {'[', ']'}, args);
+		return serializeAsSubscope(source, variablesCount() > 0 ? new char[] {'{', '}'} : new char[] {'[', ']'}, args);
 	}
 	
 	/**
@@ -300,7 +300,7 @@ public class JsonSerializer extends JussSerializer
 			</tr>
 			<tr>
 			    <td>{@link CharSequence}</td>
-			    <td>{@link Serializer#LoadFrom(CharSequence, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(CharSequence, Object...)}</td>
 		  	</tr>
 			<tr>
 			    <td>{@link CharSequence} (as http address)</td>
@@ -308,15 +308,15 @@ public class JsonSerializer extends JussSerializer
 		  	</tr>
 		    <tr>
 			    <td>{@link File}</td>
-			    <td>{@link Serializer#LoadFrom(File, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(File, Object...)}</td>
 			</tr>
 			<tr>
 			    <td>{@link Reader}</td>
-			    <td>{@link Serializer#LoadFrom(Reader)}</td>
+			    <td>{@link Serializer#loadFrom(Reader)}</td>
 			</tr>
 			<tr>
 			    <td>{@link InputStream}</td>
-			    <td>{@link Serializer#LoadFrom(InputStream, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(InputStream, Object...)}</td>
 		  	</tr>
 		  	<tr>
 			    <td>{@link URL}</td>
@@ -367,7 +367,7 @@ public class JsonSerializer extends JussSerializer
 			</tr>
 			<tr>
 			    <td>{@link CharSequence}</td>
-			    <td>{@link Serializer#LoadFrom(CharSequence, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(CharSequence, Object...)}</td>
 		  	</tr>
 			<tr>
 			    <td>{@link CharSequence} (as http address)</td>
@@ -375,15 +375,15 @@ public class JsonSerializer extends JussSerializer
 		  	</tr>
 		    <tr>
 			    <td>{@link File}</td>
-			    <td>{@link Serializer#LoadFrom(File, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(File, Object...)}</td>
 			</tr>
 			<tr>
 			    <td>{@link Reader}</td>
-			    <td>{@link Serializer#LoadFrom(Reader)}</td>
+			    <td>{@link Serializer#loadFrom(Reader)}</td>
 			</tr>
 			<tr>
 			    <td>{@link InputStream}</td>
-			    <td>{@link Serializer#LoadFrom(InputStream, Object...)}</td>
+			    <td>{@link Serializer#loadFrom(InputStream, Object...)}</td>
 		  	</tr>
 		  	<tr>
 			    <td>{@link URL}</td>
