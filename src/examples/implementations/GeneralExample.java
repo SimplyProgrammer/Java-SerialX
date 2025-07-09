@@ -46,7 +46,7 @@ public class GeneralExample
 {
 	//Test constants...
 	public static final String TEST_1 = "father";
-	public static final String TEST_2 = "has an event horizon... //lol";
+	public static final String TEST_2 = "has.indeed = an event horizon... //lol";
 	public static final String TEST_3 = "some string";
 
 	public static final double TEST_4 = 5;
@@ -148,7 +148,7 @@ public class GeneralExample
 			serializer.getParsers().resetCache(); //Enabling cache, this can improve performance when serializing a lot of data (not case of this example)!
 
 		double t0 = System.nanoTime();			
-		serializer.SerializeTo(f, converterArgs); //Saving content of serializer to file (serializing)
+		serializer.serializeTo(f, converterArgs); //Saving content of serializer to file (serializing)
 		double t = System.nanoTime();						  
 		System.out.println("Write: " + (t-t0)/1000000 + " ms"); //Write benchmark
 		
@@ -168,7 +168,7 @@ public class GeneralExample
 		deserializer.getParsers().preCache(SerializationDebugger.class);
 		
 		t0 = System.nanoTime();
-		deserializer.LoadFrom(f, parserArgs); //Loading content of file in to deserializer!
+		deserializer.loadFrom(f, parserArgs); //Loading content of file in to deserializer!
 		t = System.nanoTime();
 		System.out.println("Read: " + (t-t0)/1000000 + " ms"); //Read benchmark
 

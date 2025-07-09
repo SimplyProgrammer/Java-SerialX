@@ -94,7 +94,7 @@ $srlxVer1 = srlxVer2 = $dependencies.something.dataStorage.serialx.version; //Ob
 something = 
 [
 	test = "NOPE"
-} //Well yea... [} or {] is possible. In 99% cases the interpreter sees these 2 chars as the same one... but it does not mean that you should adopt this convention...
+}; //Well yea... [} or {] is possible. In 99% cases the interpreter sees these 2 chars as the same one... but it does not mean that you should adopt this convention...
 
 devDependencies = 
 {

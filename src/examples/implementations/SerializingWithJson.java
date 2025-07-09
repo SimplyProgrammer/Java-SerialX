@@ -126,7 +126,7 @@ public class SerializingWithJson
 		Serializer serializer = new JsonSerializer(null, messages);
 		if (args != NO_FORMAT)
 			serializer.setFormat((byte)1);
-		serializer.SerializeTo(medium); // Serializing to given file.
+		serializer.serializeTo(medium); // Serializing to given file.
 		
 		System.out.println("-------- Serialization complete! --------");
 		

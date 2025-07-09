@@ -126,7 +126,7 @@ public class StandardBenchmark
 		JussSerializer serializer = (JussSerializer) newSerializer(null, state.data);
 //		serializer.setGenerateComments(true);
 		
-		serializer.SerializeTo((File) state.medium);
+		serializer.serializeTo((File) state.medium);
 		
 		hole.consume(serializer);
 	}
@@ -136,7 +136,7 @@ public class StandardBenchmark
 	{
 		JussSerializer deserializer = (JussSerializer) newSerializer(null, null);
 		
-		return deserializer.LoadFrom((File) state.medium);
+		return deserializer.loadFrom((File) state.medium);
 	}
 	
 //	@Benchmark

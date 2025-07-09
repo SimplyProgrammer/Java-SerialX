@@ -43,7 +43,7 @@ public class AdvancedParsersExample
 
 		LogProvider.instance.setReThrowException(true); //This allows us to implement custom exception handling!
 		
-		interpreter.LoadFrom(new File("src/examples/implementations/simpleScript.juss")); //Running our script from simpleScript.juss file!
+		interpreter.loadFrom(new File("src/examples/implementations/simpleScript.juss")); //Running our script from simpleScript.juss file!
 		
 		//Printing the results of our script...
 		System.out.println(interpreter); //This is not necessary in this case!
