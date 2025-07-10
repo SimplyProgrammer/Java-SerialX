@@ -2,6 +2,7 @@ package examples.implementations;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -57,7 +58,7 @@ public class GeneralExample
 	@Test
 	public void test() throws Exception
 	{
-		GeneralExample.main(new String[0]);
+		GeneralExample.main(new String[0]); // Test Base 64
 	}
 	
 	@Test
@@ -121,7 +122,7 @@ public class GeneralExample
 		vars.put("yourMom", TEST_2);
 		vars.put("num", TEST_4I);
 		
-		int[][] ints = {{1, 2, 3}, {4, 5, 4}, {3, 2, 1}};
+		int[][] ints = {{1, 2, 3}, {4, 5, 4}, {3, 2, 1}, {}, {0}};
 		
 		String complexExpression = "$undef??0 ?12 : 11??{} ? ($_boolTst1 = 1 2 <= {1, 2, 3} - 2 - 3 + 5)&& ($_boolTst2: !!T instanceof java.lang.Boolean) && !!!5.0 > 5 && ($_boolTst3 = T) || ($_boolTst4= 'i'- 5 == 'd' ^ 240/4*2 != 'x') ? (+1 --+-6l /- 2*(2l+--(T || F))%- 10**2 + 1 ) * \"a\"";
 		Scope someScope = new Scope(111, 222, new Scope(new ArrayList<>(Arrays.asList("some{", "}elements{", "...", new Scope('c', TEST_5)))));
@@ -150,7 +151,7 @@ public class GeneralExample
 		double t0 = System.nanoTime();			
 		serializer.serializeTo(f, converterArgs); //Saving content of serializer to file (serializing)
 		double t = System.nanoTime();						  
-		System.out.println("Write: " + (t-t0)/1000000 + " ms"); //Write benchmark
+		LogProvider.instance.logOut("Write: " + (t-t0)/1000000 + " ms"); //Write benchmark
 		
 		//------------------------------------------- Deserializing -------------------------------------------
 		SerializationProtocol.REGISTRY.setActivityForAll(true); //Enabling all protocols, just in case...
@@ -170,7 +171,7 @@ public class GeneralExample
 		t0 = System.nanoTime();
 		deserializer.loadFrom(f, parserArgs); //Loading content of file in to deserializer!
 		t = System.nanoTime();
-		System.out.println("Read: " + (t-t0)/1000000 + " ms"); //Read benchmark
+		LogProvider.instance.logOut("Read: " + (t-t0)/1000000 + " ms"); //Read benchmark
 
 		deserializer = (JussSerializer) deserializer.filter(obj -> obj != null); //This will filter away every null value and variable!
 
@@ -203,6 +204,9 @@ public class GeneralExample
 		
 		assertEquals(serializer.getClass(), converterArgs[0].getClass());
 		assertEquals(deserializer.getClass(), parserArgs[0].getClass());
+		
+		for (Throwable ex : new Throwable[] {null, new IllegalAccessError("Wery oh no :(")})
+			assertThrows(RuntimeException.class, () -> LogProvider.instance.logErr("Oh no :(", ex));
  	}
 	
 	//We can invoke static members in JUSS!
