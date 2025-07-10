@@ -49,18 +49,19 @@ public class ArrayConverter implements DataConverter
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args) 
 	{
-		if (indexOfNotInObj(str, ' ') > 0)
+		int len, startI = 0;
+		if ((len = str.length()) != 0 && str.charAt(0) == '@' || (startI = indexOfNotInObj(str, 1, len, 0, true, ' ')) > 0)
 		{
-			String[] strObjs = tokenize(str);
-			int len, i = 0;
-			Object[] objs = new Object[len = strObjs.length];
+			String[] strObjs = tokenize(startI == 0 ? str.substring(1).trim() : str, startI);
+			int arrLen, i = 0;
+			Object[] arr = new Object[arrLen = strObjs.length];
 			
 			if (args.length < 2 || !(args[1] instanceof Boolean) || (boolean) args[1])
 			{
 				Class<?> arrClass = null;
-				for (; i < len; i++) 
+				for (; i < arrLen; i++) 
 				{
-					Object obj = objs[i] = myHomeRegistry.parse(strObjs[i], args);
+					Object obj = arr[i] = myHomeRegistry.parse(strObjs[i], args);
 					if (obj != null)
 						if (arrClass == null)
 							arrClass = obj.getClass();
@@ -71,16 +72,16 @@ public class ArrayConverter implements DataConverter
 				if (arrClass != null && arrClass != Object.class)
 					try
 					{
-						return castArray(objs, arrClass);
+						return castArray(arr, arrClass);
 					}
 					catch (IllegalArgumentException e) 
 					{}
-				return objs;
+				return arr;
 			}
 			
-			for (; i < len; i++) 
-				objs[i] = myHomeRegistry.parse(strObjs[i], args);
-			return objs;
+			for (; i < arrLen; i++) 
+				arr[i] = myHomeRegistry.parse(strObjs[i], args);
+			return arr;
 		}
 		return CONTINUE;
 	}
@@ -108,21 +109,23 @@ public class ArrayConverter implements DataConverter
 				
 				Object[] elms = fromAmbiguousArray(obj);
 				final int len = elms.length;
-				StringBuilder sb = new StringBuilder();
+				if (len == 0)
+					return "@";
+
+				StringBuilder sb = new StringBuilder("@");
 				if (args.length > 5 && args[5] instanceof Byte && (byte) args[5] != 0) // Format
 				{
 					for (int i = 0, sizeEndl = 10000; i < len; i++)
 					{
-						if (i != 0)
-							if (sb.length() > sizeEndl)
-							{
-								sb.append('\n');
-								for (int j = 0; j < tabs+1; j++) 
-									sb.append('\t');
-								sizeEndl += 10000;
-							}
-							else 
-								sb.append(' ');
+						if (sb.length() > sizeEndl)
+						{
+							sb.append('\n');
+							for (int j = 0; j < tabs+1; j++) 
+								sb.append('\t');
+							sizeEndl += 10000;
+						}
+						else 
+							sb.append(' ');
 						
 						CharSequence str = myHomeRegistry.toString(elms[i], args);
 						char ch = str.charAt(0);
@@ -136,8 +139,7 @@ public class ArrayConverter implements DataConverter
 				{
 					for (int i = 0; i < len; i++) 
 					{
-						if (i != 0)
-							sb.append(' ');
+						sb.append(' ');
 						
 						CharSequence str = myHomeRegistry.toString(elms[i], args);
 						char ch = str.charAt(0);
@@ -167,8 +169,8 @@ public class ArrayConverter implements DataConverter
 	 * 
 	 * @since 1.3.2
 	 */
-	public String[] tokenize(String str)
+	public String[] tokenize(String str, int firstSplitterI)
 	{
-		return splitValues(str, ' ');
+		return str.isEmpty() ? new String[0] : splitValues(str, firstSplitterI, 0, 2, new char[0], ' ');
 	}
 }
