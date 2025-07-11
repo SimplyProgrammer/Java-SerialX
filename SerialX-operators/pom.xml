@@ -10,7 +10,7 @@
 
 	<groupId>org.ugp.serialx</groupId>
 	<artifactId>serialx-operators</artifactId>
-	<version>1.3.9-SNAPSHOT</version>
+	<version>1.3.9</version>
 
 	<name>SerialX operators</name>
 	<description>This modul contains basic operators contained in almost every programing language...</description>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>org.ugp.serialx</groupId>
 			<artifactId>serialx-core</artifactId>
-			<version>1.3.9-SNAPSHOT</version>
+			<version>1.3.9</version>
 		</dependency>
 	</dependencies>
 </project>
