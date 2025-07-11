@@ -295,6 +295,7 @@ Release date: 7.12.2025
 * ArrayConverter now supports proper serializing of 0 and 1 length arrays (@ identifier for arrays).
 * Slight default formatting changes (';' is no longer used for the last element, similarly to JSON).
 * Other smaller optimizations and API improvements.
+ * hashCode for GenericScope
  * Deprecations were removed...
  * More Unit/Integration tests...
 * Minor bug fixes.
