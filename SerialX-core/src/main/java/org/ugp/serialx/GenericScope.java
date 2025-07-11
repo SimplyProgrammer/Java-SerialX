@@ -23,7 +23,7 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 
 	
 /**
- * This collection is some sort of hybrid between {@link List} and {@link Map} which allow you to have both variables and independent values managed by one Object. <br>
+ * This collection is some sort of hybrid, or more accurately "union" between {@link List} and {@link Map} which allow you to have both variables and independent values managed by one Object. <br>
  * Note: Variables are managed and accessed classically via {@link Map} methods such as <code>put(KeyT key, Object)</code> and array of independent values is accessed by via {@link List} methods such as <code>add(Object)</code> and <code>get(int)</code><br>
  * Also this is java representation of JUSS GenericScope group such as:
  * <pre>
@@ -117,10 +117,19 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	public String toString()
 	{
 		String name = getClass().getSimpleName();
-		if (variablesCount() > 0 ^ valuesCount() > 0)
-			return name + (variablesCount() > 0 ? variables() : values());
-		else
-			return name + toUnifiedList();
+		final int varCount;
+		if ((varCount = variablesCount()) > 0 ^ valuesCount() > 0)
+			return name + (varCount > 0 ? variables() : values());
+		return name + toUnifiedList();
+	}
+	
+	@Override
+	public int hashCode() 
+	{
+		final int varCount;
+		if ((varCount = variablesCount()) > 0 ^ valuesCount() > 0)
+			return (varCount > 0 ? variables() : values()).hashCode();
+		return Objects.hash(variables(), values());
 	}
 	
 	@SuppressWarnings("unchecked")
