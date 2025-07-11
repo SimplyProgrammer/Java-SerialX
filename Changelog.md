@@ -282,15 +282,31 @@ What was added:<br>
   * Some functions were slightly renamed but it is usually documented but deprecated functions were removed!
 #
 
-# SerialX 1.3.9+
+# SerialX 1.3.9
 
-Release date: UNKNOWN
+Release date: 7.12.2025
+
+### Notable changes:
+* A new, far performant, reading and lexing method was written for parsing, resulting in almost 2x improvement when deserializing a large amount of data.
+* Serializer now provides an option to implement a custom code formatting flag, including the option to disable formatting entirely (so no indentation or new line blank characters will be present).
+ *  
+* Key Serializer methods, LoadFrom and SerializeTo were renamed to camel case (original PascalCase was largely a legacy thing...).
+* JsonVariableConverter was added as JSON-specific variant of VariableConverter.
+* ArrayConverter now supports proper serializing of 0 and 1 length arrays (@ identifier for arrays).
+* Slight default formatting changes (';' is no longer used for the last element, similarly to JSON).
+* Other smaller optimizations and API improvements.
+ * Deprecations were removed...
+ * More Unit/Integration tests...
+* Minor bug fixes.
+
+# SerialX 1.4.0
+
+Release date: ???
 
 ### Roadmap of potential changes:
 * Separating From/Into API from Scope and Serializer into the standalone classes making it more flexible and customizable.
 * ? Implementing Register in such a way that it will be possible to specify the underlying data structure.
-* Optimizing deserialization process in JussSerializer (unification of "those 2 methods" and getting rid of that stinky legacy spaghetti code they have).
+* ? ParserProvider, ProtocolProvider, MultimediaSerializer interfaces...
 * ? Optimizations - Introducing char/class-based direct dispatch hashing algorithm for selecting the best fitting data converter for the string/object. (This is likely not going to be possible to fully implement due to internal dependencies between parsers and other legacy reasons...)
-* Update CLRFs to be compatible with multiple systems.
-* ? Formating options
+* ? Java 11
 
