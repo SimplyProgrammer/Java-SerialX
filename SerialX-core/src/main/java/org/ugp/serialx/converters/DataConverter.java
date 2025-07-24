@@ -53,6 +53,8 @@ public interface DataConverter extends DataParser
 	}
 	
 	/**
+	 * @param objToDescribe | Object to gen. comment for...
+	 * 
 	 * @return <code>"Object of " + objToDescribe.getClass().getName() + ": \""  + objToDescribe + "\" converted by " + DataParser.class.getName()</code>
 	 * 
 	 * @since 1.3.2

@@ -391,16 +391,17 @@ public final class Utils {
 	}
 	
 	/**
+	 * @param unwrap | If the box types should be unwrapped to primitives...
 	 * @param objs | Array of objects.
 	 * 
 	 * @return Array of inserted objects class types. Wrapper types of primitive values will be converted to primitive types! For instance: Integer.class -> int.class
 	 * 
 	 * @since 1.3.5
 	 */
-	public static Class<?>[] ToClasses(boolean unwrapp, Object... objs)
+	public static Class<?>[] ToClasses(boolean unwrap, Object... objs)
 	{
 		Class<?>[] classes = new Class<?>[objs.length];
-		if (unwrapp)
+		if (unwrap)
 		{
 			for (int i = 0; i < classes.length; i++) 
 			{
@@ -771,6 +772,9 @@ public final class Utils {
 	}
 	
 	/**
+	 * @param str | Char sequence to search.
+	 * @param oneOf | Chars to search for!
+	 * 
 	 * @return {@link String#contains(CharSequence)} for char sequence!
 	 * 
 	 * @since 1.3.0
@@ -785,7 +789,7 @@ public final class Utils {
 			return false;
 		}
 			
-		for (int i = 0, len = str.length(); i < len; i++) 
+		for (int i = 0, len = str.length(); i < len; i++)
 			if (isOneOf(str.charAt(i), oneOf))
 				return true;
 		return false;

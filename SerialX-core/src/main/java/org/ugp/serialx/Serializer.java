@@ -265,8 +265,6 @@ public abstract class Serializer extends Scope
 	 * @param f | File to write in. This must be a text file.
 	 * @param args | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (they should not be serialized)!
 	 * 
-	 * @return String with variables and objects serialized in specific format.
-	 * 
 	 * @throws IOException if file can't be opened or serialization fails!
 	 * 
 	 * @since 1.1.5		
@@ -280,8 +278,6 @@ public abstract class Serializer extends Scope
 	 * @param append | When true, the new objects will be appended to files content (same objects will be also appended if there are some)! 
 	 * @param f | File to write in. This must be a text file.
 	 * @param args | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (they should not be serialized)!
-	 * 
-	 * @return String with variables and objects serialized in specific format.
 	 * 
 	 * @throws IOException if file can't be opened or serialization fails!
 	 * 
@@ -348,6 +344,8 @@ public abstract class Serializer extends Scope
 	 * @param args | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (they should not be serialized)!
 	 * 
 	 * @return Source {@link Appendable} with variables and objects serialized in specific format.
+	 * 
+	 * @throws IOException depends on the implementation (likely when the provided source throws). 
 	 * 
 	 * @since 1.3.2
 	 */
@@ -456,9 +454,11 @@ public abstract class Serializer extends Scope
 	}
 	
 	/**
+	 * @param typeOfClone | Specific type of the clone (has to extend Serializer).
 	 * @param parent | Parent scope of new Serializer instance!
 	 * 
 	 * @return Clone of this {@link Serializer} without variables and values, protocols and parser will remain same!
+	 * @throws Exception 
 	 * 
 	 * @since 1.3.5
 	 */

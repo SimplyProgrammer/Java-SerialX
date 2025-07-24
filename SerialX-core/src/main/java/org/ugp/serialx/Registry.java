@@ -86,7 +86,7 @@ public class Registry<E> extends ArrayList<E>
 	{
 		E contained = get((Class<? extends E>) element.getClass());
 		if (contained != null)
-			remove(contained);		
+			remove(contained);
 		super.add(index, element);
 	}
 	
@@ -128,8 +128,6 @@ public class Registry<E> extends ArrayList<E>
 	/**
 	 * @param elms | Array o elements to add!
 	 * 
-	 * @return {@link Registry#addAll(int, Object...)}
-	 * 
 	 * @since 1.3.0
 	 */
 	public void addAll(@SuppressWarnings("unchecked") E... elms)
@@ -138,9 +136,8 @@ public class Registry<E> extends ArrayList<E>
 	}
 	
 	/**
+	 * @param index | Index at which the specified elements should be inserted
 	 * @param elms | Array o elements to add!
-	 * 
-	 * @return {@link Registry#addAll(int, Collection)}
 	 * 
 	 * @since 1.3.0
 	 */
@@ -219,9 +216,9 @@ public class Registry<E> extends ArrayList<E>
 	 * 
 	 * @since 1.3.0
 	 */
-	public void addAllBefore(Class<? extends E> cls, @SuppressWarnings("unchecked") E... element)
+	public int addAllBefore(Class<? extends E> cls, @SuppressWarnings("unchecked") E... element)
 	{
-		addAllBefore(cls, false, element);
+		return addAllBefore(cls, false, element);
 	}
 	
 	/**

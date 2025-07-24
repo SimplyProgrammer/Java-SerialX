@@ -164,6 +164,7 @@ public class ArrayConverter implements DataConverter
 	
 	/**
 	 * @param str | String to tokenize!
+	 * @param firstSplitterI | Index of first expected splitter char (space).
 	 * 
 	 * @return String splitted according to defined rules!
 	 * 

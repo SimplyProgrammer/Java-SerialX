@@ -3,6 +3,8 @@ package org.ugp.serialx.juss.protocols;
 /**
  * SelfSerializableProtocol is universal protocol to serialize any {@link SelfSerializable} instance. The condition of use is implementation of {@link SelfSerializable} interface and public constructor that can be called with content returned by specific {@link SelfSerializable#serialize()}!
  * 
+ * @param <T> Type of SelfSerializable class that this protocol should be applicable for...
+ * 
  * @author PETO
  *
  * @since 1.2.2	

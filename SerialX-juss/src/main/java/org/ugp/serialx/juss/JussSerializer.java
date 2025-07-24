@@ -32,6 +32,7 @@ import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.Registry;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
+import org.ugp.serialx.Utils;
 import org.ugp.serialx.converters.BooleanConverter;
 import org.ugp.serialx.converters.CharacterConverter;
 import org.ugp.serialx.converters.DataConverter;
@@ -802,7 +803,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @return Clone of value stored by variable with inserted name or null if there is no such a one!
 	 * <br><br>
-	 * Note: Cloning is done by {@link Serializer#Clone(Object, Registry, Object[], Object...))}!
+	 * Note: Cloning is done by {@link Utils#Clone(Object, Collection, Object[], Object...)}!
 	 * 
 	 * @since 1.3.2
 	 */
@@ -817,7 +818,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @return Clone of value stored by variable with inserted name or defaultValue if there is no such a one or given key contains null!
 	 * <br><br>
-	 * Note: Cloning is done by {@link Serializer#Clone(Object, Registry, Object[], Object...))}!
+	 * Note: Cloning is done by {@link Utils#Clone(Object, Collection, Object[], Object...)}!
 	 * 
 	 * @since 1.3.2
 	 */
@@ -835,7 +836,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @return Clone of independent value with valueIndex!
 	 * <br><br>
-	 * Note: Cloning is done by {@link Serializer#Clone(Object, Registry, Object[], Object...))}!
+	 * Note: Cloning is done by {@link Utils#Clone(Object, Collection, Object[], Object...)}!
 	 * 
 	 * @since 1.3.2
 	 */

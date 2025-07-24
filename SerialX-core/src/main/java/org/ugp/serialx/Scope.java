@@ -615,7 +615,7 @@ public class Scope extends GenericScope<String, Object>
 	}
 	
 	/**
-	 * @param scopesOrderIndex | Order index of sub-scope.
+	 * @param subscopesOrderIndex | Order index of sub-scope.
 	 * 
 	 * @return Sub-scope with required number. Similar to {@link Scope#getScope(int)} however this will ignore non scope values.
 	 * <br><br>
@@ -732,9 +732,9 @@ public class Scope extends GenericScope<String, Object>
 	 * 
 	 * @since 1.2.5
 	 */
-	public <T> T toObjectOf(String variableWithscope, Class<T> objClass) throws Exception
+	public <T> T toObjectOf(String variableWithScope, Class<T> objClass) throws Exception
 	{
-		return toObjectOf(variableWithscope, objClass, null);
+		return toObjectOf(variableWithScope, objClass, null);
 	}
 	
 	/**
@@ -752,9 +752,9 @@ public class Scope extends GenericScope<String, Object>
 	 * 
 	 * @since 1.2.5
 	 */
-	public <T> T toObjectOf(String variableWithscope, Class<T> objClass, T defaultValue) throws Exception
+	public <T> T toObjectOf(String variableWithScope, Class<T> objClass, T defaultValue) throws Exception
 	{
-		return toObjectOf(variableWithscope, objClass, defaultValue, SerializationProtocol.REGISTRY);
+		return toObjectOf(variableWithScope, objClass, defaultValue, SerializationProtocol.REGISTRY);
 	}
 	
 	/**
@@ -774,9 +774,9 @@ public class Scope extends GenericScope<String, Object>
 	 * @since 1.3.2
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T toObjectOf(String variableWithscope, Class<T> objClass, T defaultValue, ProtocolRegistry protocolsToUse) throws Exception
+	public <T> T toObjectOf(String variableWithScope, Class<T> objClass, T defaultValue, ProtocolRegistry protocolsToUse) throws Exception
 	{
-		T obj = get(variableWithscope, defaultValue);
+		T obj = get(variableWithScope, defaultValue);
 		if (obj instanceof GenericScope)
 			return ((GenericScope<String, ?>) obj).toObject(objClass, protocolsToUse);
 		return obj;

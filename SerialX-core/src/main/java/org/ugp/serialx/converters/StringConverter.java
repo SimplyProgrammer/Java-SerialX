@@ -150,7 +150,7 @@ public class StringConverter implements DataConverter
 	/**
 	 * @param obj | Object to stringify directly.
 	 * 
-	 * @return "${" + obj + "}" - if this is be inserted into {@link StringConverter#toString(Registry, Object, Object...))}, it will be returned without ${ and }!
+	 * @return "${" + obj + "}" - if this is be inserted into {@link StringConverter#toString(Registry, Object, Object...)}, it will be returned without ${ and }!
 	 *
 	 * @since 1.3.5
 	 */

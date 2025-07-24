@@ -76,6 +76,8 @@ public abstract class SerializationProtocol<T>
 	 * 
 	 * @return Array of objects to serialize created from given object.
 	 * 
+	 * @throws Exception depends on the implementation (most likely reflection related exceptions).
+	 * 
 	 * @since 1.0.0
 	 */
 	public abstract Object[] serialize(T object) throws Exception;

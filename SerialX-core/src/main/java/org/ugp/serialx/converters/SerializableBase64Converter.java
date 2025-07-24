@@ -108,7 +108,7 @@ public class SerializableBase64Converter implements DataConverter
 	 * 
 	 * @since 1.0.0 (moved to {@link SerializableBase64Converter} since 1.3.0)
 	 */
-	public static Object UnserializeClassis(String objStr) throws Exception
+	public static Object UnserializeClassis(String objStr) throws IOException, ClassNotFoundException
 	{
         return new ObjectInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(objStr))).readObject();
 	}

@@ -54,6 +54,13 @@
 			<url>https://maven.pkg.github.com/SimplyProgrammer/Java-SerialX</url>
 		</repository>
 	</distributionManagement>
+	
+	<repositories>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/SimplyProgrammer/Java-SerialX</url>
+		</repository>
+	</repositories>
 
 	<properties>
 		<java.version>8</java.version>

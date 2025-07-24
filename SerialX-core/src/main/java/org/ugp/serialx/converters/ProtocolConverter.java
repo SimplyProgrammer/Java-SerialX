@@ -346,13 +346,14 @@ public class ProtocolConverter implements DataConverter
 	
 	/**
 	 * @param str | String to check protocol class for!
+	 * @param args | Args provided by the caller. Should contain {@link ImportsProvider}-like object at index 0.
 	 * 
 	 * @return Class of the protocol or null if inserted statement is not protocol expression!
 	 * For example: <code>getProtocolExprClass("java.util.ArrayList 1 2 3 4 5")</code> will return {@link ArrayList} but <code>"Hello world!"</code> will return null!
 	 *
 	 * @since 1.3.0
 	 */
-	public static Class<?> getProtocolExprClass(String str, Object... compilerArgs)
+	public static Class<?> getProtocolExprClass(String str, Object... args)
 	{
 		int i = 0, len = str.length();
 		for (char ch; i < len; i++)
@@ -361,7 +362,7 @@ public class ProtocolConverter implements DataConverter
 
 		try 
 		{
-			Class<?> cls = ImportsProvider.forName(compilerArgs.length > 0 ? compilerArgs[0] : null, str.substring(0, i), false, ProtocolConverter.class.getClassLoader());
+			Class<?> cls = ImportsProvider.forName(args.length > 0 ? args[0] : null, str.substring(0, i), false, ProtocolConverter.class.getClassLoader());
 			if (cls != null)
 				return cls;
 			for (char ch; i < len; i++)

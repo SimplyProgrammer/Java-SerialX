@@ -332,7 +332,7 @@ public class JsonSerializer extends JussSerializer
 			</tr>
 		</table>
 	 *	
-	 * @throws When something went wrong during deserialization!
+	 * @throws Exception When something went wrong during deserialization!
 	 * 
 	 * @since 1.3.5
 	 */
