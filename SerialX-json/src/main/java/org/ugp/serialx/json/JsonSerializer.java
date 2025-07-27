@@ -200,7 +200,7 @@ public class JsonSerializer extends JussSerializer
 	 * @since 1.3.2
 	 */
 	@Override
-	protected Appendable appandVar(Appendable source, ParserRegistry parsersToUse, Entry<String, ?> varToSerialize, int tabs, boolean isLast, Object... args) throws IOException
+	protected Appendable appandVar(Appendable source, ParserRegistry parsersToUse, Entry<String, ?> varToSerialize, int tabs, boolean isLast, Object[] args) throws IOException
 	{
 		if (format != 0)
 			source.append(multilpy('\t', tabs));
@@ -211,7 +211,7 @@ public class JsonSerializer extends JussSerializer
 	}
 	
 	@Override
-	protected Appendable appandVal(Appendable source, ParserRegistry parsersToUse, Object objToSerialize, int tabs, boolean isLast, Object... args) throws IOException
+	protected Appendable appandVal(Appendable source, ParserRegistry parsersToUse, Object objToSerialize, int tabs, boolean isLast, Object[] args) throws IOException
 	{
 		if (format != 0)
 			source.append(multilpy('\t', tabs));

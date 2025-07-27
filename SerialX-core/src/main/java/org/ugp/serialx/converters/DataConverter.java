@@ -29,7 +29,7 @@ public interface DataConverter extends DataParser
 	{
 		try 
 		{
-			return (CharSequence) toString(new StringBuilder().append(0), myHomeRegistry, obj, args);
+			return (CharSequence) toString(new StringBuilder(), myHomeRegistry, obj, args);
 		} 
 		catch (IOException e) 
 		{
