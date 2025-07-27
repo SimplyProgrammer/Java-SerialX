@@ -1,5 +1,6 @@
 package org.ugp.serialx.json.converters;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.ugp.serialx.Scope;
@@ -20,36 +21,36 @@ public class JsonObjectConverter extends ObjectConverter
 {		
 	@SuppressWarnings("unchecked")
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object arg, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException 
 	{
-		if (arg == null)
+		if (obj == null)
 			return CONTINUE;
 
-		if (arg.getClass().isArray())
-			return super.toString(myHomeRegistry, new Scope(Utils.fromAmbiguousArray(arg)), args);
+		if (obj.getClass().isArray())
+			return super.toString(source, myHomeRegistry, new Scope(Utils.fromAmbiguousArray(obj)), args);
 		
-		if (arg instanceof Map)
+		if (obj instanceof Map)
 		{
-			Map<?, ?> map = (Map<?, ?>) arg;
+			Map<?, ?> map = (Map<?, ?>) obj;
 			if (map.isEmpty())
-				return "{}";
+				return source.append("{}");
 			if (map.keySet().iterator().next() instanceof CharSequence)
-				return super.toString(myHomeRegistry, new Scope((Map<String, ?>) map), args);
+				return super.toString(source, myHomeRegistry, new Scope((Map<String, ?>) map), args);
 		}
 			
-		SerializationProtocol<Object> prot = (SerializationProtocol<Object>) getProtocolFor(arg, SerializationProtocol.MODE_SERIALIZE, args);
-		if (prot != null && !(arg instanceof Scope))
+		SerializationProtocol<Object> prot = (SerializationProtocol<Object>) getProtocolFor(obj, SerializationProtocol.MODE_SERIALIZE, args);
+		if (prot != null && !(obj instanceof Scope))
 			try
 			{
-				Object[] objArgs = prot.serialize(arg);
+				Object[] objArgs = prot.serialize(obj);
 				if (objArgs.length == 1 && objArgs[0] instanceof Scope)
-					return super.toString(myHomeRegistry, objArgs[0], args);
-				return super.toString(myHomeRegistry, new Scope(objArgs), args);
+					return super.toString(source, myHomeRegistry, objArgs[0], args);
+				return super.toString(source, myHomeRegistry, new Scope(objArgs), args);
 			}
 			catch (Exception e) 
 			{}
 
-		return super.toString(myHomeRegistry, arg, prot, args);
+		return super.toString(source, myHomeRegistry, obj, prot, args);
 	}
 	
 	@Override

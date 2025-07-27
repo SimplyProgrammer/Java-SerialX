@@ -1,5 +1,6 @@
 package org.ugp.serialx.devtools;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -49,7 +50,8 @@ public class DebugParserRegistry extends ParserRegistry
 	}
 	
 	@Override
-	public CharSequence toString(Object obj, Object... args) {
+	public Appendable toString(Appendable source, Object obj, Object... args) throws IOException
+	{
 		int iterationIndex = 0;
 		if (args.length > 99 && args[99] instanceof Integer)
 		{
@@ -65,12 +67,12 @@ public class DebugParserRegistry extends ParserRegistry
 				if (parser != null)
 				{
 					double t0 = System.nanoTime();
-					str = ((DataConverter) parser).toString(this, obj, args);
+					str = (CharSequence) ((DataConverter) parser).toString(new StringBuilder(), this, obj, args);
 					double t = System.nanoTime();
 					if (str != SerializationDebugger.CONTINUE)
 					{
 						iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms (from cache)\n>>\t" + SerializationDebugger.toStringAndCls(obj) + "\t -->\t\"" + str + "\"");
-						return str; 
+						return source.append(str); 
 					}
 				}
 			}
@@ -81,14 +83,14 @@ public class DebugParserRegistry extends ParserRegistry
 			if (parser instanceof DataConverter)
 			{
 				double t0 = System.nanoTime();
-				str = ((DataConverter) parser).toString(this, obj, args);
+				str = (CharSequence) ((DataConverter) parser).toString(new StringBuilder(), this, obj, args);
 				double t = System.nanoTime();
 				if(str != SerializationDebugger.CONTINUE)
 				{
 					if (convertingCache != null && i < convertingCache.length)
 						convertingCache[i] = parser; 
 					iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms\n>>\t" + SerializationDebugger.toStringAndCls(obj) + "\t -->\t\"" + str + "\"");
-					return str;
+					return source.append(str); 
 				}
 			}
 		}

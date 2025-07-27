@@ -65,7 +65,7 @@ public class SerializableBase64Converter implements DataConverter
 			}
 			catch (Exception e) 
 			{
-				LogProvider.instance.logErr("Looks like there appear some problems with unserializing some object, the instance of java.io.Serializable from string \"" + arg + "\"! This string is most likely corrupted! See error below:", e);
+				LogProvider.instance.logErr("Looks like there were some problems with unserializing some object, the instance of java.io.Serializable from string \"" + arg + "\"! This string is most likely corrupted! See error below:", e);
 				e.printStackTrace();
 				return null;
 			}
@@ -74,16 +74,16 @@ public class SerializableBase64Converter implements DataConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object arg, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args)
 	{
-		if (arg instanceof Serializable)
+		if (obj instanceof Serializable)
 			try
 			{
-				return "#" + URLEncoder.encode(SerializeClassic((Serializable) arg), "UTF-8").replace('%', '#');
+				return source.append('#').append(URLEncoder.encode(SerializeClassic((Serializable) obj), "UTF-8").replace('%', '#'));
 			}
 			catch (Exception e)
 			{
-				LogProvider.instance.logErr("Looks like there appear some problems with serializing \"" + arg + "\", the instance of java.io.Serializable. This could happen when certain object contains non-transient unserializable objects. Use custom valid protocol for serializing \"" + arg + "\" might solve the problem!", e);
+				LogProvider.instance.logErr("Looks like there were some problems with serializing \"" + obj + "\", the instance of java.io.Serializable. This could happen when certain object contains non-transient unserializable objects. Using custom valid protocol for serializing \"" + obj + "\" might solve the problem!", e);
 				e.printStackTrace();
 				return null;
 			}

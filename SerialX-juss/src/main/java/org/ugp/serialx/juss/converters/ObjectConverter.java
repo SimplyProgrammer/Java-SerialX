@@ -15,6 +15,7 @@ import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.ProtocolConverter;
 import org.ugp.serialx.converters.SerializableBase64Converter;
+import org.ugp.serialx.converters.DataParser.ParserRegistry;
 import org.ugp.serialx.converters.imports.ImportsProvider;
 import org.ugp.serialx.juss.JussSerializer;
 import org.ugp.serialx.protocols.SerializationProtocol;
@@ -136,25 +137,25 @@ public class ObjectConverter extends ProtocolConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args)
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException
 	{
-		return toString(myHomeRegistry, obj, null, args);
+		return toString(source, myHomeRegistry, obj, null, args);
 	}
 	
 	/**
+	 * @param source | Source to append the properly stringified object (obj) into. Should be treated as only and only {@link Appendable}, no casting!
 	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link ParserRegistry#parse(String, boolean, Class, Object...)} otherwise it demands on implementation (it should not be null)!
 	 * @param obj | Object to convert into string!
 	 * @param preferedProtocol | Protocol to use preferably.
 	 * @param args | Some additional args. This can be anything and it demands on implementation of DataConverter. Default SerialX API implementation will provide some flags about formating (2 ints)!
 	 * 
-	 * @return Object converted to string. Easiest way to do this is obj.toString() but you most likely want some more sofisticated formating.
+	 * @return The source appendable after stringified object (obj) was appropriately appended into it.
 	 * Return {@link DataParser#CONTINUE} to tell that this converter is not suitable for converting this object! You most likely want to do this when obtained obj is not suitable instance!
 	 * 
 	 * @since 1.3.5
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, SerializationProtocol<Object> preferedProtocol, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, SerializationProtocol<Object> preferedProtocol, Object... args) 
 	{
 		if (obj instanceof Scope)
 		{
@@ -187,11 +188,10 @@ public class ObjectConverter extends ProtocolConverter
 			
 			try 
 			{
-				StringBuilder sb = new StringBuilder();
 				GenericScope<?, ?> parent;
 				if ((parent = serializer.getParent()) == null || serializer.getClass() != parent.getClass())
-					sb.append(ImportsProvider.getAliasFor(serializer, getClass()) + " ");
-				return serializer.serializeAsSubscope(sb, args);
+					source.append(ImportsProvider.getAliasFor(serializer, getClass())).append(' ');
+				return serializer.serializeAsSubscope(source, args);
 			} 
 			catch (IOException e) 
 			{
@@ -199,7 +199,7 @@ public class ObjectConverter extends ProtocolConverter
 			}
 		}
 
-		return super.toString(myHomeRegistry, obj, preferedProtocol, args);
+		return super.toString(source, myHomeRegistry, obj, preferedProtocol, args);
 	}
 	
 	@Override

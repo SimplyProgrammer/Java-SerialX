@@ -1,5 +1,6 @@
 package org.ugp.serialx.converters;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.ugp.serialx.LogProvider;
@@ -29,10 +30,11 @@ public interface DataParser
 	
 	/**
 	 * This is connected with {@link DataParser#parse(String, Object...)} and {@link DataParser#parseObj(String, Object...)}! And its a way to tell that this parser is not suitable for parsing obtained string and search for optimal one should continue.
+	 * Should not be modified under any circumstances, always treat as immutable!
 	 * 
 	 * @since 1.3.0
 	 */
-	public static final String CONTINUE = new String();
+	public static final Appendable CONTINUE = new StringBuilder();
 	
 	/**
 	 * This is DataParser registry. Here your parser implementations should be registered in order to work properly!
@@ -165,18 +167,43 @@ public interface DataParser
 		 * 
 		 * @since 1.3.5
 		 */
+		@Deprecated
 		public CharSequence toString(Object obj, Object... args)
 		{
-			CharSequence str;
+			try 
+			{
+				return (CharSequence) toString(new StringBuilder(), obj, args);
+			} 
+			catch (IOException e) 
+			{
+				throw new RuntimeException(e);
+			}
+		}
+		
+		/**
+		 * @param source | Source to append the properly stringified object (obj) into. Should be treated as only and only {@link Appendable}, no casting!
+		 * @param obj | Object to convert into string!
+		 * @param args | Additional arguments that will be obtained in {@link DataParser#toString(String, Object...)}!
+		 * 
+		 * @return The source appendable after stringified object (obj) was appropriately appended into it.
+		 * Return {@link DataParser#CONTINUE} to tell that this converter is not suitable for converting this object! You most likely want to do this when obtained obj is not suitable instance!
+		 * 
+		 * @throws IOException When appending into source throws it... 
+		 * 
+		 * @since 1.3.9
+		 */
+		public Appendable toString(Appendable source, Object obj, Object... args) throws IOException
+		{
+			Appendable str;
 			if (convertingCache != null)
 				for (DataParser parser : convertingCache)
-					if (parser != null && (str = ((DataConverter) parser).toString(this, obj, args)) != CONTINUE)
+					if (parser != null && (str = ((DataConverter) parser).toString(source, this, obj, args)) != CONTINUE)
 						return str;
 			
 			for (int i = 0, size = size(); i < size; i++) 
 			{
 				DataParser parser = get(i);
-				if (parser instanceof DataConverter && (str = ((DataConverter) parser).toString(this, obj, args)) != CONTINUE)
+				if (parser instanceof DataConverter && (str = ((DataConverter) parser).toString(source, this, obj, args)) != CONTINUE)
 				{
 					if (convertingCache != null && i < convertingCache.length)
 						convertingCache[i] = parser; 

@@ -5,6 +5,8 @@ import static org.ugp.serialx.Utils.fromAmbiguousArray;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
 import static org.ugp.serialx.Utils.splitValues;
 
+import java.io.IOException;
+
 import org.ugp.serialx.converters.DataConverter;
 
 /**
@@ -87,7 +89,7 @@ public class ArrayConverter implements DataConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException 
 	{
 		if (obj != null && myHomeRegistry != null && obj.getClass().isArray())
 		{
@@ -110,47 +112,49 @@ public class ArrayConverter implements DataConverter
 				Object[] elms = fromAmbiguousArray(obj);
 				final int len = elms.length;
 				if (len == 0)
-					return "@";
-
-				StringBuilder sb = new StringBuilder("@");
+					return source.append('@');
+				source.append(index > 0 ? "(@" : "@");
+				
+				StringBuilder elmStr = new StringBuilder();
 				if (args.length > 5 && args[5] instanceof Byte && (byte) args[5] != 0) // Format
 				{
-					for (int i = 0, sizeEndl = 10000; i < len; i++)
+					for (int i = 0; i < len; i++)
 					{
-						if (sb.length() > sizeEndl)
+						if (i != 0 && i % 1000 == 0)
 						{
-							sb.append('\n');
+							source.append('\n');
 							for (int j = 0; j < tabs+1; j++) 
-								sb.append('\t');
-							sizeEndl += 10000;
+								source.append('\t');
 						}
 						else 
-							sb.append(' ');
+							source.append(' ');
 						
-						CharSequence str = myHomeRegistry.toString(elms[i], args);
-						char ch = str.charAt(0);
+						elmStr.setLength(0);
+						myHomeRegistry.toString(elmStr, elms[i], args);
+						char ch = elmStr.charAt(0);
 						if ((ch | ' ') == '{')
-							sb.append('(').append(str).append(')');
+							source.append('(').append(elmStr).append(')');
 						else
-							sb.append(str);
+							source.append(elmStr);
 					}
 				}
 				else
 				{
 					for (int i = 0; i < len; i++) 
 					{
-						sb.append(' ');
+						source.append(' ');
 						
-						CharSequence str = myHomeRegistry.toString(elms[i], args);
-						char ch = str.charAt(0);
+						elmStr.setLength(0);
+						myHomeRegistry.toString(elmStr, elms[i], args);
+						char ch = elmStr.charAt(0);
 						if ((ch | ' ') == '{')
-							sb.append('(').append(str).append(')');
+							source.append('(').append(elmStr).append(')');
 						else
-							sb.append(str);
+							source.append(elmStr);
 					}
 				}
 					
-				return index > 0 ? sb.insert(0, '(').append(')') : sb;
+				return index > 0 ? source.append(')') : source;
 			}
 		}
 		return CONTINUE;

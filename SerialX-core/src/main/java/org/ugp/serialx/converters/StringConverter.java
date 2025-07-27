@@ -3,6 +3,7 @@ package org.ugp.serialx.converters;
 import static org.ugp.serialx.Utils.contains;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.ugp.serialx.Registry;
@@ -48,7 +49,7 @@ public class StringConverter implements DataConverter
 	protected Map<String, String> parsingCache;
 	
 	@Override
-	public String parse(ParserRegistry myHomeRegistry, String str, Object... args) 
+	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args) 
 	{	
 		String result;
 		int len;
@@ -67,24 +68,24 @@ public class StringConverter implements DataConverter
 	}
 	
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object arg, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException 
 	{
-		if (arg instanceof String)
+		if (obj instanceof String)
 		{
-			String str = arg.toString();
+			String str = (String) obj;
 			if (str.startsWith("${") && str.endsWith("}"))
 			{
 				str = str.substring(2, str.length()-1);
 				if (str.contains("::") && indexOfNotInObj(str, ' ') > -1)
-					str = "{"+str+"}";
-				return str;
+					return source.append('{').append(str).append('}');
+				return source.append(str);
 			}
 
 			if (serializeStringNormally)
 			{
 				if (contains(str, '\"', '\n', '\r'))
 					return CONTINUE;
-				return "\""+str+"\"";
+				return source.append('"').append(str).append('"');
 			}
 		}
 		return CONTINUE;

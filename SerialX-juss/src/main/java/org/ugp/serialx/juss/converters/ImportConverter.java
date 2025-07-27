@@ -1,5 +1,7 @@
 package org.ugp.serialx.juss.converters;
 
+import java.io.IOException;
+
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.DataParser;
@@ -62,11 +64,11 @@ public class ImportConverter implements DataConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException 
 	{
 		if (args.length > 0 && args[0] instanceof ImportsProvider && obj instanceof Import)
 		{
-			return obj.toString();
+			return source.append(obj.toString());
 		}
 		return CONTINUE;
 	}

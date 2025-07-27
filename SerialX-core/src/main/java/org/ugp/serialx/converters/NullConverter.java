@@ -2,6 +2,8 @@ package org.ugp.serialx.converters;
 
 import static org.ugp.serialx.Utils.equalsLowerCase;
 
+import java.io.IOException;
+
 /**
  * This converter is capable of converting "nothing" otherwise known as null and {@link DataParser#VOID}.
  * Its case insensitive!
@@ -49,10 +51,10 @@ public class NullConverter implements DataConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException 
 	{
 		if (obj == null)
-			return "null";
+			return source.append("null");
 		return CONTINUE;
 	}
 	

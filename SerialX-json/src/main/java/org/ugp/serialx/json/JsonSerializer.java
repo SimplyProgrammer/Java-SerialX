@@ -200,28 +200,23 @@ public class JsonSerializer extends JussSerializer
 	 * @since 1.3.2
 	 */
 	@Override
-	protected Appendable appandVar(Appendable source, CharSequence serializedVar, Entry<String, ?> var, int tabs, boolean isLast) throws IOException
+	protected Appendable appandVar(Appendable source, ParserRegistry parsersToUse, Entry<String, ?> varToSerialize, int tabs, boolean isLast, Object... args) throws IOException
 	{
 		if (format != 0)
 			source.append(multilpy('\t', tabs));
-		source.append(serializedVar);
+		parsersToUse.toString(source, varToSerialize, args);
 		if (isLast)
 			return source;
 		return source.append(',');
 	}
 	
-	/**
-	 * This should append serializedVal into source based on arguments, add separator and return source!
-	 * 
-	 * @since 1.3.2
-	 */
 	@Override
-	protected Appendable appandVal(Appendable source, CharSequence serializedVal, Object value, int tabs, boolean isLast) throws IOException
+	protected Appendable appandVal(Appendable source, ParserRegistry parsersToUse, Object objToSerialize, int tabs, boolean isLast, Object... args) throws IOException
 	{
 		if (format != 0)
 			source.append(multilpy('\t', tabs));
-		source.append(serializedVal);
-		if (isLast || serializedVal != null && indexOfNotInObj(serializedVal, "//") != -1)
+		parsersToUse.toString(source, objToSerialize, args);
+		if (isLast /*|| serializedVal != null && indexOfNotInObj(serializedVal, "//") != -1*/)
 			return source;
 		return source.append(',');
 	}

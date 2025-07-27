@@ -1,7 +1,7 @@
 package org.ugp.serialx.juss;
 
 import static org.ugp.serialx.Utils.Clone;
-import static org.ugp.serialx.Utils.*;
+import static org.ugp.serialx.Utils.ENDL;
 import static org.ugp.serialx.Utils.InvokeStaticFunc;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
 import static org.ugp.serialx.Utils.isOneOf;
