@@ -43,7 +43,7 @@ public interface DataConverter extends DataParser
 	 * @param obj | Object to convert into string!
 	 * @param args | Some additional args. This can be anything and it demands on implementation of DataConverter. Default SerialX API implementation will provide some flags about formating (2 ints)!
 	 * 
-	 * @return The source appendable after stringified object (obj) was appropriately appended into it.
+	 * @return The source appendable after stringified object (obj) was appropriately appended into it. Alternatively you can return null to signify error or that everything necessary was already appended and no further chars should be appended immediately after this obj's stringification.
 	 * Return {@link DataParser#CONTINUE} to tell that this converter is not suitable for converting this object! You most likely want to do this when obtained obj is not suitable instance!
 	 * 
 	 * @throws IOException When appending into source throws it... 

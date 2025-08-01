@@ -401,8 +401,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	{
 		if (format != 0)
 			source.append(multilpy('\t', tabs));
-		parsersToUse.toString(source, varToSerialize, args);
-		if (isLast)
+		if (parsersToUse.toString(source, varToSerialize, args) == null || isLast)
 			return source;
 		return source.append(';');
 	}
@@ -416,8 +415,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	{
 		if (format != 0)
 			source.append(multilpy('\t', tabs));
-		parsersToUse.toString(source, objToSerialize, args);
-		if (isLast /*|| serializedVal != null && indexOfNotInObj(serializedVal, "//") != -1*/)
+		if (parsersToUse.toString(source, objToSerialize, args) == null || isLast)
 			return source;
 		return source.append(';');
 	}

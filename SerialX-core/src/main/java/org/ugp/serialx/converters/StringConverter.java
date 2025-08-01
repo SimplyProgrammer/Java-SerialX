@@ -78,6 +78,12 @@ public class StringConverter implements DataConverter
 				str = str.substring(2, str.length()-1);
 				if (str.contains("::") && indexOfNotInObj(str, ' ') > -1)
 					return source.append('{').append(str).append('}');
+				
+				if (indexOfNotInObj(str, "//") != -1)
+				{
+					source.append(str);
+					return null; // No append ; when ends with //
+				}
 				return source.append(str);
 			}
 

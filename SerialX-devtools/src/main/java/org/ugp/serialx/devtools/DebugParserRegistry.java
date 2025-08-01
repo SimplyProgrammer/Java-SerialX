@@ -63,15 +63,15 @@ public class DebugParserRegistry extends ParserRegistry
 		if (convertingCache != null)
 			for (int i = 0; i < convertingCache.length; i++)
 			{
-				DataParser parser = convertingCache[i];
-				if (parser != null)
+				DataConverter converter = convertingCache[i];
+				if (converter != null)
 				{
 					double t0 = System.nanoTime();
-					str = (CharSequence) ((DataConverter) parser).toString(new StringBuilder(), this, obj, args);
+					str = (CharSequence) converter.toString(new StringBuilder(), this, obj, args);
 					double t = System.nanoTime();
 					if (str != SerializationDebugger.CONTINUE)
 					{
-						iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms (from cache)\n>>\t" + SerializationDebugger.toStringAndCls(obj) + "\t -->\t\"" + str + "\"");
+						iterationStackTrace.put(iterationIndex, "[" + i + "] " + converter + " " + (t-t0)/1000000 + "ms (from cache)\n>>\t" + SerializationDebugger.toStringAndCls(obj) + "\t -->\t\"" + str + "\"");
 						return source.append(str); 
 					}
 				}
@@ -88,7 +88,7 @@ public class DebugParserRegistry extends ParserRegistry
 				if(str != SerializationDebugger.CONTINUE)
 				{
 					if (convertingCache != null && i < convertingCache.length)
-						convertingCache[i] = parser; 
+						convertingCache[i] = (DataConverter) parser; 
 					iterationStackTrace.put(iterationIndex, "[" + i + "] " + parser + " " + (t-t0)/1000000 + "ms\n>>\t" + SerializationDebugger.toStringAndCls(obj) + "\t -->\t\"" + str + "\"");
 					return source.append(str); 
 				}
