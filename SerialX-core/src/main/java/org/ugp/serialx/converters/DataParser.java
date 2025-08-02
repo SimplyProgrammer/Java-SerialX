@@ -34,7 +34,7 @@ public interface DataParser
 	 * 
 	 * @since 1.3.0
 	 */
-	public static final Appendable CONTINUE = new StringBuilder();
+	public static final Appendable CONTINUE = new StringBuilder(0);
 	
 	/**
 	 * This is DataParser registry. Here your parser implementations should be registered in order to work properly!
@@ -186,7 +186,8 @@ public interface DataParser
 		 * @param args | Additional arguments that will be obtained in {@link DataParser#toString(String, Object...)}!
 		 * 
 		 * @return The source appendable after stringified object (obj) was appropriately appended into it. Alternatively you can return null to signify error or that everything necessary was already appended and no further chars should be appended immediately after this obj's stringification.
-		 * Return {@link DataParser#CONTINUE} to tell that this converter is not suitable for converting this object! You most likely want to do this when obtained obj is not suitable instance!
+		 * <br>Return {@link DataParser#CONTINUE} to tell that this converter is not suitable for converting this object! You most likely want to do this when obtained obj is not suitable instance!
+		 * <br>Note: It is highly discouraged to append into this return!
 		 * 
 		 * @throws IOException When appending into source throws it... 
 		 * 
