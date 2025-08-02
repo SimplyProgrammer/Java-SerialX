@@ -2,6 +2,7 @@ package org.ugp.serialx.devtools;
 
 import static org.ugp.serialx.Utils.multilpy;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
@@ -40,15 +41,26 @@ public class SerializationDebugger implements DataConverter
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... args)
 	{
 		if (str.toLowerCase().startsWith(DEBUG_MARK))
-			return printDebugs(myHomeRegistry instanceof DebugParserRegistry ? (DebugParserRegistry) myHomeRegistry : new DebugParserRegistry(myHomeRegistry), null, str, args);
+			try 
+			{
+				return printDebugs(null, myHomeRegistry instanceof DebugParserRegistry ? (DebugParserRegistry) myHomeRegistry : new DebugParserRegistry(myHomeRegistry), null, str, args);
+			} 
+			catch (IOException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		return CONTINUE;
 	}
 	
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException 
 	{
 		if (obj instanceof DebugWrapper)
-			return printDebugs(myHomeRegistry instanceof DebugParserRegistry ? (DebugParserRegistry) myHomeRegistry : new DebugParserRegistry(myHomeRegistry), ((DebugWrapper) obj).obj, null, args).toString();
+		{
+			printDebugs(source, myHomeRegistry instanceof DebugParserRegistry ? (DebugParserRegistry) myHomeRegistry : new DebugParserRegistry(myHomeRegistry), ((DebugWrapper) obj).obj, null, args);
+			return source;
+		}
 		return CONTINUE;
 	}
 	
@@ -59,7 +71,7 @@ public class SerializationDebugger implements DataConverter
 	 * 
 	 * @since 1.3.5
 	 */
-	public Object printDebugs(DebugParserRegistry myHomeRegistry, Object objToSerialize, String strToParse, Object... args)
+	public Object printDebugs(Appendable source, DebugParserRegistry myHomeRegistry, Object objToSerialize, String strToParse, Object... args) throws IOException
 	{
 		if (out == null)
 			out = new PrintWriter(System.err);
@@ -127,7 +139,7 @@ public class SerializationDebugger implements DataConverter
 			out.println("\n");
 
 			out.flush();
-			return strToParse;
+			return source.append(strToParse);
 		}
 		
 		printCacheInfo(out, myHomeRegistry.getParsingCache(), "parsing", "");

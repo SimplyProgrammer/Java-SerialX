@@ -2,6 +2,8 @@ package org.ugp.serialx.converters;
 
 import static org.ugp.serialx.Utils.contains;
 
+import java.io.IOException;
+
 /**
  * This converter is capable of converting {@link Number} including all common implementations like {@link Double}, {@link Float}, {@link Integer} and others. They are determine by suffixes like in java!
  * Its case insensitive!
@@ -106,22 +108,23 @@ public class NumberConverter implements DataConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException 
 	{
 		if (obj instanceof Number)
 		{
-			StringBuilder str = new StringBuilder(format((Number) obj));
+			String str;
+			source.append(str = format((Number) obj));
 			if (obj instanceof Double && !contains(str, '.'))
-				str.append('D');
+				source.append('D');
 			else if (obj instanceof Float)
-				str.append('F');
+				source.append('F');
 			else if (obj instanceof Long)
-				str.append('L');
+				source.append('L');
 			else if (obj instanceof Short)
-				str.append('S');
+				source.append('S');
 			else if (obj instanceof Byte)
-				str.append('Y');
-			return str;
+				source.append('Y');
+			return source;
 		}
 		return CONTINUE;
 	}

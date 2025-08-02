@@ -3,18 +3,14 @@ package org.ugp.serialx.juss.converters;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.StringReader;
 import java.util.Arrays;
-import java.util.Base64;
 
 import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
-import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.ProtocolConverter;
-import org.ugp.serialx.converters.SerializableBase64Converter;
 import org.ugp.serialx.converters.imports.ImportsProvider;
 import org.ugp.serialx.juss.JussSerializer;
 import org.ugp.serialx.protocols.SerializationProtocol;
@@ -63,18 +59,6 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
  */
 public class ObjectConverter extends ProtocolConverter 
 {
-	/**
-	 * Set this on true to force program to use {@link Base64} serialization on {@link Serializable} objects.
-	 * Doing this might result into some form of encryption but its less flexible and tends to be slower than SerialX {@link SerializationProtocol} system!
-	 * In some cases, java Serialization can be more effective than protocols sometimes not! You should try which gives you the best result, then you can also deactivate certain protocols that are less effective than Java serialization.
-	 * For example for long strings, classic Java serialization is better than protocol, it will take less memory storage space, but performance is almost always far slower!<br>
-	 * Note: Whole concept of SerialX API is about avoiding classic Java serialization from many reasons so you most likely want this on true! Also protocol will be almost certainly faster classic serialization!<br>
-	 * Note: This will only work when this converter is registered in {@link ParserRegistry} together with {@link SerializableBase64Converter}!
-	 * 
-	 * @since 1.0.0 (moved to {@link SerializableBase64Converter} since 1.3.0 and since 1.3.5 into {@link ObjectConverter})
-	 */
-	protected boolean useBase64IfCan = false;
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object parse(ParserRegistry myHomeRegistry, String str, Object... compilerArgs) 
@@ -136,25 +120,13 @@ public class ObjectConverter extends ProtocolConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args)
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException
 	{
-		return toString(myHomeRegistry, obj, null, args);
+		return toString(source, myHomeRegistry, obj, null, args);
 	}
 	
-	/**
-	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link ParserRegistry#parse(String, boolean, Class, Object...)} otherwise it demands on implementation (it should not be null)!
-	 * @param obj | Object to convert into string!
-	 * @param preferedProtocol | Protocol to use preferably.
-	 * @param args | Some additional args. This can be anything and it demands on implementation of DataConverter. Default SerialX API implementation will provide some flags about formating (2 ints)!
-	 * 
-	 * @return Object converted to string. Easiest way to do this is obj.toString() but you most likely want some more sofisticated formating.
-	 * Return {@link DataParser#CONTINUE} to tell that this converter is not suitable for converting this object! You most likely want to do this when obtained obj is not suitable instance!
-	 * 
-	 * @since 1.3.5
-	 */
 	@SuppressWarnings("unchecked")
-	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, SerializationProtocol<Object> preferedProtocol, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, SerializationProtocol<Object> preferedProtocol, Object... args) 
 	{
 		if (obj instanceof Scope)
 		{
@@ -187,11 +159,10 @@ public class ObjectConverter extends ProtocolConverter
 			
 			try 
 			{
-				StringBuilder sb = new StringBuilder();
 				GenericScope<?, ?> parent;
 				if ((parent = serializer.getParent()) == null || serializer.getClass() != parent.getClass())
-					sb.append(ImportsProvider.getAliasFor(serializer, getClass()) + " ");
-				return serializer.serializeAsSubscope(sb, args);
+					source.append(ImportsProvider.getAliasFor(serializer, getClass())).append(' ');
+				return serializer.serializeAsSubscope(source, args);
 			} 
 			catch (IOException e) 
 			{
@@ -199,7 +170,7 @@ public class ObjectConverter extends ProtocolConverter
 			}
 		}
 
-		return super.toString(myHomeRegistry, obj, preferedProtocol, args);
+		return super.toString(source, myHomeRegistry, obj, preferedProtocol, args);
 	}
 	
 	@Override

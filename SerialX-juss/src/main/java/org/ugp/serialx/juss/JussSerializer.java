@@ -1,9 +1,8 @@
 package org.ugp.serialx.juss;
 
 import static org.ugp.serialx.Utils.Clone;
-import static org.ugp.serialx.Utils.*;
+import static org.ugp.serialx.Utils.ENDL;
 import static org.ugp.serialx.Utils.InvokeStaticFunc;
-import static org.ugp.serialx.Utils.indexOfNotInObj;
 import static org.ugp.serialx.Utils.isOneOf;
 import static org.ugp.serialx.Utils.multilpy;
 import static org.ugp.serialx.converters.DataParser.VOID;
@@ -253,10 +252,21 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 */
 	public String StaticMember(Class<?> cls, String staticMethodName, Object... args)
 	{
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0, len = args.length; i < len; i++) 
-			sb.append(getParsers().toString(args[i], this, 0, 0, getProtocols(), getFormat())).append(i < len-1 ? " " : "");
-		return Code(cls.getName() + "::" + staticMethodName + (args.length <= 0 ? "" : " ") + sb);
+		StringBuilder sb = new StringBuilder(cls.getName()).append("::").append(staticMethodName);
+		for (int i = 0, len = args.length; i < len; i++)
+		{
+			sb.append(' ');
+			
+			try
+			{
+				getParsers().toString(sb, args[i], this, 0, 0, getProtocols(), getFormat());
+			} 
+			catch (IOException e) 
+			{
+				throw new RuntimeException(e); // No...
+			}
+		}
+		return Code(sb);
 	}
 	
 	/**
@@ -316,7 +326,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 			{
 				for (Entry<String, ?> var : variables.entrySet()) //Vars
 				{
-					appandVar(source, reg.toString(var, args), var, tabs, i >= varLen-1 && valuesLen <= 0);
+					appandVar(source, reg, var, tabs, i >= varLen-1 && valuesLen <= 0, args);
 					if (!(var.getValue() instanceof Scope) || ((Scope) var.getValue()).isEmpty())
 						GenerateComment(source, reg, var);
 					
@@ -328,7 +338,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 			{
 				for (Entry<String, ?> var : variables.entrySet()) //Vars
 				{
-					appandVar(source, reg.toString(var, args), var, tabs, i >= varLen-1 && valuesLen <= 0);
+					appandVar(source, reg, var, tabs, i >= varLen-1 && valuesLen <= 0, args);
 					
 					if (++i < varLen || valuesLen > 0)
 						source.append('\n');
@@ -338,7 +348,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 			{
 				for (Entry<String, ?> var : variables.entrySet()) //Vars
 				{
-					appandVar(source, reg.toString(var, args), var, tabs, i++ >= varLen-1 && valuesLen <= 0);
+					appandVar(source, reg, var, tabs, i++ >= varLen-1 && valuesLen <= 0, args);
 				}
 			}
 		}
@@ -350,10 +360,8 @@ public class JussSerializer extends Serializer implements ImportsProvider
 				if (i != 0)
 					source.append('\n');
 				
-				Object obj = objs.get(i);
-				CharSequence serialized = reg.toString(obj, args);
-				
-				appandVal(source, serialized, obj, tabs, i == valuesLen-1);
+				Object obj;
+				appandVal(source, reg, obj = objs.get(i), tabs, i == valuesLen-1, args);
 				if (!(obj instanceof Scope) || ((Scope) obj).isEmpty())
 					GenerateComment(source, reg, obj);
 			} 
@@ -365,16 +373,14 @@ public class JussSerializer extends Serializer implements ImportsProvider
 				if (i != 0)
 					source.append('\n');
 				
-				Object obj;
-				appandVal(source, reg.toString(obj = objs.get(i), args), obj, tabs, i == valuesLen-1);
+				appandVal(source, reg, objs.get(i), tabs, i == valuesLen-1, args);
 			} 
 		}
 		else // No formating
 		{
 			for (i = 0; i < valuesLen; i++) //Values
 			{
-				Object obj;
-				appandVal(source, reg.toString(obj = objs.get(i), args), obj, tabs, i == valuesLen-1);
+				appandVal(source, reg, objs.get(i), tabs, i == valuesLen-1, args);
 			} 
 		}
 
@@ -386,31 +392,29 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 	
 	/**
-	 * This should append serializedVar into source based on arguments, add separator and return source!
+	 * his should stringify and append ({@link ParserRegistry#toString(Appendable, Object, Object...)}) varToSerialize into source based on arguments, add separator and return source!
 	 * 
 	 * @since 1.3.2
 	 */
-	protected Appendable appandVar(Appendable source, CharSequence serializedVar, Entry<String, ?> var, int tabs, boolean isLast) throws IOException
+	protected Appendable appandVar(Appendable source, ParserRegistry parsersToUse, Entry<String, ?> varToSerialize, int tabs, boolean isLast, Object[] args) throws IOException
 	{
 		if (format != 0)
 			source.append(multilpy('\t', tabs));
-		source.append(serializedVar);
-		if (isLast)
+		if (parsersToUse.toString(source, varToSerialize, args) == null || isLast)
 			return source;
 		return source.append(';');
 	}
 	
 	/**
-	 * This should append serializedVal into source based on arguments, add separator and return source!
+	 * This should stringify and append ({@link ParserRegistry#toString(Appendable, Object, Object...)}) objToSerialize into source based on arguments, add separator and return source!
 	 * 
 	 * @since 1.3.2
 	 */
-	protected Appendable appandVal(Appendable source, CharSequence serializedVal, Object value, int tabs, boolean isLast) throws IOException
+	protected Appendable appandVal(Appendable source, ParserRegistry parsersToUse, Object objToSerialize, int tabs, boolean isLast, Object[] args) throws IOException
 	{
 		if (format != 0)
 			source.append(multilpy('\t', tabs));
-		source.append(serializedVal);
-		if (isLast || serializedVal != null && indexOfNotInObj(serializedVal, "//") != -1)
+		if (parsersToUse.toString(source, objToSerialize, args) == null || isLast)
 			return source;
 		return source.append(';');
 	}

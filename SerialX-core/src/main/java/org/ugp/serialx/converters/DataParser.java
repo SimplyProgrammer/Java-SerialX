@@ -1,5 +1,6 @@
 package org.ugp.serialx.converters;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.ugp.serialx.LogProvider;
@@ -29,10 +30,11 @@ public interface DataParser
 	
 	/**
 	 * This is connected with {@link DataParser#parse(String, Object...)} and {@link DataParser#parseObj(String, Object...)}! And its a way to tell that this parser is not suitable for parsing obtained string and search for optimal one should continue.
+	 * Should not be modified under any circumstances, always treat as immutable!
 	 * 
 	 * @since 1.3.0
 	 */
-	public static final String CONTINUE = new String();
+	public static final Appendable CONTINUE = new StringBuilder(0);
 	
 	/**
 	 * This is DataParser registry. Here your parser implementations should be registered in order to work properly!
@@ -80,7 +82,7 @@ public interface DataParser
 		private static final long serialVersionUID = -2598324826689380752L;
 		
 		protected DataParser[] parsingCache;
-		protected DataParser[] convertingCache;
+		protected DataConverter[] convertingCache;
 		
 		/**
 		 * Constructs an {@link ParserRegistry} with the specified initial capacity.
@@ -151,7 +153,7 @@ public interface DataParser
 		public DataConverter getConverterFor(Object obj, Object... args)
 		{
 			for (DataParser parser : this) 
-				if (parser instanceof DataConverter && ((DataConverter)parser).toString(this, obj, args) != CONTINUE)
+				if (parser instanceof DataConverter && ((DataConverter) parser).toString(this, obj, args) != CONTINUE)
 					return (DataConverter) parser;
 			return null;
 		}
@@ -167,25 +169,50 @@ public interface DataParser
 		 */
 		public CharSequence toString(Object obj, Object... args)
 		{
-			CharSequence str;
+			try 
+			{
+				return (CharSequence) toString(new StringBuilder(), obj, args);
+			} 
+			catch (IOException e) 
+			{
+				throw new RuntimeException(e);
+			}
+		}
+		
+		/**
+		 * @param source | Source to append the properly stringified object (obj) into. Should be treated as only and only {@link Appendable}, no casting!
+		 * @param obj | Object to convert into string!
+		 * @param args | Additional arguments that will be obtained in {@link DataParser#toString(String, Object...)}!
+		 * 
+		 * @return The source appendable after stringified object (obj) was appropriately appended into it. Alternatively you can return null to signify error or that everything necessary was already appended and no further chars should be appended immediately after this obj's stringification.
+		 * <br>Return {@link DataParser#CONTINUE} to tell that this converter is not suitable for converting this object! You most likely want to do this when obtained obj is not suitable instance!
+		 * <br>Note: It is highly discouraged to append into this return!
+		 * 
+		 * @throws IOException When appending into source throws it... 
+		 * 
+		 * @since 1.3.9
+		 */
+		public Appendable toString(Appendable source, Object obj, Object... args) throws IOException
+		{
+			Appendable str;
 			if (convertingCache != null)
-				for (DataParser parser : convertingCache)
-					if (parser != null && (str = ((DataConverter) parser).toString(this, obj, args)) != CONTINUE)
+				for (DataConverter parser : convertingCache)
+					if (parser != null && (str = parser.toString(source, this, obj, args)) != CONTINUE)
 						return str;
 			
 			for (int i = 0, size = size(); i < size; i++) 
 			{
 				DataParser parser = get(i);
-				if (parser instanceof DataConverter && (str = ((DataConverter) parser).toString(this, obj, args)) != CONTINUE)
+				if (parser instanceof DataConverter && (str = ((DataConverter) parser).toString(source, this, obj, args)) != CONTINUE)
 				{
 					if (convertingCache != null && i < convertingCache.length)
-						convertingCache[i] = parser; 
+						convertingCache[i] = (DataConverter) parser;
 					return str;
 				}
 			}
 
 			LogProvider.instance.logErr("Unable to convert \"" + (obj == null ? "null" : obj.getClass().getName()) + "\" to string because none of registered converters were aplicable for this object!", null);
-			return null;
+			return source.append("null");
 		}
 		
 		/**
@@ -299,9 +326,9 @@ public interface DataParser
 				ret[0] = i;
 			}
 			
-			if (i < convertingCache.length)
+			if (i < convertingCache.length && parser instanceof DataConverter)
 			{
-				convertingCache[i] = parser;
+				convertingCache[i] = (DataConverter) parser;
 				ret[1] = i;
 			}
 			
@@ -319,7 +346,7 @@ public interface DataParser
 		public void resetCache()
 		{
 			int size = size();
-			resetCache(new DataParser[size], new DataParser[size]);
+			resetCache(new DataParser[size], new DataConverter[size]);
 		}
 		
 		/**
@@ -330,7 +357,7 @@ public interface DataParser
 		 * 
 		 * @since 1.3.5
 		 */
-		public void resetCache(DataParser[] parsingCache, DataParser[] convertingCache)
+		public void resetCache(DataParser[] parsingCache, DataConverter[] convertingCache)
 		{
 			if (parsingCache != null)
 				this.parsingCache = parsingCache;
@@ -363,7 +390,7 @@ public interface DataParser
 		 * 
 		 * @since 1.3.5
 		 */
-		public DataParser[] getConverterCache()
+		public DataConverter[] getConverterCache()
 		{
 			return convertingCache;
 		}

@@ -1,5 +1,7 @@
 package org.ugp.serialx.converters;
 
+import java.io.IOException;
+
 /**
  * This converter is capable of converting {@link Character}.
  * Its case sensitive!
@@ -52,10 +54,10 @@ public class CharacterConverter implements DataConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException 
 	{
 		if (obj instanceof Character)
-			return "'"+(int) (char) obj+"'";
+			return source.append("'"+(int) (char) obj+"'");
 		return CONTINUE;
 	}
 	

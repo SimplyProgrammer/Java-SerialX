@@ -1,5 +1,7 @@
 package org.ugp.serialx.json.converters;
 
+import java.io.IOException;
+
 import org.ugp.serialx.converters.NumberConverter;
 
 /**
@@ -12,10 +14,10 @@ import org.ugp.serialx.converters.NumberConverter;
 public class JsonNumberConverter extends NumberConverter 
 {
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException 
 	{
 		if (obj instanceof Number)
-			return format((Number) obj);
+			return source.append(format((Number) obj));
 		return CONTINUE;
 	}
 }

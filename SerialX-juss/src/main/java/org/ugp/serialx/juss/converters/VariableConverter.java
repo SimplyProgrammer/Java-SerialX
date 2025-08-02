@@ -3,6 +3,7 @@ package org.ugp.serialx.juss.converters;
 import static org.ugp.serialx.Utils.contains;
 import static org.ugp.serialx.Utils.splitValues;
 
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,7 +11,6 @@ import java.util.Map.Entry;
 import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataConverter;
-import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.VariableParser;
 
 /**
@@ -132,41 +132,26 @@ public class VariableConverter extends VariableParser implements DataConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException 
 	{
 		if (obj instanceof Entry)
 		{
 			Entry<?, ?> var = (Entry<?, ?>) obj;
 			
 			final Object key, val = var.getValue();
-			return appendEntry(new StringBuilder((key = var.getKey()) instanceof String ? 
-						(String) key : 
-						myHomeRegistry.toString(key, args)
-					), myHomeRegistry.toString(val, args), val, args);
+			if ((key = var.getKey()) instanceof String)
+				source.append((String) key);
+			else // We are likely GenericScope
+				myHomeRegistry.toString(source, key, args);
+			
+			if (args.length > 5 && args[5] instanceof Byte && (byte) args[5] != 0)
+				source.append(" = ");
+			else
+				source.append('=');
+			
+			return myHomeRegistry.toString(source, val, args);
 		}
 		return CONTINUE;
-	}
-	
-	/**
-	 * @param keyString | The string builder containing the key as string.
-	 * @param valueString | The string containing the serialized value.
-	 * @param value | The real value, the valueString before it was serialized...
-	 * @param args | Same as {@link DataParser#parse(org.ugp.serialx.converters.DataParser.ParserRegistry, String, Object...)}
-	 * 
-	 * @return Should return the string form of an entry (key value pair). Preferably constructed by appending some form of assignment operator (such as <code>=</code>) to the keyString and then appending the valueString at the end with some formating around it if needed.
-	 * No unrelated characters should be included!
-	 * 
-	 * @since 1.3.9
-	 */
-	protected StringBuilder appendEntry(StringBuilder keyString, CharSequence valueString, Object value, Object... args)
-	{
-//		int tabs = args.length > 1 && args[1] instanceof Integer ? (int) args[1] : 0;
-//		return sb
-//			.append(val instanceof GenericScope && !((GenericScope<?, ?>) val).isEmpty() ? (jsonStyle ? " : " : " =\n" + multilpy('\t', tabs)) : (jsonStyle ? " : " : " = "))
-//			.append(myHomeRegistry.toString(val, args));
-		if (args.length > 5 && args[5] instanceof Byte && (byte) args[5] != 0)
-			return keyString.append(" = ").append(valueString);
-		return keyString.append("=").append(valueString);
 	}
 
 	@SuppressWarnings("unchecked")

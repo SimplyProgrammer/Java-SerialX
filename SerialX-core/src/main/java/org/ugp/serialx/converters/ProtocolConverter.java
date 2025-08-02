@@ -4,6 +4,7 @@ import static org.ugp.serialx.Utils.*;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
 import static org.ugp.serialx.Utils.splitValues;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -166,24 +167,24 @@ public class ProtocolConverter implements DataConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args)
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException
 	{
-		return toString(myHomeRegistry, obj, null, args);
+		return toString(source, myHomeRegistry, obj, null, args);
 	}
 	
 	/**
+	 * @param source | Source to append the properly stringified object (obj) into. Should be treated as only and only {@link Appendable}, no casting!
 	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link ParserRegistry#parse(String, boolean, Class, Object...)} otherwise it demands on implementation (it should not be null)!
 	 * @param obj | Object to convert into string!
 	 * @param preferedProtocol | Protocol to use preferably.
 	 * @param args | Some additional args. This can be anything and it demands on implementation of DataConverter. Default SerialX API implementation will provide some flags about formating (2 ints)!
 	 * 
-	 * @return Object converted to string. Easiest way to do this is obj.toString() but you most likely want some more sofisticated formating.
-	 * Return {@link DataParser#CONTINUE} to tell that this converter is not suitable for converting this object! You most likely want to do this when obtained obj is not suitable instance!
+	 * @return In accordance with {@link DataConverter#toString(Appendable, org.ugp.serialx.converters.DataParser.ParserRegistry, Object, Object...)}.
 	 * 
 	 * @since 1.3.5
 	 */
 	@SuppressWarnings("unchecked")
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, SerializationProtocol<Object> preferedProtocol, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, SerializationProtocol<Object> preferedProtocol, Object... args) 
 	{
 		if (obj == null)
 			return CONTINUE;
@@ -205,42 +206,45 @@ public class ProtocolConverter implements DataConverter
 			{
 				Object[] objArgs = preferedProtocol.serialize(obj);
 				final int len = objArgs.length;
+				
+				boolean wrap;
+				if (wrap = index > 0 && len != 0)
+					source.append('{');
 
-				StringBuilder sb = new StringBuilder(ImportsProvider.getAliasFor(args[0], obj.getClass()));
+				source.append(ImportsProvider.getAliasFor(args[0], obj.getClass()));
 				args = args.clone();
 				if (args[5] instanceof Byte && (byte) args[5] != 0) // Format
 				{
-					for (int i = 0, sizeEndl = 10000; i < len; i++) 
+					for (int i = 0; i < len; i++) 
 					{
-						if (sb.length() > sizeEndl)
+						if (i != 0 && i % 1000 == 0)
 						{
-							sb.append('\n'); 
+							source.append('\n'); 
 							for (int j = 0; j < tabs+1; j++) 
-								sb.append('\t');
-							sizeEndl += 10000;
+								source.append('\t');
 						}
 						else 
-							sb.append(' ');
+							source.append(' ');
 						
 						if (args.length > 2)
 							args[2] = index + 1; // DO NOT TOUCH
-						sb.append(myHomeRegistry.toString(objArgs[i], args));
+						myHomeRegistry.toString(source, objArgs[i], args);
 					}
 				}
 				else
 				{
 					for (int i = 0; i < len; i++)
 					{
-						sb.append(' ');
+						source.append(' ');
 						
 						if (args.length > 2)
 							args[2] = index + 1; // DO NOT TOUCH
-						sb.append(myHomeRegistry.toString(objArgs[i], args));
+						myHomeRegistry.toString(source, objArgs[i], args);
 					}
 				}
 				
 				args[4] = oldObjectClass;
-				return index > 0 && len != 0 ? sb.insert(0, '{').append('}') : sb;
+				return wrap ? source.append('}') : source;
 			}
 			catch (Exception e)
 			{

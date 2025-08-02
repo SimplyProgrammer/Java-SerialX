@@ -3,6 +3,8 @@ package org.ugp.serialx.converters;
 import static java.lang.Boolean.*;
 import static org.ugp.serialx.Utils.equalsLowerCase;
 
+import java.io.IOException;
+
 /**
  * This converter is capable of converting {@link String}. 
  * Its case insensitive!
@@ -76,10 +78,14 @@ public class BooleanConverter implements DataConverter
 	}
 
 	@Override
-	public CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args) 
+	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException 
 	{
 		if (obj instanceof Boolean)
-			return isShorten() ? (boolean) obj ? "T" : "F" : (boolean) obj ? "true" : "false";
+		{
+			if (isShorten())
+				return source.append((boolean) obj ? 'T' : 'F');
+			return source.append((boolean) obj ? "true" : "false");
+		}
 		return CONTINUE;
 	}
 	
