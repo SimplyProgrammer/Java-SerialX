@@ -72,7 +72,7 @@ public class ProtocolConverter implements DataConverter
 	 */
 	protected boolean useBase64IfCan = false;
 	
-	protected Set<Class<?>> invokableClasses = new HashSet<>(Arrays.asList(Math.class, Scope.class, Double.class, Float.class, String.class));
+	protected Set<Class<?>> invokableClasses = new HashSet<>(Arrays.asList(Math.class, GenericScope.class, Double.class, Float.class, String.class));
 	
 	protected long protocolType = 0;
 	
