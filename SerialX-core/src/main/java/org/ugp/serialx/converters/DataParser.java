@@ -153,7 +153,7 @@ public interface DataParser
 		public DataConverter getConverterFor(Object obj, Object... args)
 		{
 			for (DataParser parser : this) 
-				if (parser instanceof DataConverter && ((DataConverter)parser).toString(this, obj, args) != CONTINUE)
+				if (parser instanceof DataConverter && ((DataConverter) parser).toString(this, obj, args) != CONTINUE)
 					return (DataConverter) parser;
 			return null;
 		}
@@ -167,7 +167,6 @@ public interface DataParser
 		 * 
 		 * @since 1.3.5
 		 */
-		@Deprecated
 		public CharSequence toString(Object obj, Object... args)
 		{
 			try 
@@ -213,7 +212,7 @@ public interface DataParser
 			}
 
 			LogProvider.instance.logErr("Unable to convert \"" + (obj == null ? "null" : obj.getClass().getName()) + "\" to string because none of registered converters were aplicable for this object!", null);
-			return null;
+			return source.append("null");
 		}
 		
 		/**

@@ -24,7 +24,6 @@ public interface DataConverter extends DataParser
 	 * 
 	 * @since 1.3.0
 	 */
-	@Deprecated
 	default CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args)
 	{
 		try 

@@ -1,6 +1,5 @@
 package org.ugp.serialx.json;
 
-import static org.ugp.serialx.Utils.indexOfNotInObj;
 import static org.ugp.serialx.Utils.isOneOf;
 import static org.ugp.serialx.Utils.multilpy;
 
