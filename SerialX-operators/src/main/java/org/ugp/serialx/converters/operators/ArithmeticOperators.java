@@ -23,7 +23,7 @@ import org.ugp.serialx.converters.DataParser;
 public class ArithmeticOperators implements DataParser
 {
 	/**
-	 * Operator characters recognized by {@link ArithmeticOperators}, operators can be any combination of provided characters. Exact behavior is handled by {@link ArithmeticOperators#operator(Object, String, Object)}.<br> Intended for override, should not be null or empty!
+	 * Operator characters recognized by {@link ArithmeticOperators}, operators can be any combination of provided characters. Exact behavior is handled by {@link ArithmeticOperators#operator}.<br> Intended for override, should not be null or empty!
 	 * 
 	 * @since 1.3.8
 	 */

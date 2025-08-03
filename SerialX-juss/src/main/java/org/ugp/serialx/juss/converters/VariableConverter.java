@@ -15,7 +15,7 @@ import org.ugp.serialx.converters.VariableParser;
 
 /**
  * This converter is capable of converting {@link Map.Entry} and reading variables from {@link GenericScope} by using <code>$</code>!<br>
- * {@link VariableConverter#parse(String, Object...)} requires one additional Scope argument in args... at index 0!<br>
+ * {@link VariableConverter#parse} requires one additional Scope argument in args... at index 0!<br>
  * It manages assign operator <code>=</code> as well as access member operator also known as separator <code>"."</code>.<br>
  * Its case sensitive!<br>
  * Exact outputs of this converter are based on inserted scope!
@@ -38,7 +38,7 @@ public class VariableConverter extends VariableParser implements DataConverter
 	
 	/**
 	 * @deprecated (1.3.9) IF YOU WANT THIS TO BE TRUE, YOU WANT TO USE <code>JsonVariableConverter</code> FROM <code>json-serializer</code> MODULE!
-	 * FORMATING IS NO DONE IN {@link VariableConverter#appendEntry(StringBuilder, CharSequence, Object, Object...)}
+	 * ORMATING IS NO DONE IN <code>toString</code> FUNCTION!
 	 * 
 	 * @param jsonStyle | If true, this converter will be using Json style of variables ("key" : value)!
 	 * 
@@ -188,7 +188,7 @@ public class VariableConverter extends VariableParser implements DataConverter
 	
 	/**
 	 * @deprecated (1.3.9) IF YOU WANT THIS TO BE TRUE, YOU WANT TO USE <code>JsonVariableConverter</code> FROM <code>json-serializer</code> MODULE!
-	 * FORMATING IS NO DONE IN {@link VariableConverter#appendEntry(StringBuilder, CharSequence, Object, Object...)}
+	 * ORMATING IS NO DONE IN <code>toString</code> FUNCTION!
 	 * 
 	 * @return True if variables will be serialized using json style ("key" : value)!
 	 * 
@@ -202,7 +202,7 @@ public class VariableConverter extends VariableParser implements DataConverter
 
 	/**
 	 * @deprecated (1.3.9) IF YOU WANT THIS TO BE TRUE, YOU WANT TO USE <code>JsonVariableConverter</code> FROM <code>json-serializer</code> MODULE!
-	 * FORMATING IS NO DONE IN {@link VariableConverter#appendEntry(StringBuilder, CharSequence, Object, Object...)}
+	 * FORMATING IS NO DONE IN <code>toString</code> FUNCTION!
 	 * 
 	 * @param jsonStyle | If true, this converter will be using Json style of variables ("key" : value)!
 	 * 

@@ -46,7 +46,7 @@ public interface DataParser
 	public static final ParserRegistry REGISTRY = new ParserRegistry(new VariableParser(), new StringConverter(), new ProtocolConverter(), new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter());
 	
 	/**
-	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link DataParser#parse(String, boolean, Class, Object...)} otherwise it demands on implementation (it should not be null)!
+	 * @param myHomeRegistry | Registry where this parser is registered provided by {@link ParserRegistry#parse(String, boolean, Class, Object...)} otherwise it demands on implementation (it should not be null)!
 	 * @param str | Source string, preferably trimed!
 	 * @param args | Some additional args. This can be anything and it demands on implementation of DataParser. Default SerialX API implementation will provide one optional argument with {@link Scope} that value was loaded from!
 	 * 

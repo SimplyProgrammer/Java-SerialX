@@ -68,7 +68,7 @@ public class ProtocolConverter implements DataConverter
 	 * Note: Whole concept of SerialX API is about avoiding classic Java serialization from many reasons so you most likely want this on true! Also protocol will be almost certainly faster classic serialization!<br>
 	 * Note: This will only work when this converter is registered in {@link ParserRegistry} together with {@link SerializableBase64Converter}!
 	 * 
-	 * @since 1.0.0 (moved to {@link SerializableBase64Converter} since 1.3.0 and since 1.3.5 into {@link ObjectConverter})
+	 * @since 1.0.0 (moved to {@link SerializableBase64Converter} since 1.3.0 and since 1.3.5 into {@link ProtocolConverter})
 	 */
 	protected boolean useBase64IfCan = false;
 	
@@ -95,7 +95,7 @@ public class ProtocolConverter implements DataConverter
 	/**
 	 * @param myHomeRegistry | Same as {@link DataParser#parse(ParserRegistry, String, Object...)}.
 	 * @param objClass | Class of object to parse using {@link SerializationProtocol}.
-	 * @param str | String that starts with {@link Class} of object to deserialized (it will be used with {@link SerializationProtocol#unserializeObj(ProtocolRegistry, Class, Object...)}).
+	 * @param str | String that starts with {@link Class} of object to deserialized (it will be used with {@link SerializationProtocol#unserializeObj(ProtocolRegistry, long, Class, Object...)}).
 	 * @param compilerArgs | Same as {@link DataParser#parse(ParserRegistry, String, Object...)}.
 	 * 
 	 * @return Object od objClass parsed from str in accordance with compilerArgs!
@@ -108,7 +108,7 @@ public class ProtocolConverter implements DataConverter
 		{
 			StringBuilder sb = new StringBuilder(str);
 			sb.setCharAt(str.indexOf(' '), '=');
-			return myHomeRegistry.parse(sb.toString(), compilerArgs); //Should work only when ObjectConverter and VariableConverter are present...
+			return myHomeRegistry.parse(sb.toString(), compilerArgs); //Should work only when ProtocolConverter and VariableConverter are present...
 		}
 
 		if (compilerArgs.length < 5)
@@ -331,7 +331,7 @@ public class ProtocolConverter implements DataConverter
 	 * @param args | Parser args to get protocol from!
 	 * 
 	 * @return Protocol obtained from args or from {@link SerializationProtocol#REGISTRY} if there is no protocol or {@link ProtocolRegistry} in args (index 3).<br>
-	 * Note: This is mainly used by {@link ObjectConverter}!
+	 * Note: This is mainly used by {@link ProtocolConverter}!
 	 *
 	 * @since 1.3.5
 	 */
@@ -449,7 +449,7 @@ public class ProtocolConverter implements DataConverter
 	}
 	
 	/**
-	 * Used internally by {@link ObjectConverter}!<br>
+	 * Used internally by {@link ProtocolConverter}!<br>
 	 * Dummy class with no purpose except to be mark (.class) for shortened scope expression such as:
 	 * <code>
 	 * shortenedSelectorLikeScope {<br><br>

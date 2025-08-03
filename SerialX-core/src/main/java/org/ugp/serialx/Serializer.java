@@ -737,7 +737,7 @@ public abstract class Serializer extends Scope
 			</tr>
 		    <tr>
 			    <td>{@link File}</td>
-			    <td>{@link Serializer#serializeTo(File)}</td>
+			    <td>{@link Serializer#serializeTo(File, Object...)}</td>
 			</tr>
 		    <tr>
 			    <td>{@link Appendable}</td>

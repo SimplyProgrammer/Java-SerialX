@@ -39,7 +39,7 @@ import org.ugp.serialx.protocols.SerializationProtocol;
 		    <td>new int[] {5, 5, 5}</td>
 	  	</tr>
 	</table>
- * Note: In most of the cases {@link ObjectConverter} and {@link SerializationProtocol} should be used as preferable alternative!<br>
+ * Note: In most of the cases {@link SerializationProtocol} and therefore {@link ProtocolConverter} should be used as preferable alternative!<br>
  * Note: In order to avoid conflicts with JUSS syntax, this converter serializes and deserializes by using {@link Base64} and {@link URLEncoder} with addition of all % are being replaced by #!
  * 
  * @author PETO

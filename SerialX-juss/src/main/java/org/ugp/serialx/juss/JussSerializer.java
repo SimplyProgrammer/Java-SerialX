@@ -192,7 +192,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 	
 	/**
-	 * @param absoluteClone | If true this scope will be cloned using {@link Serializer#Clone(Object, Registry, Object[], Object...)}, if false {@link Scope#clone()}!
+	 * @param absoluteClone | If true this scope will be cloned using {@link Utils#Clone}, if false {@link Scope#clone()}!
 	 * 
 	 * @return Clone of this scope!
 	 * 
@@ -622,7 +622,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 	
 	/**
-	 * @deprecated (1.3.9) DO NOT USE, IT IS SLOW AND POORLY WRITTEN, USE {@link JussSerializer#readAndParse(Collection, Reader, Object...)} INSTEAD!
+	 * @deprecated (1.3.9) DO NOT USE, IT IS SLOW AND POORLY WRITTEN, USE {@link JussSerializer#readAndParse(Collection, Reader, int, Object...)} INSTEAD!
 	 * 
 	 * @return Formated content of reader ready to parse! Should not modify this object in any way!
 	 * 
@@ -710,7 +710,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 
 	/**
-	 * @deprecated (1.3.9) DO NOT USE, IT IS SLOW AND POORLY WRITTEN, USE {@link JussSerializer#readAndParse(Collection, Reader, Object...)} INSTEAD!
+	 * @deprecated (1.3.9) DO NOT USE, IT IS SLOW AND POORLY WRITTEN, USE {@link JussSerializer#readAndParse(Collection, Reader, int, Object...)} INSTEAD!
 	 * 
 	 * @return List of objects parsed from given formatted string!
 	 * 
@@ -791,9 +791,9 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	/**
 	 * @return Object parsed from str!
 	 * <br><br>
-	 * Note: Used by {@link JussSerializer#splitAndParse(String, int, Object...)}!
+	 * Note: Used by {@link JussSerializer#readAndParse(Collection, Reader, int, Object...)}!
 	 * 
-	 * @see DataParser#parseObj(Registry, String, Object...)
+	 * @see ParserRegistry#parse(ParserRegistry, String, Object...)
 	 * 
 	 * @since 1.3.2
 	 */

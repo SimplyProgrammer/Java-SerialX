@@ -15,7 +15,7 @@ public class SelfSerializableProtocol<T extends SelfSerializable> extends Univer
 {
 	/**
 	 * @param applicableFor | Class implementing {@link SelfSerializable} that can be serialized using this protocol.<br>
-	 * Note: Passing {@link SelfSerializable#getClass()} will make this protocol universal and work for any {@link SelfSerializable} instance, this can be considered unsafe in some cases...
+	 * Note: Passing <code>{@link SelfSerializable}.class</code> will make this protocol universal and work for any {@link SelfSerializable} instance, this can be considered a security risk in some cases...
 	 * 
 	 * @since 1.3.8
 	 */

@@ -4,9 +4,8 @@ import static org.ugp.serialx.Utils.contains;
 import static org.ugp.serialx.Utils.indexOfNotInObj;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
-
-import org.ugp.serialx.Registry;
 
 /**
  * This converter is capable of converting {@link String}.
@@ -30,7 +29,7 @@ import org.ugp.serialx.Registry;
 		    <td>new String("Hello world!")</td>
 	  	</tr>
 	</table>
- * If you enter string in ${yourString}, "yourString" will be returned by {@link StringConverter#toString(Registry, Object, Object...)} according to {@link StringConverter#CodeInsertion(String)}!
+ * If you enter string in ${yourString}, "yourString" will be returned by {@link StringConverter#toString} according to {@link StringConverter#DirectCode}!
  * 
  * @author PETO
  * 
@@ -155,9 +154,9 @@ public class StringConverter implements DataConverter
 	}
 
 	/**
-	 * @param obj | Object to stringify directly.
+	 * @param obj | Object to stringify directly (without formating it as string).
 	 * 
-	 * @return "${" + obj + "}" - if this is be inserted into {@link StringConverter#toString(Registry, Object, Object...)}, it will be returned without ${ and }!
+	 * @return "${" + obj + "}" - if this is be inserted into {@link StringConverter#toString}, it will be returned without ${ and }!
 	 *
 	 * @since 1.3.5
 	 */

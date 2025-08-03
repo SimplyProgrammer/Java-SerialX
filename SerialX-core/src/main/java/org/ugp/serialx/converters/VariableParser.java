@@ -10,7 +10,7 @@ import org.ugp.serialx.Serializer;
 
 /**
  * This parser is capable of reading variables from {@link GenericScope} by using <code>$</code>!<br>
- * {@link VariableParser#parse(String, Object...)} requires one additional Scope argument in args... at index 0!<br>
+ * {@link VariableParser#parse} requires one additional Scope argument in args... at index 0!<br>
  * It also manages access member operator also known as separator <code>"."</code>.<br>
  * Its case sensitive!<br>
  * Exact outputs of this converter are based on inserted scope!
