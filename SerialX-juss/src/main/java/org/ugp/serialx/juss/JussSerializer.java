@@ -949,7 +949,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 			</tr>
 		</table>
 	 *	
-	 * @throws If something went wrong during deserialization!
+	 * @throws Exception If something went wrong during deserialization!
 	 * 
 	 * @since 1.3.5
 	 */

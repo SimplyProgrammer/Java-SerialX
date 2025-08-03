@@ -254,7 +254,7 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @see Serializer#stringify(Object...)
 	 */
-	public String toString(boolean serialize) throws IOException 
+	public String toString(boolean serialize)
 	{
 		if (serialize)
 			return stringify();
@@ -290,7 +290,7 @@ public abstract class Serializer extends Scope
 		//double t0 = System.nanoTime();
 		Writer writer = new BufferedWriter(new FileWriter(f, append));
 
-		writer.write(stringify(args));
+		serializeTo(writer, args);
 		
 		writer.close();
 		
@@ -314,13 +314,22 @@ public abstract class Serializer extends Scope
 	 * 
 	 * @return String with objects serialized in specific format.
 	 * 
+	 * @throws RuntimeException IOException, but it should not occur in this case...
+	 * 
 	 * @since 1.0.0
 	 * 
 	 * @see Serializer#serializeTo(Appendable, Object...)
 	 */
-	public String stringify(Object... args) throws IOException
+	public String stringify(Object... args)
 	{
-		return serializeTo(new StringBuilder(), args).toString();
+		try
+		{
+			return serializeTo(new StringBuilder(), args).toString();
+		} 
+		catch (IOException e) 
+		{
+			throw new RuntimeException(e); // Should not occur...
+		}
 	}
 	
 	/**
@@ -328,6 +337,8 @@ public abstract class Serializer extends Scope
 	 * @param args | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (they should not be serialized)!
 	 * 
 	 * @return Source {@link OutputStream} with variables and objects serialized in specific format (may or may not be flushed).
+	 * 
+	 * @throws IOException When appending the {@link OutputStream} throws.... 
 	 * 
 	 * @since 1.3.2
 	 * 
@@ -434,6 +445,8 @@ public abstract class Serializer extends Scope
 	/**
 	 * @return Clone of this {@link Serializer} without variables and values, protocols and parser will remain same!
 	 * 
+	 * @throws Exception When creating the new instance fails...
+	 * 
 	 * @since 1.3.2 
 	 */
 	public Serializer emptyClone() throws Exception
@@ -445,6 +458,8 @@ public abstract class Serializer extends Scope
 	 * @param parent | Parent scope of new Serializer instance!
 	 * 
 	 * @return Clone of this {@link Serializer} without variables and values, protocols and parser will remain same!
+	 * 
+	 * @throws Exception When creating the new instance fails...
 	 * 
 	 * @since 1.3.2 
 	 */
@@ -458,7 +473,8 @@ public abstract class Serializer extends Scope
 	 * @param parent | Parent scope of new Serializer instance!
 	 * 
 	 * @return Clone of this {@link Serializer} without variables and values, protocols and parser will remain same!
-	 * @throws Exception 
+	 * 
+	 * @throws Exception When creating the new instance fails...
 	 * 
 	 * @since 1.3.5
 	 */

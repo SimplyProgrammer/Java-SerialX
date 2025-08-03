@@ -171,6 +171,8 @@ public abstract class SerializationProtocol<T>
 	 * @return Array of objects to serialize created from given object. Object will be serialized via protocol picked from {@link SerializationProtocol#REGISTRY}.
 	 * {@link SerializationProtocol#serialize(Class, Object...)} method of picked protocol will be called! Null will be returned if no protocol was found and you will be prompted with error message!
 	 * 
+	 * @throws Exception Depends on the implementation of {@link SerializationProtocol#serialize(Object)}.
+	 * 
 	 * @since 1.3.0
 	 */
 	public static <O> Object[] serializeObj(O object) throws Exception
@@ -185,6 +187,8 @@ public abstract class SerializationProtocol<T>
 	 * 
 	 * @return Array of objects to serialize created from given object. Object will be serialized via protocol picked from registry.
 	 * {@link SerializationProtocol#serialize(Class, Object...)} method of picked protocol will be called! Null will be returned if no protocol was found and you will be prompted with error message!
+	 * 
+	 * @throws Exception Depends on the implementation of {@link SerializationProtocol#serialize(Object)}.
 	 * 
 	 * @since 1.3.0
 	 */
