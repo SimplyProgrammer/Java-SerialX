@@ -284,21 +284,22 @@ What was added:<br>
 
 # SerialX 1.3.9
 
-Release date: July
+Release date: 8.4.2025
 
 ### Notable changes:
 * A new, far performant, reading and lexing method was written for parsing, resulting in almost 2x improvement when deserializing a large amount of data.
 * Serializer now provides an option to implement a custom code formatting flag, including the option to disable formatting entirely (so no indentation or new line blank characters will be present).
- *  
+* DataConverter `CharSequence toString(ParserRegistry myHomeRegistry, Object obj, Object... args)` was changed to `Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException` where now, instead of creating the string from the object and returning it, you are supposed to append it directly into the provided source. In this way, you do not have to create your own StringBuilders.
+ * This is far more optimal, and together with formatting flags, results in 2x, sometimes even 3x increase in performance when serializing, especially with larger amounts of data.
 * Key Serializer methods, LoadFrom and SerializeTo were renamed to camel case (original PascalCase was largely a legacy thing...).
 * JsonVariableConverter was added as JSON-specific variant of VariableConverter.
 * ArrayConverter now supports proper serializing of 0 and 1 length arrays (@ identifier for arrays).
 * Slight default formatting changes (';' is no longer used for the last element, similarly to JSON).
 * Other smaller optimizations and API improvements.
  * hashCode for GenericScope
- * Deprecations were removed...
+ * Deprecateds were removed...
  * More Unit/Integration tests...
-* Minor bug fixes.
+* Minor bug fixes and Javadoc improvements.
 
 # SerialX 1.4.0
 
