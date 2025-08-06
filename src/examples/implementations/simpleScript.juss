@@ -1,4 +1,4 @@
-/* THIS EXAMPLE IS DEMONSTRATING CAPABILITIES OF SERIALX AS A DOMAIN SPECIFIC LANGUAGE TOOLKIT BY CREATING A SIMPLE SCRIPT */
+/* THIS EXAMPLE IS DEMONSTRATING CAPABILITIES OF SERIALX AS A DOMAIN SPECIFIC LANGUAGE TOOLKIT BY CREATING A SIMPLE SCRIPTING LANGUAGE */
 /* In this case, we are writing a simple script that will print "Hello world!" and then analyze your age category from the age given! */
 
 System::out->println "Hello world!"; //Saying the famous "Hello world" in our custom script by calling java methods!

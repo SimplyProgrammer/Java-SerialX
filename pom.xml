@@ -13,12 +13,12 @@
 		<dependency>
 			<groupId>org.ugp.serialx</groupId>
 			<artifactId>serialx-json</artifactId>
-			<version>1.3.9-SNAPSHOT</version>
+			<version>1.3.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ugp.serialx</groupId>
 			<artifactId>serialx-juss</artifactId>
-			<version>1.3.9-SNAPSHOT</version>
+			<version>1.3.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ugp.serialx</groupId>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>org.ugp.serialx</groupId>
 			<artifactId>serialx-operators</artifactId>
-			<version>1.3.9-SNAPSHOT</version>
+			<version>1.3.9</version>
 		</dependency>
 
 		<dependency>

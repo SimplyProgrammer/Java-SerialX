@@ -49,7 +49,7 @@ import org.ugp.serialx.juss.JussSerializer;
 //@Fork(1)
 public class StandardBenchmark 
 {
-	static final String VERSION = "1.1.1", LIB_VERSION = "1.3.9_SNAPSHOT";
+	static final String VERSION = "1.1.1", LIB_VERSION = "1.3.9";
 
 	static final int seed = 123; // DO NOT CHANGE
 	
@@ -265,17 +265,18 @@ public class StandardBenchmark
 	{
 //		org.openjdk.jmh.Main.main(args);
 		
-//		String jvmVersion = "8.0.412-tem";
-		String jvmVersion = "21.0.7-graal";
+		String jvmVersion = "8.0.412-tem";
+//		String jvmVersion = "21.0.7-graal";
 
 		OptionsBuilder ob = new OptionsBuilder();
 		ob.include(StandardBenchmark.class.getSimpleName());
 		ob.jvm(System.getProperty("user.home") + "\\.sdkman\\candidates\\java\\" + jvmVersion + "\\bin\\java.exe");
 
 //		ob.addProfiler(org.openjdk.jmh.profile.StackProfiler.class);
-		ob.addProfiler(org.openjdk.jmh.profile.JavaFlightRecorderProfiler.class, "dir=./bench_results/jfr-" + (VERSION + "-" + LIB_VERSION + "-j" + jvmVersion).replace(".", ""));
 
-//		ob.result("bench_results/_StandardBenchmark-" + (VERSION + "-" + LIB_VERSION + ".j" + jvmVersion).replace(".", "") + ".bn");
+		ob.addProfiler(org.openjdk.jmh.profile.JavaFlightRecorderProfiler.class, "dir=./bench_results/_jfr-" + (VERSION + "-" + LIB_VERSION + "-j" + jvmVersion).replace(".", ""));
+
+//		ob.result("bench_results/_StandardBenchmark-" + (VERSION + "-" + LIB_VERSION + "-j" + jvmVersion).replace(".", "") + ".bn");
 //		ob.resultFormat(org.openjdk.jmh.results.format.ResultFormatType.TEXT);
 
 		new Runner(ob).run();

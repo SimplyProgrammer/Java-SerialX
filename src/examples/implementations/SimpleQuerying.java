@@ -169,7 +169,7 @@ public class SimpleQuerying
 		assertEquals(sc.getClass(), content.get("jsonArrayCla" + Utils.multilpy('s', 2)));
 		
 		
-		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Object>get(Arrays.asList((Object[]) content.getParsers().parse("(1_0_0e-2 (0b10 ) 3d)"))), new JsonCharacterConverter(false).toString(null, '{') /* DO NOT DO IN PROD ("123") */);
+		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Object>get(Arrays.asList((Object[]) content.getParsers().parse("(1_0_0e-2 (0b10 ) 3d)"))), new JsonCharacterConverter(false).toString(null, '{').toString() /* DO NOT DO IN PROD ("123") */);
 		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Scope>get(Arrays.asList(-+-+04, -+-5.000, 0x6)).<Object>get(0), 456d);
 		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Scope>get(Arrays.asList(.7, 8f, (byte) +-+-9)).<Object>get("test"), 789l);
 

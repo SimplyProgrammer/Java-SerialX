@@ -1,5 +1,7 @@
 package examples.implementations;
 
+import static org.ugp.serialx.Utils.equalsLowerCase;
+
 import java.util.Scanner;
 
 import org.ugp.serialx.converters.DataParser;
@@ -37,7 +39,7 @@ public class SimpleCalculator
 			@Override
 			public Object parse(ParserRegistry myHomeRegistry, String str, Object... args) 
 			{
-				if (str.equalsIgnoreCase("ans"))
+				if (equalsLowerCase(str, "ans", 0, 3))
 				{
 					if (args.length > 0)
 						return args[0]; //First arg is old answer!
@@ -52,7 +54,7 @@ public class SimpleCalculator
 		while (true)
 		{
 			System.out.print("Please insert your math problem: "); //Ask for input!
-			String input = scIn.nextLine() ;//Read console input
+			String input = scIn.nextLine(); //Read console input
 			if (!(input = input.trim()).isEmpty()) //Avoiding empty input!
 			{
 				double t0 = System.nanoTime(); //Performing simple benchmark
