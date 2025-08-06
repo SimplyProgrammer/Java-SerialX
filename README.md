@@ -6,7 +6,7 @@
 	<dependency>
 		<groupId>org.ugp.serialx</groupId>
 		<artifactId>serialx-json</artifactId>
-		<version>1.3.8</version> <!-- Specify newer version if needed -->
+		<version>1.3.9</version> <!-- Specify newer version if needed -->
 	</dependency>
 </dependencies>
 
