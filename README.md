@@ -18,10 +18,10 @@
 </repositories>
 ```
 
-* If you want to add or see issues just click on [Issues section](https://github.com/PetoPetko/Java-SerialX/issues) in up.
-* If you want to comment or suggest a feature use [Discussions section](https://github.com/PetoPetko/Java-SerialX/discussions).
+* If you want to add or see issues just click on [Issues section](https://github.com/SimplyProgrammer/Java-SerialX/issues) in up.
+* If you want to comment or suggest a feature use [Discussions section](https://github.com/SimplyProgrammer/Java-SerialX/discussions).
 * If you want to see or learn some things about library, take a look at [examples](https://github.com/SimplyProgrammer/Java-SerialX/tree/tests-and-experimental-features/src/examples).
-* And if you want to see the changelog, open [changelog file](Changelog.md) or use [Releases section](https://github.com/PetoPetko/Java-SerialX/releases) too.
+* And if you want to see the changelog, open [changelog file](Changelog.md) or use [Releases section](https://github.com/SimplyProgrammer/Java-SerialX/releases) too.
 <br>
 <!-- Kinda old... rewrite if possible -->
 
