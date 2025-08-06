@@ -284,7 +284,7 @@ What was added:<br>
 
 # SerialX 1.3.9
 
-Release date: 8.8.2025
+Release date: 8.6.2025 (Night)
 
 ### Notable changes:
 * A new, far performant, reading and lexing method was written for parsing, resulting in almost 2x improvement when deserializing a large amount of data.
