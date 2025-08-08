@@ -12,15 +12,15 @@ import java.util.List;
 
 import org.junit.Test;
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
-import org.ugp.serialx.Utils;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.json.JsonSerializer;
 import org.ugp.serialx.json.converters.JsonCharacterConverter;
 import org.ugp.serialx.juss.JussSerializer;
 import org.ugp.serialx.juss.converters.ObjectConverter;
+import org.ugp.serialx.utils.LogProvider;
+import org.ugp.serialx.utils.Utils;
 
 /**
  * This example contains brief example of querying and obtaining real data from deserialized content!

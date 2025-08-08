@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Objects;
 
 import org.junit.Test;
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.json.JsonSerializer;
 import org.ugp.serialx.juss.protocols.AutoProtocol;
 import org.ugp.serialx.juss.protocols.SelfSerializableProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol;
+import org.ugp.serialx.utils.LogProvider;
 
 import examples.Message;
 

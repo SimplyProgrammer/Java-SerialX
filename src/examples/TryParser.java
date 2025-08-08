@@ -1,6 +1,6 @@
 package examples;
 
-import static org.ugp.serialx.Utils.indexOfNotInObj;
+import static org.ugp.serialx.utils.Utils.indexOfNotInObj;
 
 import org.ugp.serialx.converters.DataParser;
 

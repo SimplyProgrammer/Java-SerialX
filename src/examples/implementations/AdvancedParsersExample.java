@@ -2,13 +2,13 @@ package examples.implementations;
 
 import java.io.File;
 
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.devtools.SerializationDebugger;
 import org.ugp.serialx.juss.JussSerializer;
 import org.ugp.serialx.juss.converters.ObjectConverter;
 import org.ugp.serialx.juss.converters.VariableConverter;
 import org.ugp.serialx.juss.protocols.UniversalObjectInstantiationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol;
+import org.ugp.serialx.utils.LogProvider;
 
 import examples.MemberInvokeOperator;
 import examples.TryParser;

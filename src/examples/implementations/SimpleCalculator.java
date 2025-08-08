@@ -1,6 +1,6 @@
 package examples.implementations;
 
-import static org.ugp.serialx.Utils.equalsLowerCase;
+import static org.ugp.serialx.utils.Utils.equalsLowerCase;
 
 import java.util.Scanner;
 

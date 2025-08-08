@@ -1,7 +1,7 @@
 package tests.n.benchmarks;
 
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
-import static org.ugp.serialx.Utils.fastReplace;
+import static org.ugp.serialx.utils.Utils.fastReplace;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,8 +25,6 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.LogProvider;
-import org.ugp.serialx.Utils;
 import org.ugp.serialx.converters.BooleanConverter;
 import org.ugp.serialx.converters.CharacterConverter;
 import org.ugp.serialx.converters.DataConverter;
@@ -41,6 +39,8 @@ import org.ugp.serialx.juss.converters.ImportConverter;
 import org.ugp.serialx.juss.converters.ObjectConverter;
 import org.ugp.serialx.juss.converters.OperationGroups;
 import org.ugp.serialx.juss.converters.VariableConverter;
+import org.ugp.serialx.utils.LogProvider;
+import org.ugp.serialx.utils.Utils;
 
 @State(Benchmark)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)

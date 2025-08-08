@@ -18,9 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
-import org.ugp.serialx.Utils;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.Operators;
 import org.ugp.serialx.converters.StringConverter;
@@ -30,6 +28,8 @@ import org.ugp.serialx.juss.converters.ObjectConverter;
 import org.ugp.serialx.juss.converters.VariableConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
+import org.ugp.serialx.utils.LogProvider;
+import org.ugp.serialx.utils.Utils;
 
 import examples.Bar;
 import examples.Foo;
