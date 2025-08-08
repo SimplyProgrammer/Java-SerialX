@@ -1,7 +1,7 @@
 package org.ugp.serialx.converters.operators;
 
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataParser;
+import org.ugp.serialx.utils.LogProvider;
 
 /**
  * This parser provides ability to negate stuff! For example <code>!true</code> returns false!<br>

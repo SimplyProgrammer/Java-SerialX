@@ -5,10 +5,10 @@ import java.util.Map;
 
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
-import org.ugp.serialx.Utils;
 import org.ugp.serialx.json.JsonSerializer;
 import org.ugp.serialx.juss.converters.ObjectConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
+import org.ugp.serialx.utils.Utils;
 
 /**
  * Used internally by {@link JsonSerializer} to ensure proper and valid Json format for scopes and protocols.

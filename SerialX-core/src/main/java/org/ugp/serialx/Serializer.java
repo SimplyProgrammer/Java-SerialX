@@ -1,25 +1,17 @@
 package org.ugp.serialx;
 
-import static org.ugp.serialx.Utils.Instantiate;
-import static org.ugp.serialx.Utils.indexOfNotInObj;
-import static org.ugp.serialx.Utils.multilpy;
-import static org.ugp.serialx.Utils.post;
+import static org.ugp.serialx.utils.Utils.Instantiate;
+import static org.ugp.serialx.utils.Utils.indexOfNotInObj;
+import static org.ugp.serialx.utils.Utils.multilpy;
+import static org.ugp.serialx.utils.Utils.post;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.StringReader;
-import java.io.Writer;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -37,6 +29,8 @@ import org.ugp.serialx.converters.DataParser.ParserRegistry;
 import org.ugp.serialx.converters.StringConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
+import org.ugp.serialx.utils.LogProvider;
+import org.ugp.serialx.utils.Registry;
 
 /**
  * {@link org.ugp.serialx.Serializer} is powerful abstract class that allows you to serialize any object in Java using custom data format compiled by recursive descent parser consisting of {@link DataParser}s.
@@ -48,7 +42,7 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
  * @since 1.0.0 
  */
 @SuppressWarnings("serial")
-public abstract class Serializer extends Scope
+public abstract class Serializer extends Scope implements MultimediaSerializer<Scope>
 {	
 	/**
 	 * Common parsers that can parse primitive datatypes!
@@ -262,187 +256,6 @@ public abstract class Serializer extends Scope
 	}
 	
 	/**
-	 * @param f | File to write in. This must be a text file.
-	 * @param args | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (they should not be serialized)!
-	 * 
-	 * @throws IOException if file can't be opened or serialization fails!
-	 * 
-	 * @since 1.1.5		
-	 */
-	public void serializeTo(File f, Object... args) throws IOException
-	{
-		serializeTo(false, f, args);
-	}
-	
-	/**
-	 * @param append | When true, the new objects will be appended to files content (same objects will be also appended if there are some)! 
-	 * @param f | File to write in. This must be a text file.
-	 * @param args | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (they should not be serialized)!
-	 * 
-	 * @throws IOException if file can't be opened or serialization fails!
-	 * 
-	 * @since 1.1.5
-	 * 
-	 * @see Serializer#serializeTo(Appendable, Object...)
-	 */
-	public void serializeTo(boolean append, File f, Object... args) throws IOException
-	{
-		//double t0 = System.nanoTime();
-		Writer writer = new BufferedWriter(new FileWriter(f, append));
-
-		serializeTo(writer, args);
-		
-		writer.close();
-		
-//		String serialized = stringify(args);
-//
-//		RandomAccessFile fileOutputStream = new RandomAccessFile(f, "rw");
-//		FileChannel channel = fileOutputStream.getChannel();
-//
-////		channel.write(ByteBuffer.wrap(serialized.getBytes()));
-//		
-//		ByteBuffer buff = channel.map(FileChannel.MapMode.READ_WRITE, append ? channel.size() : 0, serialized.length());
-//		buff.put(serialized.getBytes());
-//
-//		channel.force(true);
-//		channel.close();
-//		fileOutputStream.close();
-	}
-	
-	/**
-	 * @param args | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (they should not be serialized)!
-	 * 
-	 * @return String with objects serialized in specific format.
-	 * 
-	 * @throws RuntimeException IOException, but it should not occur in this case...
-	 * 
-	 * @since 1.0.0
-	 * 
-	 * @see Serializer#serializeTo(Appendable, Object...)
-	 */
-	public String stringify(Object... args)
-	{
-		try
-		{
-			return serializeTo(new StringBuilder(), args).toString();
-		} 
-		catch (IOException e) 
-		{
-			throw new RuntimeException(e); // Should not occur...
-		}
-	}
-	
-	/**
-	 * @param outputStream | Source {@link OutputStream} to serialize variables and objects into!
-	 * @param args | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (they should not be serialized)!
-	 * 
-	 * @return Source {@link OutputStream} with variables and objects serialized in specific format (may or may not be flushed).
-	 * 
-	 * @throws IOException When appending the {@link OutputStream} throws.... 
-	 * 
-	 * @since 1.3.2
-	 * 
-	 * @see Serializer#serializeTo(Appendable, Object...)
-	 */
-	public OutputStream serializeTo(OutputStream outputStream, Object... args) throws IOException
-	{
-		serializeTo(new OutputStreamWriter(outputStream), args);
-		return outputStream;
-	}
-	
-	/**
-	 * @param source | Source {@link Appendable} to serialize variables and objects into!
-	 * @param args | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (they should not be serialized)!
-	 * 
-	 * @return Source {@link Appendable} with variables and objects serialized in specific format.
-	 * 
-	 * @throws IOException depends on the implementation (likely when the provided source throws). 
-	 * 
-	 * @since 1.3.2
-	 */
-	public abstract <A extends Appendable> A serializeTo(A source, Object... args) throws IOException;
-
-	/**
-	 * @param file | Text file with serialized objects in specific format to load.
-	 * @param parserArgs | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (probably used for formating of incoming information)!
-	 * 
-	 * @return Unserialized objects and variables in {@link Scope} or empty {@link Scope} if string is empty.
-	 * You can use negative indexes to get objects from back of this array since 1.1.0 (-1 = last element)!
-	 * 
-	 * @throws FileNotFoundException if file does not exist or cannot be read!
-	 * 
-	 * @since 1.0.0
-	 * 
-	 * @see Serializer#loadFrom(Reader, Object...)
-	 */
-	public <S extends Scope> S loadFrom(File file, Object... parserArgs) throws IOException
-	{
-		return loadFrom(new FileReader(file), parserArgs);
-	}
-	
-	/**
-	 * @param str | {@link CharSequence} with serialized objects in specific format to load.
-	 * @param parserArgs | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (probably used for formating of incoming information)!
-	 * 
-	 * @return Unserialized objects and variables in {@link Scope} or empty {@link Scope} if string is empty.
-	 * You can use negative indexes to get objects from back of this array since 1.1.0 (-1 = last element)!
-	 * 
-	 * @throws IOException When reading the char sequence fails...
-	 * 
-	 * @since 1.2.5
-	 * 
-	 * @see Serializer#loadFrom(Reader, Object...)
-	 */
-	public <S extends Scope> S loadFrom(CharSequence str, Object... parserArgs) throws IOException
-	{
-		return loadFrom(new StringReader(str.toString()), parserArgs);
-	}
-	
-	/**
-	 * @param stream | Any {@link InputStream} with serialized objects in specific format to load.
-	 * @param parserArgs | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (probably used for formating of incoming information)!
-	 * 
-	 * @return Unserialized objects and variables in {@link Scope} or empty {@link Scope} if string is empty.
-	 * You can use negative indexes to get objects from back of this array since 1.1.0 (-1 = last element)!
-	 * 
-	 * @throws IOException When reading the input stream fails...
-	 * 
-	 * @since 1.3.2
-	 * 
-	 * @see Serializer#loadFrom(Reader, Object...)
-	 */
-	public <S extends Scope> S loadFrom(InputStream stream, Object... parserArgs) throws IOException
-	{
-		return loadFrom(new InputStreamReader(stream), parserArgs);
-	}
-	
-	/**
-	 * @param reader | Any {@link Reader} with serialized objects in specific format to load.
-	 * 
-	 * @return This scope after loading data from reader (you most likely want to return "this")!
-	 * 
-	 * @throws IOException When reading the reader fails...
-	 * 
-	 * @since 1.2.5
-	 */
-	public <S extends Scope> S loadFrom(Reader reader) throws IOException
-	{
-		return loadFrom(reader, true);
-	}
-	
-	/**
-	 * @param reader | Reader to read from!
-	 * @param parserArgs | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (probably used for formating of incoming information)!
-	 * 
-	 * @return This scope after loading data from reader (you most likely want to return "this")!
-	 * 
-	 * @throws IOException When reading the reader fails...
-	 * 
-	 * @since 1.3.2
-	 */
-	public abstract <S extends Scope> S loadFrom(Reader reader, Object... parserArgs) throws IOException;
-	
-	/**
 	 * @return Clone of this {@link Serializer} without variables and values, protocols and parser will remain same!
 	 * 
 	 * @throws Exception When creating the new instance fails...
@@ -619,19 +432,6 @@ public abstract class Serializer extends Scope
 			}
 		};
 		return (GenericScope<String, Object>) transform(transFunction);
-	}
-	
-	/**
-	 * @param source | Source {@link Appendable} to serialize variables and objects into!
-	 * @param args | Additional arguments to use, exact usage and behavior of them is based on specific implementation of this function (they should not be serialized)!
-	 * 
-	 * @return Serialized content of this scope as inner sub-scope of this scope! Wrapped inside of corresponding wrappingBrackets (default { and })!
-	 * 
-	 * @since 1.3.5
-	 */
-	public <A extends Appendable> A serializeAsSubscope(A source, Object... args) throws IOException
-	{
-		return serializeAsSubscope(source, new char[] {'{', '}'}, args);
 	}
 	
 	/**

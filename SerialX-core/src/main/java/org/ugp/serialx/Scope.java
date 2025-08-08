@@ -1,8 +1,8 @@
 package org.ugp.serialx;
 
-import static org.ugp.serialx.Utils.Instantiate;
-import static org.ugp.serialx.Utils.equalsLowerCase;
 import static org.ugp.serialx.converters.DataParser.VOID;
+import static org.ugp.serialx.utils.Utils.Instantiate;
+import static org.ugp.serialx.utils.Utils.equalsLowerCase;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -24,6 +24,8 @@ import java.util.function.Predicate;
 
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
+import org.ugp.serialx.utils.LogProvider;
+import org.ugp.serialx.utils.Utils;
 
 	
 /**

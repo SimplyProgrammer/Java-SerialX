@@ -1,16 +1,16 @@
 package org.ugp.serialx.converters.operators;
 
-import static org.ugp.serialx.Utils.indexOfNotInObj;
+import static org.ugp.serialx.utils.Utils.indexOfNotInObj;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.imports.ImportsProvider;
+import org.ugp.serialx.utils.LogProvider;
 
 /**
  * This parser provides comparison operators, <code>> < >= <= == === != !===</code> and <code>instanceof</code>, to compare 2 objects! For example <code>6 > 5</code>, <code>1 < 5</code> or <code>5 == 5</code> returns true!

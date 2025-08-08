@@ -1,8 +1,6 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.Utils.*;
-import static org.ugp.serialx.Utils.indexOfNotInObj;
-import static org.ugp.serialx.Utils.splitValues;
+import static org.ugp.serialx.utils.Utils.*;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -14,13 +12,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
-import org.ugp.serialx.Utils;
 import org.ugp.serialx.converters.imports.ImportsProvider;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
+import org.ugp.serialx.utils.LogProvider;
+import org.ugp.serialx.utils.Utils;
 
 /**
  * This converter is capable of converting any Object using {@link SerializationProtocol} as well as invoking static functions!

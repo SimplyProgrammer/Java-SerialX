@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.DataParser.ParserRegistry;
+import org.ugp.serialx.utils.LogProvider;
 
 /**
  * Special {@link ParserRegistry} that keeps track of its actions! Use only for debugging!

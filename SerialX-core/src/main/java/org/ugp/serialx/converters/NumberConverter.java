@@ -1,6 +1,6 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.Utils.contains;
+import static org.ugp.serialx.utils.Utils.contains;
 
 import java.io.IOException;
 

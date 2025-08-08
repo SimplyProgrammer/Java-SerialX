@@ -2,12 +2,12 @@ package org.ugp.serialx.juss.converters;
 
 import java.io.IOException;
 
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.imports.Import;
 import org.ugp.serialx.converters.imports.ImportsProvider;
 import org.ugp.serialx.converters.imports.ImportsProvider.Imports;
+import org.ugp.serialx.utils.LogProvider;
 
 /**
  * This parser maintains list of {@link Imports#IMPORTS} represented as {@link Import}s. Where are registered imports imported by user as well as temporary imports that are parsed! Result of parsing will be always added to imports list and {@link DataParser#VOID} will be returned!

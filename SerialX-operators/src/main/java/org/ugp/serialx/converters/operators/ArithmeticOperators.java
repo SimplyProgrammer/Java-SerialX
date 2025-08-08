@@ -1,7 +1,7 @@
 package org.ugp.serialx.converters.operators;
 
 import static java.util.Arrays.asList;
-import static org.ugp.serialx.Utils.*;
+import static org.ugp.serialx.utils.Utils.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataParser;
+import org.ugp.serialx.utils.LogProvider;
 
 /**
  * This parser provides arithmetics operators to evaluate mathematical expressions such as <code>5 * 2 +-- 2 / 2 ** 2 % 4</code> = 10!

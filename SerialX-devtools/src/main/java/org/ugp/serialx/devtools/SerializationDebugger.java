@@ -1,6 +1,6 @@
 package org.ugp.serialx.devtools;
 
-import static org.ugp.serialx.Utils.multilpy;
+import static org.ugp.serialx.utils.Utils.multilpy;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.ugp.serialx.Registry;
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.DataParser;
+import org.ugp.serialx.utils.Registry;
 
 /**	
  * Use this for debugging during parsing and converting by adding new instance of it into your parser {@link Registry} or in case of {@link Serializer} use !<br>

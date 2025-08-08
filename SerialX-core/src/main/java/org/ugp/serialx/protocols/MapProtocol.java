@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.LogProvider;
+import org.ugp.serialx.utils.LogProvider;
 
 /**
  * ListProtocol is universal protocol to serialize any {@link Map} instance. The condition of use is public constructor with one {@link Map} argument.

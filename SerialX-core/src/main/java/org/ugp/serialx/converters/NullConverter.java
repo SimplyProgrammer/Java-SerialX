@@ -1,6 +1,6 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.Utils.equalsLowerCase;
+import static org.ugp.serialx.utils.Utils.equalsLowerCase;
 
 import java.io.IOException;
 

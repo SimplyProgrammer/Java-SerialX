@@ -1,13 +1,12 @@
 package org.ugp.serialx.juss.converters;
 
-import static org.ugp.serialx.Utils.indexOfNotInObj;
+import static org.ugp.serialx.utils.Utils.indexOfNotInObj;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
 
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.ProtocolConverter;
@@ -15,6 +14,7 @@ import org.ugp.serialx.converters.imports.ImportsProvider;
 import org.ugp.serialx.juss.JussSerializer;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
+import org.ugp.serialx.utils.LogProvider;
 
 /**
  * This converter is capable of converting any Object using {@link SerializationProtocol} as well as invoking static functions!

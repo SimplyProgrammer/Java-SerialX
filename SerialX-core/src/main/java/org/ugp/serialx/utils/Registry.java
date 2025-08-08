@@ -1,4 +1,4 @@
-package org.ugp.serialx;
+package org.ugp.serialx.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;

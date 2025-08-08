@@ -1,7 +1,7 @@
 package org.ugp.serialx.juss.converters;
 
-import static org.ugp.serialx.Utils.contains;
-import static org.ugp.serialx.Utils.splitValues;
+import static org.ugp.serialx.utils.Utils.contains;
+import static org.ugp.serialx.utils.Utils.splitValues;
 
 import java.io.IOException;
 import java.util.AbstractMap;
@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.VariableParser;
+import org.ugp.serialx.utils.LogProvider;
 
 /**
  * This converter is capable of converting {@link Map.Entry} and reading variables from {@link GenericScope} by using <code>$</code>!<br>

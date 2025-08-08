@@ -3,9 +3,9 @@ package org.ugp.serialx.converters;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.ugp.serialx.LogProvider;
-import org.ugp.serialx.Registry;
 import org.ugp.serialx.Scope;
+import org.ugp.serialx.utils.LogProvider;
+import org.ugp.serialx.utils.Registry;
 
 /**
  * This interface is supposed to be used to parse strings back to java objects using {@link DataParser#parse(String, Object...)}!

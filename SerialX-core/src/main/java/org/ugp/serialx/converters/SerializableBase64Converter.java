@@ -10,8 +10,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Base64;
 
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.protocols.SerializationProtocol;
+import org.ugp.serialx.utils.LogProvider;
 
 /**
  * This converter is capable of converting {@link Serializable}.

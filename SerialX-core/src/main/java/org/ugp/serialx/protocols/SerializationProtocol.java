@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.ugp.serialx.LogProvider;
-import org.ugp.serialx.Registry;
 import org.ugp.serialx.Serializer;
+import org.ugp.serialx.utils.LogProvider;
+import org.ugp.serialx.utils.Registry;
 
 /**
  * This class supposed to be used for serializing and unserializing objects in Java by turning them in to array of Objects that can be serialized by {@link Serializer} or used by some higher entities. Also this class is capable of turning array of these objects back in to that very same Object! <br>

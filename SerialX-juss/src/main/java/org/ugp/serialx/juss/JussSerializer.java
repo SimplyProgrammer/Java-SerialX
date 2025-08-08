@@ -1,11 +1,11 @@
 package org.ugp.serialx.juss;
 
-import static org.ugp.serialx.Utils.Clone;
-import static org.ugp.serialx.Utils.ENDL;
-import static org.ugp.serialx.Utils.InvokeStaticFunc;
-import static org.ugp.serialx.Utils.isOneOf;
-import static org.ugp.serialx.Utils.multilpy;
 import static org.ugp.serialx.converters.DataParser.VOID;
+import static org.ugp.serialx.utils.Utils.Clone;
+import static org.ugp.serialx.utils.Utils.ENDL;
+import static org.ugp.serialx.utils.Utils.InvokeStaticFunc;
+import static org.ugp.serialx.utils.Utils.isOneOf;
+import static org.ugp.serialx.utils.Utils.multilpy;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -28,10 +28,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.Registry;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
-import org.ugp.serialx.Utils;
 import org.ugp.serialx.converters.BooleanConverter;
 import org.ugp.serialx.converters.CharacterConverter;
 import org.ugp.serialx.converters.DataConverter;
@@ -48,6 +46,8 @@ import org.ugp.serialx.juss.converters.ObjectConverter;
 import org.ugp.serialx.juss.converters.OperationGroups;
 import org.ugp.serialx.juss.converters.VariableConverter;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
+import org.ugp.serialx.utils.Registry;
+import org.ugp.serialx.utils.Utils;
 
 /**
  * This is implementation of {@link Serializer} for serializing in default SerialX API implementation known as JUSS (Java universal serial script) which is Json like domain specific language that has extended functionality!
@@ -477,7 +477,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 	
 	/**
-	 * This acts basically as a lexer for Juss and Json...
+	 * This acts basically as reader + lexer for Juss and Json input...
 	 * 
 	 * @param result | Resulting collection of objects to fill up with parsed objects from reader.
 	 * @param reader | The reader to {@link Reader#read(char[], int, int)}.

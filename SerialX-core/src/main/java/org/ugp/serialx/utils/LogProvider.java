@@ -1,4 +1,4 @@
-package org.ugp.serialx;
+package org.ugp.serialx.utils;
 
 /**
  * Log provider used for logging in SerialX.

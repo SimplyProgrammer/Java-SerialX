@@ -1,9 +1,9 @@
 package org.ugp.serialx.converters.operators;
 
-import static org.ugp.serialx.Utils.indexOfNotInObj;
+import static org.ugp.serialx.utils.Utils.indexOfNotInObj;
 
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataParser;
+import org.ugp.serialx.utils.LogProvider;
 
 /**
  * This parser provides conditional assignment operators more specially ternary and null coalescing! For example <code>true ? "Yes" : "No"</code> will return "Yes" and <code>null ?? "Hello!"</code> will return hello!

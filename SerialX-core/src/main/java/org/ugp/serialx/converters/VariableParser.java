@@ -1,8 +1,8 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.Utils.Clone;
-import static org.ugp.serialx.Utils.contains;
-import static org.ugp.serialx.Utils.splitValues;
+import static org.ugp.serialx.utils.Utils.Clone;
+import static org.ugp.serialx.utils.Utils.contains;
+import static org.ugp.serialx.utils.Utils.splitValues;
 
 import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.Scope;

@@ -1,4 +1,4 @@
-package org.ugp.serialx;
+package org.ugp.serialx.utils;
 
 import static org.ugp.serialx.converters.DataParser.VOID;
 
@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.ugp.serialx.Scope;
+import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.DataConverter;
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.converters.DataParser.ParserRegistry;

@@ -1,7 +1,7 @@
 package org.ugp.serialx.json;
 
-import static org.ugp.serialx.Utils.isOneOf;
-import static org.ugp.serialx.Utils.multilpy;
+import static org.ugp.serialx.utils.Utils.isOneOf;
+import static org.ugp.serialx.utils.Utils.multilpy;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.ugp.serialx.GenericScope;
-import org.ugp.serialx.Registry;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.converters.BooleanConverter;
@@ -33,6 +32,7 @@ import org.ugp.serialx.json.converters.JsonVariableConverter;
 import org.ugp.serialx.juss.JussSerializer;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
+import org.ugp.serialx.utils.Registry;
 
 /**
  * This is implementation of {@link JussSerializer} for serializing in <a href = "https://www.json.org/json-en.html">Json</a>!

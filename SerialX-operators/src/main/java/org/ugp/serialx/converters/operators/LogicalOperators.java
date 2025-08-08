@@ -2,11 +2,11 @@ package org.ugp.serialx.converters.operators;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.ugp.serialx.Utils.indexOfNotInObj;
-import static org.ugp.serialx.Utils.multilpy;
+import static org.ugp.serialx.utils.Utils.indexOfNotInObj;
+import static org.ugp.serialx.utils.Utils.multilpy;
 
-import org.ugp.serialx.LogProvider;
 import org.ugp.serialx.converters.DataParser;
+import org.ugp.serialx.utils.LogProvider;
 
 /**
  * This parser provides logical operators to evaluate boolean expressions such as <code>false || true && true ^ false</code> = true!

@@ -11,8 +11,8 @@ import java.util.List;
 
 import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.Scope;
-import org.ugp.serialx.Utils;
 import org.ugp.serialx.protocols.SerializationProtocol;
+import org.ugp.serialx.utils.Utils;
 
 /**
  * This is automatic protocol that will automatically serialize every or selected field in object that has valid and public getter and setter!
