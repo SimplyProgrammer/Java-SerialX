@@ -77,7 +77,7 @@ public interface DataParser
 	 *
 	 * @since 1.3.5
 	 */
-	public static class ParserRegistry extends Registry<DataParser> implements DataParser
+	public static class ParserRegistry extends Registry<DataParser> implements DataConverter
 	{
 		private static final long serialVersionUID = -2598324826689380752L;
 		
@@ -171,7 +171,7 @@ public interface DataParser
 		{
 			try 
 			{
-				return (CharSequence) toString(new StringBuilder(), obj, args);
+				return (CharSequence) toString(new StringBuilder(), this, obj, args);
 			} 
 			catch (IOException e) 
 			{
@@ -194,16 +194,25 @@ public interface DataParser
 		 */
 		public Appendable toString(Appendable source, Object obj, Object... args) throws IOException
 		{
+			return toString(source, this, obj, args);
+		}
+		
+		@Override
+		public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, Object... args) throws IOException 
+		{
 			Appendable str;
 			if (convertingCache != null)
 				for (DataConverter parser : convertingCache)
-					if (parser != null && (str = parser.toString(source, this, obj, args)) != CONTINUE)
+					if (parser != null && (str = parser.toString(source, myHomeRegistry, obj, args)) != CONTINUE)
 						return str;
 			
 			for (int i = 0, size = size(); i < size; i++) 
 			{
 				DataParser parser = get(i);
-				if (parser instanceof DataConverter && (str = ((DataConverter) parser).toString(source, this, obj, args)) != CONTINUE)
+				if (myHomeRegistry == parser) // Registry is registered in itself, infinite recursion = not good skip
+					continue;
+
+				if (parser instanceof DataConverter && (str = ((DataConverter) parser).toString(source, myHomeRegistry, obj, args)) != CONTINUE)
 				{
 					if (convertingCache != null && i < convertingCache.length)
 						convertingCache[i] = (DataConverter) parser;
@@ -254,7 +263,7 @@ public interface DataParser
 		/**
 		 * @param str | Source string to parse using suitable parser from registry.
 		 * @param returnAsStringIfNotFound | If true, inserted string will be returned instead of null and error message in case of suitable parser not found!
-		 * @param ignore | {@link DataParser} class to ignore!
+		 * @param ignore | {@link DataParser} class to ignore (if not precached)!
 		 * @param args | Additional arguments that will be obtained in {@link DataParser#parse(String, Object...)}!
 		 * 
 		 * @return Object that was parsed from obtained string using suitable parser. This method will iterate registry and try to parse string using each registered parser until suitable return is obtained by parse method of parser, first suitable result will be returned! You can return {@link DataParser#CONTINUE} to mark parser as not suitable for parsing obtained string.
@@ -267,7 +276,7 @@ public interface DataParser
 			Object obj;
 			if (parsingCache != null)
 				for (DataParser parser : parsingCache)
-					if (parser != null && (ignore == null || ignore != parser.getClass()) && (obj = parser.parse(this, str, args)) != CONTINUE)
+					if (parser != null && (obj = parser.parse(this, str, args)) != CONTINUE)
 						return obj; 
 			
 			for (int i = 0, size = size(); i < size; i++)
@@ -319,6 +328,8 @@ public interface DataParser
 			
 			if (parser == null)
 				return ret;
+			if (parser == this)
+				LogProvider.instance.logErr("Warning: You are pre caching instance of this registry in itself, which can result in infinite recursion. Do not do this!", null);
 			
 			if (i < parsingCache.length)
 			{
@@ -394,6 +405,5 @@ public interface DataParser
 		{
 			return convertingCache;
 		}
-
 	}
 }

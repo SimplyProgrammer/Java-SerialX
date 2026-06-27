@@ -467,6 +467,21 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	}
 	
 	/**
+	 * @param variables | Map of variables to put in. (Will use {@link Map#putAll(Map)})
+	 * 
+	 * @return This generic scope after the variables were added into it.
+	 * 
+	 * @since 4.0.0  
+	 */
+	public GenericScope<KeyT, ValT> putAll(Map<? extends KeyT, ? extends ValT> variables)
+	{
+		if (variables.isEmpty())
+			return this;
+		variables().putAll(variables);
+		return this;
+	}
+	
+	/**
 	 * @param values | Independent values to check.
 	 * 
 	 * @return True all provided values are contained in this scope as independent values!
@@ -800,8 +815,10 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	@Override
 	public void clear()
 	{
-		variables().clear();
-		values().clear();
+		if (variables != null)
+			variables.clear();
+		if (values != null)
+			values.clear();
 	}
 	
 	/**
