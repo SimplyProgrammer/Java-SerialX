@@ -24,6 +24,7 @@ import org.openjdk.jmh.infra.BenchmarkParams;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.Serializer;
 import org.ugp.serialx.juss.JussSerializer;
 
@@ -47,7 +48,7 @@ import org.ugp.serialx.juss.JussSerializer;
 )
 @Fork(3)
 //@Fork(1)
-public class StandardBenchmark 
+public class RealBenchmark 
 {
 	static final String VERSION = "1.1.1", LIB_VERSION = "4.0.0-SNAPSHOT";
 
@@ -101,18 +102,22 @@ public class StandardBenchmark
 		public void setupMedium() {}
 	}
 	
-	public Serializer newSerializer(Map<String, ?> vars, Collection<?> data) 
-	{
-		JussSerializer srl = new JussSerializer(vars, data);
-		srl.getParsers().resetCache(); // Cached
-//		srl.getParsers().get(StringConverter.class).setParsingCache(new HashMap<>());
-		return srl;
-	}
-	
 	@Param({"8000000", "4000000"})
 	protected int dataCount;
 	
 	protected DataState<?> state;
+	
+	protected JussSerializer serializer = new JussSerializer();
+	
+	public Serializer initSerializer(Map<String, ?> vars, Collection<?> data)
+	{
+		serializer.clear();
+		serializer.addAll(new GenericScope<>(vars, data));
+		
+		serializer.getParsers().resetCache(); // Cached
+//		srl.getParsers().get(StringConverter.class).setParsingCache(new HashMap<>());
+		return serializer;
+	}
 	
 	@Setup
 	public void setupState(BenchmarkParams params)
@@ -123,7 +128,7 @@ public class StandardBenchmark
 	@Benchmark
 	public void _0_write(Blackhole hole) throws IOException
 	{
-		JussSerializer serializer = (JussSerializer) newSerializer(null, state.data);
+		JussSerializer serializer = (JussSerializer) initSerializer(null, state.data);
 //		serializer.setGenerateComments(true);
 		
 		serializer.serializeTo((File) state.medium);
@@ -134,9 +139,131 @@ public class StandardBenchmark
 	@Benchmark
 	public Object _1_read() throws IOException
 	{
-		JussSerializer deserializer = (JussSerializer) newSerializer(null, null);
+		JussSerializer deserializer = (JussSerializer) initSerializer(null, null);
 		
 		return deserializer.loadFrom((File) state.medium);
+	}
+	
+//	@Benchmark
+//	public void readAndFormat(LargeFileData data, Blackhole hole) throws FileNotFoundException
+//	{
+//		hole.consume(new JussSerializer().readAndFormat(new FileReader(data.file), false));
+//	}
+	
+	/* IO */
+	
+//	@Setup
+//	public void setupState(BenchmarkParams params)
+//	{
+//		state = new DataState<File>(new File("src/tests/n/benchmarks/_" + dataCount + "_bench.juss"), dataCount) {
+//			@Override
+//			public void setupMedium() {
+//				StringBuilder sb = new StringBuilder(dataCount*2);
+//				for (Object object : data) {
+//					sb.append(object);
+//				}
+//				strData = sb.toString();
+//			}
+//		};
+//	}
+
+//	@Benchmark
+//	public void file_readChars(Blackhole hole) throws IOException
+//	{
+//		try (Reader reader = new FileReader((File) state.medium))
+//		{
+//			hole.consume(readChars(reader));
+//		}
+//	}
+//	
+//	@Benchmark
+//	public void file_readLinesAndChars(Blackhole hole) throws IOException, InterruptedException 
+//	{
+//		try (Reader reader = new FileReader((File) state.medium))
+//		{
+//			hole.consume(readLinesAndChars(reader));
+//		}
+//	}
+	
+	
+//	@Benchmark
+//	public void file_readCharsArrayed(Blackhole hole) throws IOException, InterruptedException 
+//	{
+//		try (Reader reader = new FileReader((File) state.medium))
+//		{
+//			hole.consume(readCharsArrayed(reader));
+//		}
+//	}
+	
+//	@Benchmark
+//	public void str_readChars(Blackhole hole) throws IOException
+//	{
+//		try (Reader reader = new StringReader(state.strData))
+//		{
+//			hole.consume(readChars(reader));
+//		}
+//	}
+//	
+//	@Benchmark
+//	public void str_readLinesAndChars(Blackhole hole) throws IOException, InterruptedException 
+//	{
+//		try (Reader reader = new StringReader(state.strData))
+//		{
+//			hole.consume(readLinesAndChars(reader));
+//		}
+//	}
+	
+//	@Benchmark
+//	public void str_readCharsArrayed(Blackhole hole) throws IOException, InterruptedException 
+//	{
+//		try (Reader reader = new StringReader(state.strData))
+//		{
+//			hole.consume(readCharsArrayed(reader));
+//		}
+//	}
+	
+	public static StringBuilder readChars(Reader r) throws IOException
+	{
+		StringBuilder sb = new StringBuilder();
+        for (int ch; (ch = r.read()) != -1; ) {
+        	if (ch > 31)
+        		sb.append((char) ch);
+        }
+        
+        return sb;
+	}
+	
+	public static StringBuilder readLinesAndChars(Reader r) throws IOException
+	{
+		StringBuilder sb = new StringBuilder();
+		BufferedReader reader = new BufferedReader(r);
+
+        for (String line; (line = reader.readLine()) != null; ) {
+            for (int i = 0, len = line.length(); i < len; i++)
+            {
+            	char ch = line.charAt(i);
+            	if (ch > 31)
+            		sb.append(ch);
+            }
+        }
+		
+        reader.close();
+		return sb;
+	}
+	
+	public static StringBuilder readCharsArrayed(Reader r) throws IOException
+	{
+		StringBuilder sb = new StringBuilder();
+		char[] arr = new char[128*2];
+
+		for (int charsRead; (charsRead = r.read(arr)) != -1; ) {
+			for (int i = 0; i < charsRead; i++) {
+				if (arr[i] > 31)
+					sb.append(arr[i]);
+			}
+		}
+		
+		return sb;
 	}
 	
 	public static void main(String[] args) throws Exception 
@@ -147,7 +274,7 @@ public class StandardBenchmark
 		String jvmVersion = "21.0.7-graal";
 
 		OptionsBuilder ob = new OptionsBuilder();
-		ob.include(StandardBenchmark.class.getSimpleName());
+		ob.include(RealBenchmark.class.getSimpleName());
 		ob.jvm(System.getProperty("user.home") + "\\.sdkman\\candidates\\java\\" + jvmVersion + "\\bin\\java.exe");
 
 //		ob.addProfiler(org.openjdk.jmh.profile.StackProfiler.class);
