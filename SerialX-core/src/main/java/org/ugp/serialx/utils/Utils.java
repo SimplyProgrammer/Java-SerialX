@@ -611,7 +611,7 @@ public final class Utils {
 	/**
 	 * @param s | CharSequence to search!
 	 * @param from | The beginning index, where to start the search (should be 0 in most cases).
-	 * @param to | Ending index of search (exclusive, should be s.length()).
+	 * @param to | Ending index of search (exclusive, should be {@code >= to <= s.length()}).
 	 * @param defaultReturn | Index to return by default (usually -1).
 	 * @param firstIndex | If true, first index will be returned, if false last index will be returned.
 	 * @param oneOf | Characters to find!
@@ -667,7 +667,7 @@ public final class Utils {
 	/**
 	 * @param s | CharSequence to search!
 	 * @param from | The beginning index, where to start the search (should be 0 in most cases).
-	 * @param to | Ending index of search (exclusive, should be s.length()).
+	 * @param to | Ending index of search (exclusive, should be {@code >= to <= s.length()}).
 	 * @param defaultReturn | Index to return by default (usually -1).
 	 * @param firstIndex | If true, first index will be returned, if false last index will be returned.
 	 * @param sequencesToFind | Character sequences to find, index of any of these will be returned accordingly, none of these should contain and object structure!
@@ -801,7 +801,7 @@ public final class Utils {
 	 * @param str | Source string to compare.
 	 * @param lowerCaseOther | Other lower-case string to compare with. This must be lower-case in order for this to work! 
 	 * @param from | The beginning index, where to start with comprising (inclusive, most likely 0).
-	 * @param to | The ending marking index, index where to end the comparing (exclusive, most likely <code>str.length()</code>)
+	 * @param to | The ending marking index, index where to end the comparing (exclusive, most likely {@code >= to <= str.length()})
 	 * 
 	 * @return True if str is equal to lowerCaseOther given that str case is ignored and lowerCaseOther is lower-case, otherwise false. Similar to {@link String#equalsIgnoreCase(String)} but more optimal!<br>
 	 * Note that this function was designed for non-blank ASCII strings and may not work properly for others...<br>
@@ -915,27 +915,27 @@ public final class Utils {
 	 */
 	public static void post(Serializer serializer, HttpURLConnection conn) throws IOException
 	{
-        StringBuilder postData = new StringBuilder();
-        for (Map.Entry<String,Object> param : serializer.varEntrySet()) 
-        {
-            if (postData.length() != 0) 
-            	postData.append('&');
-            postData.append(URLEncoder.encode(param.getKey(), "UTF-8")).append('=');
-            postData.append(URLEncoder.encode(serializer.getParsers().toString(param.getValue()).toString(), "UTF-8"));
-        }
-        
-        for (Object param : serializer) 
-        {
-            if (postData.length() != 0)
-            	postData.append('&');
-            postData.append(URLEncoder.encode(serializer.getParsers().toString(param).toString(), "UTF-8"));
-        }
-        
-        byte[] postDataBytes = postData.toString().getBytes("UTF-8");
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
-        conn.setDoOutput(true);
-        conn.getOutputStream().write(postDataBytes);
+		StringBuilder postData = new StringBuilder();
+		for (Map.Entry<String,Object> param : serializer.varEntrySet()) 
+		{
+		    if (postData.length() != 0) 
+		    	postData.append('&');
+		    postData.append(URLEncoder.encode(param.getKey(), "UTF-8")).append('=');
+		    postData.append(URLEncoder.encode(serializer.getParsers().toString(param.getValue()).toString(), "UTF-8"));
+		}
+		
+		for (Object param : serializer) 
+		{
+		    if (postData.length() != 0)
+		    	postData.append('&');
+		    postData.append(URLEncoder.encode(serializer.getParsers().toString(param).toString(), "UTF-8"));
+		}
+		
+		byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+		conn.setRequestMethod("POST");
+		conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+		conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+		conn.setDoOutput(true);
+		conn.getOutputStream().write(postDataBytes);
 	}
 }
