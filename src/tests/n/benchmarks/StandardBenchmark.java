@@ -28,7 +28,8 @@ import org.ugp.serialx.Serializer;
 import org.ugp.serialx.juss.JussSerializer;
 
 /**
- * StandardBenchmark for SerialX, single shot no warmup...
+ * StandardBenchmark for Serial<br>
+ * Tests the worst case scenario, single shot no warmup, o set of 4 and 8 million object synthetic dataset.
  * 
  * @version 1.1.1
  * 

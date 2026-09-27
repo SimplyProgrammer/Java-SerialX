@@ -47,7 +47,7 @@ public class GeneralExample
 {
 	//Test constants...
 	public static final String TEST_1 = "father";
-	public static final String TEST_2 = "has.indeed = an event horizon... //lol";
+	public static final String TEST_2 = "has.indeed = an event horizon... /*nothing personal pls ignore*/ // ignored 2";
 	public static final String TEST_3 = "some string";
 
 	public static final double TEST_4 = 5;
@@ -124,7 +124,7 @@ public class GeneralExample
 		
 		int[][] ints = {{1, 2, 3}, {4, 5, 4}, {3, 2, 1}, {}, {0}};
 		
-		String complexExpression = "$undef??0 ?12 : 11??{} ? ($_boolTst1 = 1 2 <= {1, 2, 3} - 2 - 3 + 5)&& ($_boolTst2: !!T instanceof java.lang.Boolean) && !!!5.0 > 5 && ($_boolTst3 = T) || ($_boolTst4= 'i'- 5 == 'd' ^ 240/4*2 != 'x') ? (+1 --+-6l /- 2*(2l+--(T || F))%- 10**2 + 1 ) * \"a\"";
+		String complexExpression = "$undef??0 ?12 : 11??{} ? ($_boolTst1 = 1 2 <= {1, 2, 3} - 2 - 3 + 5)&& ($_boolTst2: !!T instanceof java.lang.Boolean) && !!!5.0 > 5 && ($_boolTst3 = T) || ($_boolTst4= 'i'- 5 == 'd' ^ 240/4*2 != 'x') ? (+1 --+-6l /- 2*(2l+--(T || F))%- 10**2 + 1 ) * \"a\" /* ++1*/";
 		Scope someScope = new Scope(111, 222, new Scope(new ArrayList<>(Arrays.asList("some{", "}elements{", "...", new Scope('c', TEST_5)))));
 		Scope neastedScope1 = new Scope(), neastedScope2 = new Scope();
 		neastedScope2.put("tst4", TEST_4);

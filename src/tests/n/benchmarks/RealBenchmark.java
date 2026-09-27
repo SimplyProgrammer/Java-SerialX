@@ -48,6 +48,9 @@ import org.ugp.serialx.juss.JussSerializer;
 )
 @Fork(3)
 //@Fork(1)
+/**
+ * Benchmark prototyping
+ */
 public class RealBenchmark 
 {
 	static final String VERSION = "1.1.1", LIB_VERSION = "4.0.0-SNAPSHOT";

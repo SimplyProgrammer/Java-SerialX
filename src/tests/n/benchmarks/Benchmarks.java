@@ -53,6 +53,9 @@ import org.ugp.serialx.utils.Utils;
 )
 @Fork(1)
 //@Fork(2)
+/**
+ * Sketch board for benchmarks
+ */
 public class Benchmarks {
 	
 	@Param({"0b11l", "true", "\"hiii i  isdad\"", "null", "_INVALID"})
