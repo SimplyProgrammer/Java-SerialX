@@ -23,7 +23,6 @@ import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 import org.ugp.serialx.utils.LogProvider;
 import org.ugp.serialx.utils.Utils;
 
-	
 /**
  * This collection is some sort of hybrid, or more accurately "union" between {@link List} and {@link Map} which allow you to have both variables and independent values managed by one Object. <br>
  * Note: Variables are managed and accessed classically via {@link Map} methods such as <code>put(KeyT key, Object)</code> and array of independent values is accessed by via {@link List} methods such as <code>add(Object)</code> and <code>get(int)</code><br>
@@ -410,8 +409,8 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 	 * @return Independent value with valueIndex of this converted to object of cls!
 	 * 
 	 * @throws Exception | If converting to object of cls failed from some reason! This can differ from implementation to implementation!
-     *
-     * @since 1.3.8
+	 *
+	 * @since 1.3.8
 	 */
 	public <V extends ValT> V get(int valueIndex, Class<V> cls) throws Exception
 	{
