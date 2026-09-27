@@ -271,7 +271,7 @@ public class RealBenchmark
 //		org.openjdk.jmh.Main.main(args);
 		
 //		String jvmVersion = "8.0.412-tem";
-		String jvmVersion = "21.0.7-graal";
+		String jvmVersion = "21.0.12-graal";
 
 		OptionsBuilder ob = new OptionsBuilder();
 		ob.include(RealBenchmark.class.getSimpleName());

@@ -215,7 +215,7 @@ public class Benchmarks {
 		OptionsBuilder ob = new OptionsBuilder();
 		ob.measurementTime(TimeValue.milliseconds(100));
 		ob.include(Benchmarks.class.getSimpleName());
-//		ob.jvm(System.getProperty("user.home") + "\\.sdkman\\candidates\\java\\21.0.7-graal\\bin\\java.exe");
+//		ob.jvm(System.getProperty("user.home") + "\\.sdkman\\candidates\\java\\21.0.12-graal\\bin\\java.exe");
 
 //		ParserRegistry reg = Operators.install(new ParserRegistry(new OperationGroups(), new VariableConverter(), new StringConverter(), new ObjectConverter(), new ArrayConverter(), new NumberConverter(), new BooleanConverter(), new CharacterConverter(), new NullConverter(), new SerializableBase64Converter()));
 //		
