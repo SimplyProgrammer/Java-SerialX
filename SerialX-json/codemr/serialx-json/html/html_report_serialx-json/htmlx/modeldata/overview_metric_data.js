@@ -1,0 +1,1 @@
+var CodeMR_ProjectMetrics = {"Project Name":"serialx-json working set: {serialx-json}", "Number of Highly Problematic Classes":0, "Number of Entities":5, "Number of Problematic Classes":1, "Class Lines of Code":153, "Number of External Packages":10, "Number of Packages":2, "Number of External Entities":29}
