@@ -1,7 +1,6 @@
 package org.ugp.serialx.json;
 
-import static org.ugp.serialx.utils.Utils.isOneOf;
-import static org.ugp.serialx.utils.Utils.multilpy;
+import static org.ugp.serialx.utils.StrUtils.*;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;

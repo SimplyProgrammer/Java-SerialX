@@ -1,8 +1,8 @@
 package org.ugp.serialx;
 
 import static org.ugp.serialx.converters.DataParser.VOID;
-import static org.ugp.serialx.utils.Utils.Instantiate;
-import static org.ugp.serialx.utils.Utils.equalsLowerCase;
+import static org.ugp.serialx.utils.MetaprogrammingUtils.Instantiate;
+import static org.ugp.serialx.utils.StrUtils.equalsLowerCase;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 import org.ugp.serialx.utils.LogProvider;
-import org.ugp.serialx.utils.Utils;
+import org.ugp.serialx.utils.MetaprogrammingUtils;
 
 	
 /**
@@ -995,7 +995,7 @@ public class Scope extends GenericScope<String, Object>
 			return new Scope();
 		
 		if (obj.getClass().isArray())
-			return new Scope(Utils.fromAmbiguousArray(obj));
+			return new Scope(MetaprogrammingUtils.fromAmbiguousArray(obj));
 		
 		if (obj instanceof Scope)
 		{

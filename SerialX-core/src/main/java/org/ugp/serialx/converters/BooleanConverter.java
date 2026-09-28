@@ -1,7 +1,8 @@
 package org.ugp.serialx.converters;
 
-import static java.lang.Boolean.*;
-import static org.ugp.serialx.utils.Utils.equalsLowerCase;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static org.ugp.serialx.utils.StrUtils.equalsLowerCase;
 
 import java.io.IOException;
 

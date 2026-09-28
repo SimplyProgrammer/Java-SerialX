@@ -12,7 +12,7 @@ import java.util.List;
 import org.ugp.serialx.GenericScope;
 import org.ugp.serialx.Scope;
 import org.ugp.serialx.protocols.SerializationProtocol;
-import org.ugp.serialx.utils.Utils;
+import org.ugp.serialx.utils.MetaprogrammingUtils;
 
 /**
  * This is automatic protocol that will automatically serialize every or selected field in object that has valid and public getter and setter!
@@ -125,7 +125,7 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 	/**
 	 * @param objectClass | Class to create new instance of!
 	 * 
-	 * @return New blank instance of required class! When not override, it returns {@link Utils#Instantiate(Class)} 
+	 * @return New blank instance of required class! When not override, it returns {@link MetaprogrammingUtils#Instantiate(Class)} 
 	 * 
 	 * @throws Exception if any exception occurs (based on implementation).
 	 * 
@@ -133,7 +133,7 @@ public class AutoProtocol<T> extends SerializationProtocol<T>
 	 */
 	public T createBlankInstance(Class<? extends T> objectClass) throws Exception
 	{
-		return Utils.Instantiate(objectClass);
+		return MetaprogrammingUtils.Instantiate(objectClass);
 	}
 	
 	@Override

@@ -1,7 +1,6 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.utils.Utils.contains;
-import static org.ugp.serialx.utils.Utils.indexOfNotInObj;
+import static org.ugp.serialx.utils.StrUtils.*;
 
 import java.io.IOException;
 import java.util.HashMap;

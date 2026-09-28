@@ -1,7 +1,6 @@
 package org.ugp.serialx.juss.converters;
 
-import static org.ugp.serialx.utils.Utils.contains;
-import static org.ugp.serialx.utils.Utils.splitValues;
+import static org.ugp.serialx.utils.StrUtils.*;
 
 import java.io.IOException;
 import java.util.AbstractMap;

@@ -1,6 +1,6 @@
 package org.ugp.serialx;
 
-import static org.ugp.serialx.utils.Utils.Instantiate;
+import static org.ugp.serialx.utils.MetaprogrammingUtils.Instantiate;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -21,7 +21,7 @@ import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 import org.ugp.serialx.utils.LogProvider;
-import org.ugp.serialx.utils.Utils;
+import org.ugp.serialx.utils.MetaprogrammingUtils;
 
 /**
  * This collection is some sort of hybrid, or more accurately "union" between {@link List} and {@link Map} which allow you to have both variables and independent values managed by one Object. <br>
@@ -110,7 +110,7 @@ public class GenericScope<KeyT, ValT> implements Collection<ValT>, Cloneable, Se
 		if (obj instanceof Map)
 			return valuesCount() <= 0 && variables().equals(obj);
 		if (obj != null && obj.getClass().isArray())
-			return variablesCount() <= 0 && Objects.deepEquals(toArray(), Utils.fromAmbiguousArray(obj));
+			return variablesCount() <= 0 && Objects.deepEquals(toArray(), MetaprogrammingUtils.fromAmbiguousArray(obj));
 		return super.equals(obj);
 	}
 	

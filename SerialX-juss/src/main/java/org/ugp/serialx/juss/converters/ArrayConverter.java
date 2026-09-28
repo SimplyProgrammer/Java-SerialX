@@ -1,9 +1,8 @@
 package org.ugp.serialx.juss.converters;
 
-import static org.ugp.serialx.utils.Utils.castArray;
-import static org.ugp.serialx.utils.Utils.fromAmbiguousArray;
-import static org.ugp.serialx.utils.Utils.indexOfNotInObj;
-import static org.ugp.serialx.utils.Utils.splitValues;
+import static org.ugp.serialx.utils.MetaprogrammingUtils.castArray;
+import static org.ugp.serialx.utils.MetaprogrammingUtils.fromAmbiguousArray;
+import static org.ugp.serialx.utils.StrUtils.*;
 
 import java.io.IOException;
 

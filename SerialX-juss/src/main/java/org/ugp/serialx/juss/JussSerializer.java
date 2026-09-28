@@ -1,11 +1,9 @@
 package org.ugp.serialx.juss;
 
 import static org.ugp.serialx.converters.DataParser.VOID;
-import static org.ugp.serialx.utils.Utils.Clone;
-import static org.ugp.serialx.utils.Utils.ENDL;
-import static org.ugp.serialx.utils.Utils.InvokeStaticFunc;
-import static org.ugp.serialx.utils.Utils.isOneOf;
-import static org.ugp.serialx.utils.Utils.multilpy;
+import static org.ugp.serialx.utils.MetaprogrammingUtils.Clone;
+import static org.ugp.serialx.utils.MetaprogrammingUtils.InvokeStaticFunc;
+import static org.ugp.serialx.utils.StrUtils.*;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -47,7 +45,7 @@ import org.ugp.serialx.juss.converters.OperationGroups;
 import org.ugp.serialx.juss.converters.VariableConverter;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 import org.ugp.serialx.utils.Registry;
-import org.ugp.serialx.utils.Utils;
+import org.ugp.serialx.utils.MetaprogrammingUtils;
 
 /**
  * This is implementation of {@link Serializer} for serializing in default SerialX API implementation known as JUSS (Java universal serial script) which is Json like domain specific language that has extended functionality!
@@ -192,7 +190,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	}
 	
 	/**
-	 * @param absoluteClone | If true this scope will be cloned using {@link Utils#Clone}, if false {@link Scope#clone()}!
+	 * @param absoluteClone | If true this scope will be cloned using {@link MetaprogrammingUtils#Clone}, if false {@link Scope#clone()}!
 	 * 
 	 * @return Clone of this scope!
 	 * 
@@ -807,7 +805,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @return Clone of value stored by variable with inserted name or null if there is no such a one!
 	 * <br><br>
-	 * Note: Cloning is done by {@link Utils#Clone(Object, Collection, Object[], Object...)}!
+	 * Note: Cloning is done by {@link MetaprogrammingUtils#Clone(Object, Collection, Object[], Object...)}!
 	 * 
 	 * @since 1.3.2
 	 */
@@ -822,7 +820,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @return Clone of value stored by variable with inserted name or defaultValue if there is no such a one or given key contains null!
 	 * <br><br>
-	 * Note: Cloning is done by {@link Utils#Clone(Object, Collection, Object[], Object...)}!
+	 * Note: Cloning is done by {@link MetaprogrammingUtils#Clone(Object, Collection, Object[], Object...)}!
 	 * 
 	 * @since 1.3.2
 	 */
@@ -840,7 +838,7 @@ public class JussSerializer extends Serializer implements ImportsProvider
 	 * 
 	 * @return Clone of independent value with valueIndex!
 	 * <br><br>
-	 * Note: Cloning is done by {@link Utils#Clone(Object, Collection, Object[], Object...)}!
+	 * Note: Cloning is done by {@link MetaprogrammingUtils#Clone(Object, Collection, Object[], Object...)}!
 	 * 
 	 * @since 1.3.2
 	 */

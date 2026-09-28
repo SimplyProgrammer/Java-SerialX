@@ -1,6 +1,6 @@
 package org.ugp.serialx.converters.operators;
 
-import static org.ugp.serialx.utils.Utils.indexOfNotInObj;
+import static org.ugp.serialx.utils.StrUtils.*;
 
 import java.lang.reflect.Array;
 import java.util.Collection;

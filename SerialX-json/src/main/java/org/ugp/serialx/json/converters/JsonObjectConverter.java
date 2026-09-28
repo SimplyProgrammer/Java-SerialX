@@ -8,7 +8,7 @@ import org.ugp.serialx.Serializer;
 import org.ugp.serialx.json.JsonSerializer;
 import org.ugp.serialx.juss.converters.ObjectConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
-import org.ugp.serialx.utils.Utils;
+import org.ugp.serialx.utils.MetaprogrammingUtils;
 
 /**
  * Used internally by {@link JsonSerializer} to ensure proper and valid Json format for scopes and protocols.
@@ -27,7 +27,7 @@ public class JsonObjectConverter extends ObjectConverter
 			return CONTINUE;
 
 		if (obj.getClass().isArray())
-			return super.toString(source, myHomeRegistry, new Scope(Utils.fromAmbiguousArray(obj)), args);
+			return super.toString(source, myHomeRegistry, new Scope(MetaprogrammingUtils.fromAmbiguousArray(obj)), args);
 		
 		if (obj instanceof Map)
 		{

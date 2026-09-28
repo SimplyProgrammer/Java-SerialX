@@ -1,6 +1,6 @@
 package org.ugp.serialx.devtools;
 
-import static org.ugp.serialx.utils.Utils.multilpy;
+import static org.ugp.serialx.utils.StrUtils.multilpy;
 
 import java.io.IOException;
 import java.io.PrintWriter;

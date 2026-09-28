@@ -1,7 +1,8 @@
 package org.ugp.serialx.converters.operators;
 
 import static java.util.Arrays.asList;
-import static org.ugp.serialx.utils.Utils.*;
+import static org.ugp.serialx.utils.StrUtils.*;
+import static org.ugp.serialx.utils.MetaprogrammingUtils.*;
 
 import java.util.ArrayList;
 import java.util.Collection;

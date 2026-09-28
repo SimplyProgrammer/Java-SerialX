@@ -2,8 +2,7 @@ package org.ugp.serialx.converters.operators;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.ugp.serialx.utils.Utils.indexOfNotInObj;
-import static org.ugp.serialx.utils.Utils.multilpy;
+import static org.ugp.serialx.utils.StrUtils.*;
 
 import org.ugp.serialx.converters.DataParser;
 import org.ugp.serialx.utils.LogProvider;

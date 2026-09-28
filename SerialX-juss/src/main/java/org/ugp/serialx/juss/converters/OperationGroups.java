@@ -1,6 +1,6 @@
 package org.ugp.serialx.juss.converters;
 
-import static org.ugp.serialx.utils.Utils.isOneOf;
+import static org.ugp.serialx.utils.StrUtils.isOneOf;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -111,7 +111,7 @@ public class OperationGroups implements DataParser
 	 * @param from | Beginning index of search!
 	 * @param openings | Openings to find!
 	 * 
-	 * @return Return index of first opening char found if is not in object or -1 if there is no opening found similar to {@link org.ugp.serialx.utils.Utils#indexOfNotInObj(CharSequence, char...)}!
+	 * @return Return index of first opening char found if is not in object or -1 if there is no opening found similar to {@link org.ugp.serialx.utils.MetaprogrammingUtils#indexOfNotInObj(CharSequence, char...)}!
 	 * 
 	 * @since 1.3.0
 	 */
@@ -148,7 +148,7 @@ public class OperationGroups implements DataParser
 	 * @param openings | Openings to count with!
 	 * @param closing | Closings to find!
 	 * 
-	 * @return Return index of first closing char found if is not in object or -1 if no closing is found similar to {@link org.ugp.serialx.utils.Utils#indexOfNotInObj(CharSequence, char...)}! 
+	 * @return Return index of first closing char found if is not in object or -1 if no closing is found similar to {@link org.ugp.serialx.utils.MetaprogrammingUtils#indexOfNotInObj(CharSequence, char...)}! 
 	 * 
 	 * @since 1.3.0
 	 */

@@ -1,9 +1,7 @@
 package org.ugp.serialx;
 
-import static org.ugp.serialx.utils.Utils.Instantiate;
-import static org.ugp.serialx.utils.Utils.indexOfNotInObj;
-import static org.ugp.serialx.utils.Utils.multilpy;
-import static org.ugp.serialx.utils.Utils.post;
+import static org.ugp.serialx.utils.MetaprogrammingUtils.Instantiate;
+import static org.ugp.serialx.utils.StrUtils.*;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -13,7 +11,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -595,49 +592,44 @@ public abstract class Serializer extends Scope implements MultimediaSerializer<S
 		{
 			URLConnection con = ((URL) obj).openConnection();
 			con.setDoOutput(true);
-			if (con instanceof HttpURLConnection)
-				post(fromSerializer, (HttpURLConnection) con);
-			else
+//			if (con instanceof HttpURLConnection)
+//				post(fromSerializer, (HttpURLConnection) con);
+//			else
 				fromSerializer.serializeTo(con.getOutputStream());
 			return (T) con;
 		}
 		
 		if (obj instanceof URLConnection)
 		{
-			if (obj instanceof HttpURLConnection)
-				post(fromSerializer, (HttpURLConnection) obj);
-			else
+//			if (obj instanceof HttpURLConnection)
+//				post(fromSerializer, (HttpURLConnection) obj);
+//			else
 				fromSerializer.serializeTo(((URLConnection) obj).getOutputStream());
 			return (T) obj;
 		}
 		
-		try
+		if (obj instanceof CharSequence)
 		{
-			if (obj instanceof CharSequence)
+//			if (indexOfNotInObj((CharSequence) obj, "http") == 0)
+//			{
+//				URLConnection con = new URI(obj.toString()).toURL().openConnection();
+//				con.setDoOutput(true);
+//				if (con instanceof HttpURLConnection)
+//					post(fromSerializer, (HttpURLConnection) con);
+//				else
+//					fromSerializer.serializeTo(con.getOutputStream());
+//				return (T) con;
+//			}
+		
+			try
 			{
-				if (indexOfNotInObj((CharSequence) obj, "http") == 0)
-				{
-					URLConnection con = new URI(obj.toString()).toURL().openConnection();
-					con.setDoOutput(true);
-					if (con instanceof HttpURLConnection)
-						post(fromSerializer, (HttpURLConnection) con);
-					else
-						fromSerializer.serializeTo(con.getOutputStream());
-					return (T) con;
-				}
-			
-				try
-				{
-					File file = new File(obj.toString());
-					fromSerializer.serializeTo(file);
-					return (T) file;
-				}
-				catch (Exception e)
-				{}
+				File file = new File(obj.toString());
+				fromSerializer.serializeTo(file);
+				return (T) file;
 			}
+			catch (Exception e)
+			{}
 		}
-		catch (IOException e)
-		{}
 		
 		return (T) Scope.into(obj, fromSerializer, fieldNamesToUse);
 	}

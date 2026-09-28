@@ -1,6 +1,7 @@
 package org.ugp.serialx.converters;
 
-import static org.ugp.serialx.utils.Utils.*;
+import static org.ugp.serialx.utils.MetaprogrammingUtils.*;
+import static org.ugp.serialx.utils.StrUtils.*;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -18,7 +19,7 @@ import org.ugp.serialx.converters.imports.ImportsProvider;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 import org.ugp.serialx.utils.LogProvider;
-import org.ugp.serialx.utils.Utils;
+import org.ugp.serialx.utils.MetaprogrammingUtils;
 
 /**
  * This converter is capable of converting any Object using {@link SerializationProtocol} as well as invoking static functions!
@@ -427,8 +428,8 @@ public class ProtocolConverter implements DataConverter
 	 * @param args | Arguments of method. Arguments should be certain if method is overloaded!
 	 * @param compilerArgs | Arguments provided by parser.
 	 * 
-	 * @return {@link Utils#InvokeStaticFunc(Class, String, Object...)} or null if {@link InvocationTargetException} occurred. <br>
-	 * Note: If you are not sure what this does, preferably use {@link Utils#InvokeStaticFunc(Class, String, Object...)}!
+	 * @return {@link MetaprogrammingUtils#InvokeStaticFunc(Class, String, Object...)} or null if {@link InvocationTargetException} occurred. <br>
+	 * Note: If you are not sure what this does, preferably use {@link MetaprogrammingUtils#InvokeStaticFunc(Class, String, Object...)}!
 	 * 
 	 * @since 1.3.8
 	 */
@@ -436,7 +437,7 @@ public class ProtocolConverter implements DataConverter
 		try
 		{
 			compilerArgs[4] = oldCls;
-			return Utils.InvokeStaticFunc(cls, name, args);
+			return MetaprogrammingUtils.InvokeStaticFunc(cls, name, args);
 		}
 		catch (InvocationTargetException e) 
 		{
