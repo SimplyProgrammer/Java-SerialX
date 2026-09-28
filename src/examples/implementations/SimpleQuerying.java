@@ -20,7 +20,7 @@ import org.ugp.serialx.json.converters.JsonCharacterConverter;
 import org.ugp.serialx.juss.JussSerializer;
 import org.ugp.serialx.juss.converters.ObjectConverter;
 import org.ugp.serialx.utils.LogProvider;
-import org.ugp.serialx.utils.Utils;
+import org.ugp.serialx.utils.StrUtils;
 
 /**
  * This example contains brief example of querying and obtaining real data from deserialized content!
@@ -164,9 +164,9 @@ public class SimpleQuerying
 		sc = content.getScope("jsonCrossover");
 		assertTrue(sc instanceof JsonSerializer);
 		assertTrue(Scope.from(sc).castTo(Scope.class) instanceof Scope);
-		assertEquals(TEST_JSON, sc.get("he" + Utils.multilpy("l", 2) + "o"));
+		assertEquals(TEST_JSON, sc.get("he" + StrUtils.multilpy("l", 2) + "o"));
 		assertFalse(sc.getGenericScope("jsonArray").isEmpty());
-		assertEquals(sc.getClass(), content.get("jsonArrayCla" + Utils.multilpy('s', 2)));
+		assertEquals(sc.getClass(), content.get("jsonArrayCla" + StrUtils.multilpy('s', 2)));
 		
 		
 		assertEquals(content.<Object, Object>getGenericScope("genericScope").<Object>get(Arrays.asList((Object[]) content.getParsers().parse("(1_0_0e-2 (0b10 ) 3d)"))), new JsonCharacterConverter(false).toString(null, '{').toString() /* DO NOT DO IN PROD ("123") */);

@@ -29,7 +29,7 @@ import org.ugp.serialx.juss.converters.VariableConverter;
 import org.ugp.serialx.protocols.SerializationProtocol;
 import org.ugp.serialx.protocols.SerializationProtocol.ProtocolRegistry;
 import org.ugp.serialx.utils.LogProvider;
-import org.ugp.serialx.utils.Utils;
+import org.ugp.serialx.utils.StrUtils;
 
 import examples.Bar;
 import examples.Foo;
@@ -186,7 +186,7 @@ public class GeneralExample
 		assertEquals(list.size(), deserializer.getInt("arrSize"));
 
 		assertEquals(TEST_4, deserializer.getScope(4).getScope("neastedTest").getDouble("tst4"), 0);
-		assertEquals(deserializer.getScope(4).getScope(Utils.splitValues("test  neastedTest", ' ')).getParent(2), deserializer.getScope(4));
+		assertEquals(deserializer.getScope(4).getScope(StrUtils.splitValues("test  neastedTest", ' ')).getParent(2), deserializer.getScope(4));
 		assertEquals(((Scope) deserializer.getScope(4).getSubScope(0).<List<?>>get(0).get(3)).getSubScope(0).<List<?>>toObject(List.class).size(), TEST_5.<Collection<?>>into(Collection.class).size());
 		assertTrue(deserializer.clone() instanceof JussSerializer);
 		assertTrue(deserializer.filter(obj -> obj.equals(new Scope("true").getBool(0))).get(0));
@@ -198,7 +198,7 @@ public class GeneralExample
 		assertEquals(-TEST_4I, deserializer.getByte(-3));
 
 		assertTrue(deserializer.<Boolean>get("_boolTst1") && deserializer.<Boolean>cloneOf("_boolTst2") && deserializer.getBool("_boolTst4") && !deserializer.containsVariable("_boolTst3"));
-		assertEquals(Utils.multilpy(GenericScope.intoBidirectional(Scope.from(new Scope()) , null, Arrays.asList(97)).getChar(0), +1 +-6 / -2*(2+1)%- 100 + 1).toString(), deserializer.get(-2));
+		assertEquals(StrUtils.multilpy(GenericScope.intoBidirectional(Scope.from(new Scope()) , null, Arrays.asList(97)).getChar(0), +1 +-6 / -2*(2+1)%- 100 + 1).toString(), deserializer.get(-2));
 		
 		assertEquals(TEST_6, new Scope(deserializer).getString(-1));
 		

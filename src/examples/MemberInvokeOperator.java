@@ -1,8 +1,7 @@
 package examples;
 
-import static org.ugp.serialx.utils.Utils.InvokeFunc;
-import static org.ugp.serialx.utils.Utils.indexOfNotInObj;
-import static org.ugp.serialx.utils.Utils.splitValues;
+import static org.ugp.serialx.utils.MetaprogrammingUtils.InvokeFunc;
+import static org.ugp.serialx.utils.StrUtils.*;
 
 import java.lang.reflect.InvocationTargetException;
 

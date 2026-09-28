@@ -1,4 +1,4 @@
-//Date created: 09-27-2026 at 21:11:24 CEST 
+//Date created: 09-28-2026 at 17:51:09 CEST 
 
 //Scope serialization summary:
 //2 variables!
@@ -54,5 +54,5 @@ T; //Primitive data type: "true" the boolean value!
 F; //Primitive data type: "false" the boolean value!
 null; //Null, the nothing!
 -$num::new; //Manually inserted code!
-$undef??0 ?12 : 11??{} ? ($_boolTst1 = 1 2 <= {1, 2, 3} - 2 - 3 + 5)&& ($_boolTst2: !!T instanceof java.lang.Boolean) && !!!5.0 > 5 && ($_boolTst3 = T) || ($_boolTst4= 'i'- 5 == 'd' ^ 240/4*2 != 'x') ? (+1 --+-6l /- 2*(2l+--(T || F))%- 10**2 + 1 ) * "a" /* ++1*/; //Manually inserted code!
+$undef??0 ?12 : 11??{} ? ($_boolTst1 = 1 2 <= {1, 2, 3} - 2 - 3 + 5)&& ($_boolTst2: !!T instanceof java.lang.Boolean) && !!!5.0 > 5 && ($_boolTst3 = T) || ($_boolTst4= 'i'- 5 == 'd' ^ 240/4*2 != 'x') ? (+1 --+-6l /- 2*(2l+--(T || F))%- 10**2 + 1 ) * "a"; //Manually inserted code!
 {examples.implementations.GeneralExample::println examples.implementations.GeneralExample::hello} //Manually inserted code!
