@@ -126,6 +126,7 @@ public class ObjectConverter extends ProtocolConverter
 	}
 	
 	@SuppressWarnings("unchecked")
+	@Override
 	public Appendable toString(Appendable source, ParserRegistry myHomeRegistry, Object obj, SerializationProtocol<Object> preferedProtocol, Object... args) 
 	{
 		if (obj instanceof Scope)

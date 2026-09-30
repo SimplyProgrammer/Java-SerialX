@@ -1325,7 +1325,7 @@ public class Scope extends GenericScope<String, Object>
 		return (List<T>) listToGenerify;
 	}
 	
-	/*
+	/**
 	* @param listToGenerify | Map whose values should be modify/map its elements into specified type.
 	* @param genericType | Requested type of lists elements. 
 	* 

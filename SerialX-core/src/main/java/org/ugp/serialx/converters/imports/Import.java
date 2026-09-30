@@ -111,6 +111,13 @@ public class Import implements Cloneable, Type
 		return getClsAlias();
 	}
 	
+	/**
+	 * @param newOwner | New Import provider owner.
+	 * 
+	 * @return Clone of this import for newOnwer.
+	 * 
+	 * @since 1.3.5
+	 */
 	public Import clone(ImportsProvider newOwner)  
 	{
 		return new Import(getCls(), getClsAlias(), newOwner);
